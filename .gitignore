@@ -1,3 +1,5 @@
+build
+dist
 venv
 *.egg-info
 .python-version

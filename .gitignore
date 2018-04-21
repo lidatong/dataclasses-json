@@ -1,0 +1,6 @@
+venv
+*.egg-info
+.python-version
+.idea
+.pytest_cache
+*.pyc

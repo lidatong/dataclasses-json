@@ -1,21 +1,3 @@
-from dataclasses import dataclass
-from dataclasses_json import DataClassJsonMixin
-from typing import List, Tuple, Set, Optional
-
-
-@dataclass(frozen=True)
-class DataClassWithList(DataClassJsonMixin):
-    xs: List[int]
-
-
-@dataclass(frozen=True)
-class DataClassWithSet(DataClassJsonMixin):
-    xs: Set[int]
-
-
-@dataclass(frozen=True)
-class DataClassWithTuple(DataClassJsonMixin):
-    xs: Tuple[int]
 
 
 @dataclass(frozen=True)

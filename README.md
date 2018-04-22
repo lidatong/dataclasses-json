@@ -4,8 +4,8 @@ This library provides a simple API for encoding and decoding [dataclasses](https
 
 It's recursive (see caveats below), so you can easily work with nested dataclasses.
 
-In addition to the supported types in the [py to JSON table](https://docs.python.org/3/library/json.html#py-to-json-table), the `set` type
-is supported (and more collection types may be included in later releases).
+In addition to the supported types in the [py to JSON table](https://docs.python.org/3/library/json.html#py-to-json-table), any arbitrary
+collection type is supported (they are encoded into JSON arrays, but decoded into the original collection types).
 
 
 ## Quickstart

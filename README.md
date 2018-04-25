@@ -45,5 +45,5 @@ assert Boss.from_json(boss_json) == boss
 
 
 ## Caveats
-Generic types and recursive types (types that require forward references)
-are not currently supported.
+Recursive types (types that require forward references) are not currently
+supported.

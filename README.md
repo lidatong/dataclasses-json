@@ -9,8 +9,12 @@ In addition to the supported types in the [py to JSON table](https://docs.python
 
 
 ## Quickstart
-
 `pip install dataclasses_json`
+
+```python
+my_dataclass_instance.to_json()
+MyDataClass.from_json(some_json_string)
+```
 
 ```python
 from dataclasses import dataclass
@@ -39,6 +43,7 @@ boss_json = """
     ]
 }
 """.strip()
+
 assert boss.to_json(indent=4) == boss_json
 assert Boss.from_json(boss_json) == boss
 ```

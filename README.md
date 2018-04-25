@@ -50,4 +50,4 @@ assert Boss.from_json(boss_json) == boss
 
 
 ## Caveats
-Recursive dataclasses (dataclasses that contain members that are instances of itself) are not currently supported.
+Data Classes that contain forward references (e.g. recursive dataclasses) are not currently supported.

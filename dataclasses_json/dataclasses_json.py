@@ -1,19 +1,12 @@
 import json
-from typing import List, Optional, Set, Tuple, Union, FrozenSet, Deque, Collection
-from collections import deque
+from typing import Collection, Optional
 
 from dataclasses import asdict, fields, is_dataclass
-
-_cons_map = {List: list,
-             Set: set,
-             Tuple: tuple,
-             FrozenSet: frozenset,
-             Deque: deque}
 
 
 class _Encoder(json.JSONEncoder):
     def default(self, o):
-        if any(isinstance(o, c_type) for c_type in _cons_map):
+        if _isinstance_safe(o, Collection):
             return list(o)
         return json.JSONEncoder.default(self, o)
 
@@ -53,9 +46,9 @@ def _decode_dataclass(cls, kvs):
     init_kwargs = {}
     for field in fields(cls):
         field_value = kvs[field.name]
-        if is_dataclass(field_value):
+        if is_dataclass(field.type):
             init_kwargs[field.name] = _decode_dataclass(field.type, field_value)
-        elif _is_supported_generic(field.type):
+        elif _is_supported_generic(field.type) and field.type != str:
             init_kwargs[field.name] = _decode_generic(field.type, field_value)
         else:
             init_kwargs[field.name] = field_value
@@ -63,24 +56,16 @@ def _decode_dataclass(cls, kvs):
 
 
 def _is_supported_generic(type_):
-    is_collection = any(_issubclass_safe(type_, generic_type)
-                        for generic_type in _cons_map)
+    is_collection = _issubclass_safe(type_, Collection)
     is_optional = (_issubclass_safe(type_, Optional)
                    or _hasargs(type_, type(None)))
     return is_collection or is_optional
 
 
-def _get_cons(type_, *, default):
-    for c_type, cons in _cons_map.items():
-        if _issubclass_safe(type_, c_type):
-            return cons
-    return default
-
-
 def _decode_generic(type_, value):
     if not value:
         res = value
-    elif any(_issubclass_safe(type_, c_type) for c_type in _cons_map):
+    elif _issubclass_safe(type_, Collection):
         # this is a tricky situation where we need to check both the annotated
         # type info (which is usually a type from `typing`) and check the
         # value's type directly using `type()`.
@@ -97,7 +82,7 @@ def _decode_generic(type_, value):
             xs = value
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on the type returned by
-        res = _get_cons(type_, default=type(value))(xs)
+        res = type_.__extra__(xs)
     else:  # Optional
         type_arg = type_.__args__[0]
         if is_dataclass(type_arg) or is_dataclass(value):
@@ -112,7 +97,16 @@ def _decode_generic(type_, value):
 def _issubclass_safe(cls, classinfo):
     try:
         result = issubclass(cls, classinfo)
-    except TypeError:
+    except Exception:
+        return False
+    else:
+        return result
+
+
+def _isinstance_safe(o, t):
+    try:
+        result = isinstance(o, t)
+    except Exception:
         return False
     else:
         return result
@@ -125,19 +119,3 @@ def _hasargs(type_, *args):
         return False
     else:
         return res
-
-
-from typing import Generic, TypeVar
-from dataclasses import dataclass
-
-A = TypeVar('A')
-
-
-@dataclass(frozen=True)
-class Nested(Generic[A], DataClassJsonMixin):
-    value: Optional[FrozenSet[A]]
-
-
-nested_json = Nested(frozenset([5])).to_json()
-print(Nested.from_json(nested_json))
-

@@ -1,5 +1,5 @@
 import json
-from typing import Collection, Optional, Generic
+from typing import Collection, Optional
 
 from dataclasses import asdict, fields, is_dataclass
 
@@ -113,28 +113,6 @@ def _isinstance_safe(o, t):
         return False
     else:
         return result
-
-
-from typing import TypeVar
-
-A = TypeVar('A')
-
-
-class MyCollection(Collection[A]):
-    def __init__(self, xs: Collection[A]):
-        self.xs = xs
-
-    def __contains__(self, item):
-        return False
-
-    def __iter__(self):
-        return iter(self.xs)
-
-    def __len__(self):
-        return len(self.xs)
-
-
-print(_isinstance_safe(MyCollection([1]), Collection))
 
 
 def _hasargs(type_, *args):

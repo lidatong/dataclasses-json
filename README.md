@@ -5,7 +5,7 @@ This library provides a simple API for encoding and decoding [dataclasses](https
 It's recursive (see caveats below), so you can easily work with nested dataclasses.
 
 In addition to the supported types in the [py to JSON table](https://docs.python.org/3/library/json.html#py-to-json-table), any arbitrary
-collection type is supported (they are encoded into JSON arrays, but decoded into the original collection types).
+[Collection](https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection) type is supported (they are encoded into JSON arrays, but decoded into the original collection types).
 
 
 ## Quickstart
@@ -45,5 +45,4 @@ assert Boss.from_json(boss_json) == boss
 
 
 ## Caveats
-Recursive types (types that require forward references) are not currently
-supported.
+Recursive dataclasses (dataclasses that contain members that are instances of itself) are not currently supported.

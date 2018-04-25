@@ -9,7 +9,7 @@ In addition to the supported types in the [py to JSON table](https://docs.python
 
 
 ## Quickstart
-`pip install dataclasses_json`
+`pip install dataclasses-json`
 
 ```python
 my_dataclass_instance.to_json()

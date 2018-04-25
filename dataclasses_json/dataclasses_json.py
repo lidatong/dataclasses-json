@@ -1,5 +1,5 @@
 import json
-from typing import Collection, Optional
+from typing import Collection, Optional, Generic
 
 from dataclasses import asdict, fields, is_dataclass
 
@@ -82,7 +82,10 @@ def _decode_generic(type_, value):
             xs = value
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on the type returned by
-        res = type_.__extra__(xs)
+        try:
+            res = type_.__extra__(xs)
+        except TypeError:
+            res = type_(xs)
     else:  # Optional
         type_arg = type_.__args__[0]
         if is_dataclass(type_arg) or is_dataclass(value):
@@ -110,6 +113,28 @@ def _isinstance_safe(o, t):
         return False
     else:
         return result
+
+
+from typing import TypeVar
+
+A = TypeVar('A')
+
+
+class MyCollection(Collection[A]):
+    def __init__(self, xs: Collection[A]):
+        self.xs = xs
+
+    def __contains__(self, item):
+        return False
+
+    def __iter__(self):
+        return iter(self.xs)
+
+    def __len__(self):
+        return len(self.xs)
+
+
+print(_isinstance_safe(MyCollection([1]), Collection))
 
 
 def _hasargs(type_, *args):

@@ -71,3 +71,7 @@ class TestDecoder:
     def test_my_collection(self):
         assert (DataClassWithMyCollection.from_json('{"xs": [1]}') ==
                 DataClassWithMyCollection(MyCollection([1])))
+
+    def test_my_list_collection(self):
+        assert (DataClassWithMyCollection.from_json('[{"xs": [1]}]', many=True)
+                == [DataClassWithMyCollection(MyCollection([1]))])

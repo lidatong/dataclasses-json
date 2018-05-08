@@ -33,13 +33,32 @@ class DataClassJsonMixin:
                   encoding=None,
                   parse_float=None,
                   parse_int=None,
-                  parse_constant=None):
+                  parse_constant=None,
+                  many=False):
         init_kwargs = json.loads(kvs,
                                  encoding=encoding,
                                  parse_float=parse_float,
                                  parse_int=parse_int,
                                  parse_constant=parse_constant)
+        if many:
+            return _decode_dataclass_many(cls, init_kwargs)
         return _decode_dataclass(cls, init_kwargs)
+
+
+def _decode_dataclass_many(cls, kvs_many):
+    cls_stores = []
+    for kvs in kvs_many:
+        init_kwargs = {}
+        for field in fields(cls):
+            field_value = kvs[field.name]
+            if is_dataclass(field.type):
+                init_kwargs[field.name] = _decode_dataclass(field.type, field_value)
+            elif _is_supported_generic(field.type) and field.type != str:
+                init_kwargs[field.name] = _decode_generic(field.type, field_value)
+            else:
+                init_kwargs[field.name] = field_value
+        cls_stores.append(cls(**init_kwargs))
+    return cls_stores
 
 
 def _decode_dataclass(cls, kvs):

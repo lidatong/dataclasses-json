@@ -12,7 +12,7 @@ class _Encoder(json.JSONEncoder):
 
 
 class DataClassJsonMixin:
-    def to_json(self, skipkeys=False, ensure_ascii=True, check_circular=True,
+    def to_json(self, *, skipkeys=False, ensure_ascii=True, check_circular=True,
                 allow_nan=True, indent=None, separators=None,
                 default=None, sort_keys=False, **kw):
         return json.dumps(asdict(self),
@@ -30,6 +30,7 @@ class DataClassJsonMixin:
     @classmethod
     def from_json(cls,
                   kvs,
+                  *,
                   encoding=None,
                   parse_float=None,
                   parse_int=None,
@@ -40,6 +41,21 @@ class DataClassJsonMixin:
                                  parse_int=parse_int,
                                  parse_constant=parse_constant)
         return _decode_dataclass(cls, init_kwargs)
+
+    @classmethod
+    def from_json_array(cls,
+                        kvss,
+                        encoding=None,
+                        parse_float=None,
+                        parse_int=None,
+                        parse_constant=None):
+        init_kwargs_array = json.loads(kvss,
+                                       encoding=encoding,
+                                       parse_float=parse_float,
+                                       parse_int=parse_int,
+                                       parse_constant=parse_constant)
+        return [_decode_dataclass(cls, init_kwargs)
+                for init_kwargs in init_kwargs_array]
 
 
 def _decode_dataclass(cls, kvs):

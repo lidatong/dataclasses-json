@@ -14,8 +14,13 @@ class _Encoder(json.JSONEncoder):
 class DataClassJsonMixin:
     def to_json(self, *, skipkeys=False, ensure_ascii=True, check_circular=True,
                 allow_nan=True, indent=None, separators=None,
-                default=None, sort_keys=False, **kw):
-        return json.dumps(asdict(self),
+                default=None, sort_keys=False, skip_missing_optionals=False, **kw):
+        dict_ = asdict(self)
+        if skip_missing_optionals:
+            for field in fields(self):
+                if dict_[field.name] is None and _is_optional(field.type):
+                    dict_.pop(field.name)
+        return json.dumps(dict_,
                           cls=_Encoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,

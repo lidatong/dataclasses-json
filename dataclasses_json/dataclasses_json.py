@@ -58,9 +58,17 @@ class DataClassJsonMixin:
                 for init_kwargs in init_kwargs_array]
 
 
+def _is_optional(type_):
+    return (_issubclass_safe(type_, Optional)
+            or _hasargs(type_, type(None)))
+
+
 def _decode_dataclass(cls, kvs):
     init_kwargs = {}
     for field in fields(cls):
+        if field.name not in kvs and _is_optional(field.type):
+            init_kwargs[field.name] = None
+            continue
         field_value = kvs[field.name]
         if is_dataclass(field.type):
             init_kwargs[field.name] = _decode_dataclass(field.type, field_value)
@@ -73,8 +81,7 @@ def _decode_dataclass(cls, kvs):
 
 def _is_supported_generic(type_):
     is_collection = _issubclass_safe(type_, Collection)
-    is_optional = (_issubclass_safe(type_, Optional)
-                   or _hasargs(type_, type(None)))
+    is_optional = _is_optional(type_)
     return is_collection or is_optional
 
 

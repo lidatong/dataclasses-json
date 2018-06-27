@@ -62,6 +62,8 @@ class TestDecoder:
                 DataClassWithOptional(1))
         assert (DataClassWithOptional.from_json('{"x": null}') ==
                 DataClassWithOptional(None))
+        assert (DataClassWithOptional.from_json('{}') ==
+                DataClassWithOptional(None))
 
     def test_custom_list(self):
         print(DataClassWithCustomList.from_json('{"xs": [1]}'))

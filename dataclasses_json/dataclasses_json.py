@@ -77,7 +77,7 @@ def _decode_dataclass(cls, kvs):
         field_value = kvs[field.name]
         if is_dataclass(field.type):
             init_kwargs[field.name] = _decode_dataclass(field.type, field_value)
-        elif _is_supported_generic(field.type) and field.type != str:
+        elif _is_supported_generic(field.type) and field.type != str and field.type.__args__[0] != str:
             init_kwargs[field.name] = _decode_generic(field.type, field_value)
         else:
             init_kwargs[field.name] = field_value

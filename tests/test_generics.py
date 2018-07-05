@@ -27,6 +27,8 @@ class TestEncoder:
     def test_optional(self):
         assert DataClassWithOptional(1).to_json() == '{"x": 1}'
         assert DataClassWithOptional(None).to_json() == '{"x": null}'
+        assert DataClassWithOptional(1).to_json(skip_missing_optionals=True) == '{"x": 1}'
+        assert DataClassWithOptional(None).to_json(skip_missing_optionals=True) == '{}'
 
     def test_custom_list(self):
         assert (DataClassWithCustomList(CustomList([1])).to_json() ==
@@ -61,6 +63,8 @@ class TestDecoder:
         assert (DataClassWithOptional.from_json('{"x": 1}') ==
                 DataClassWithOptional(1))
         assert (DataClassWithOptional.from_json('{"x": null}') ==
+                DataClassWithOptional(None))
+        assert (DataClassWithOptional.from_json('{}') ==
                 DataClassWithOptional(None))
 
     def test_custom_list(self):

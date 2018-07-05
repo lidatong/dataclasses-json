@@ -14,8 +14,13 @@ class _Encoder(json.JSONEncoder):
 class DataClassJsonMixin:
     def to_json(self, *, skipkeys=False, ensure_ascii=True, check_circular=True,
                 allow_nan=True, indent=None, separators=None,
-                default=None, sort_keys=False, **kw):
-        return json.dumps(asdict(self),
+                default=None, sort_keys=False, skip_missing_optionals=False, **kw):
+        dict_ = asdict(self)
+        if skip_missing_optionals:
+            for field in fields(self):
+                if dict_[field.name] is None and _is_optional(field.type):
+                    dict_.pop(field.name)
+        return json.dumps(dict_,
                           cls=_Encoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,
@@ -58,13 +63,21 @@ class DataClassJsonMixin:
                 for init_kwargs in init_kwargs_array]
 
 
+def _is_optional(type_):
+    return (_issubclass_safe(type_, Optional)
+            or _hasargs(type_, type(None)))
+
+
 def _decode_dataclass(cls, kvs):
     init_kwargs = {}
     for field in fields(cls):
+        if field.name not in kvs and _is_optional(field.type):
+            init_kwargs[field.name] = None
+            continue
         field_value = kvs[field.name]
         if is_dataclass(field.type):
             init_kwargs[field.name] = _decode_dataclass(field.type, field_value)
-        elif _is_supported_generic(field.type) and field.type != str:
+        elif _is_supported_generic(field.type) and field.type != str and field.type.__args__[0] != str:
             init_kwargs[field.name] = _decode_generic(field.type, field_value)
         else:
             init_kwargs[field.name] = field_value
@@ -73,8 +86,7 @@ def _decode_dataclass(cls, kvs):
 
 def _is_supported_generic(type_):
     is_collection = _issubclass_safe(type_, Collection)
-    is_optional = (_issubclass_safe(type_, Optional)
-                   or _hasargs(type_, type(None)))
+    is_optional = _is_optional(type_)
     return is_collection or is_optional
 
 

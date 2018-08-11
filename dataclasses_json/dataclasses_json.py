@@ -1,7 +1,6 @@
 import json
-from typing import Collection, Optional
-
 from dataclasses import asdict, fields, is_dataclass
+from typing import Collection, Optional
 
 
 class _Encoder(json.JSONEncoder):
@@ -72,7 +71,10 @@ def _decode_dataclass(cls, kvs):
 
 
 def _is_supported_generic(type_):
-    is_collection = _issubclass_safe(type_, Collection)
+    try:
+        is_collection = _issubclass_safe(type_.__origin__, Collection)
+    except AttributeError:
+        return False
     is_optional = (_issubclass_safe(type_, Optional)
                    or _hasargs(type_, type(None)))
     return is_collection or is_optional
@@ -81,7 +83,7 @@ def _is_supported_generic(type_):
 def _decode_generic(type_, value):
     if not value:
         res = value
-    elif _issubclass_safe(type_, Collection):
+    elif _issubclass_safe(type_.__origin__, Collection):
         # this is a tricky situation where we need to check both the annotated
         # type info (which is usually a type from `typing`) and check the
         # value's type directly using `type()`.
@@ -99,7 +101,7 @@ def _decode_generic(type_, value):
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on the type returned by
         try:
-            res = type_.__extra__(xs)
+            res = type_.__origin__(xs)
         except TypeError:
             res = type_(xs)
     else:  # Optional

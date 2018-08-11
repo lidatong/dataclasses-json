@@ -1,10 +1,15 @@
-from typing import (List, Set, Tuple, FrozenSet, Deque, Optional, TypeVar,
-                    Generic, Collection)
-
 from dataclasses import dataclass
+from typing import (Collection,
+                    Deque,
+                    FrozenSet,
+                    List,
+                    Optional,
+                    Set,
+                    Tuple,
+                    TypeVar,
+                    Union)
 
 from dataclasses_json import DataClassJsonMixin
-from collections import UserList
 
 A = TypeVar('A')
 
@@ -40,6 +45,11 @@ class DataClassWithOptional(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithUnionIntNone(DataClassJsonMixin):
+    x: Union[int, None]
+
+
+@dataclass(frozen=True)
 class DataClassWithDataClass(DataClassJsonMixin):
     xs: DataClassWithList
 
@@ -52,15 +62,6 @@ class DataClassX(DataClassJsonMixin):
 @dataclass(frozen=True)
 class DataClassXs(DataClassJsonMixin):
     xs: List[DataClassX]
-
-
-class CustomList(Collection[A], UserList):
-    pass
-
-
-@dataclass(frozen=True)
-class DataClassWithCustomList(DataClassJsonMixin):
-    xs: CustomList[int]
 
 
 class MyCollection(Collection[A]):
@@ -83,4 +84,3 @@ class MyCollection(Collection[A]):
 @dataclass(frozen=True)
 class DataClassWithMyCollection(DataClassJsonMixin):
     xs: MyCollection[int]
-

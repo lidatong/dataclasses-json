@@ -1,5 +1,7 @@
-from tests.test_entities import (DataClassWithDataClass, DataClassWithList,
-                                 DataClassX, DataClassXs)
+from tests.test_entities import (DataClassWithDataClass,
+                                 DataClassWithList,
+                                 DataClassX,
+                                 DataClassXs)
 
 
 class TestEncoder:
@@ -14,8 +16,6 @@ class TestEncoder:
 
 class TestDecoder:
     def test_nested_dataclass(self):
-        print(DataClassWithDataClass.from_json('{"xs": {"xs": [1]}}'))
-        print(DataClassWithDataClass(DataClassWithList([1])))
         assert (DataClassWithDataClass.from_json('{"xs": {"xs": [1]}}') ==
                 DataClassWithDataClass(DataClassWithList([1])))
 

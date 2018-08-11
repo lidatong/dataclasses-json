@@ -1,10 +1,13 @@
 from collections import deque
 
-from tests.test_entities import (DataClassWithList, DataClassWithSet,
-                                 DataClassWithTuple, DataClassWithFrozenSet,
-                                 DataClassWithDeque, DataClassWithOptional,
-                                 DataClassWithCustomList, CustomList,
+from tests.test_entities import (DataClassWithDeque,
+                                 DataClassWithFrozenSet,
+                                 DataClassWithList,
                                  DataClassWithMyCollection,
+                                 DataClassWithOptional,
+                                 DataClassWithSet,
+                                 DataClassWithTuple,
+                                 DataClassWithUnionIntNone,
                                  MyCollection)
 
 
@@ -28,12 +31,13 @@ class TestEncoder:
         assert DataClassWithOptional(1).to_json() == '{"x": 1}'
         assert DataClassWithOptional(None).to_json() == '{"x": null}'
 
-    def test_custom_list(self):
-        assert (DataClassWithCustomList(CustomList([1])).to_json() ==
-                '{"xs": [1]}')
+    def test_union_int_none(self):
+        assert DataClassWithUnionIntNone(1).to_json() == '{"x": 1}'
+        assert DataClassWithUnionIntNone(None).to_json() == '{"x": null}'
 
     def test_my_collection(self):
-        assert DataClassWithMyCollection(MyCollection([1])).to_json() == '{"xs": [1]}'
+        assert DataClassWithMyCollection(
+            MyCollection([1])).to_json() == '{"xs": [1]}'
 
 
 class TestDecoder:
@@ -62,11 +66,6 @@ class TestDecoder:
                 DataClassWithOptional(1))
         assert (DataClassWithOptional.from_json('{"x": null}') ==
                 DataClassWithOptional(None))
-
-    def test_custom_list(self):
-        print(DataClassWithCustomList.from_json('{"xs": [1]}'))
-        assert (DataClassWithCustomList.from_json('{"xs": [1]}') ==
-                DataClassWithCustomList(CustomList([1])))
 
     def test_my_collection(self):
         assert (DataClassWithMyCollection.from_json('{"xs": [1]}') ==

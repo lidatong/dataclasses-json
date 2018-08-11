@@ -1,7 +1,7 @@
+from dataclasses import dataclass
 from typing import Optional
 
 import pytest
-from dataclasses import dataclass
 
 from dataclasses_json import DataClassJsonMixin
 

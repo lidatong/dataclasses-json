@@ -1,6 +1,7 @@
 import json
 from dataclasses import asdict, fields, is_dataclass
 from typing import Collection, Optional
+from collections import ChainMap
 
 
 class _Encoder(json.JSONEncoder):
@@ -33,12 +34,18 @@ class DataClassJsonMixin:
                   encoding=None,
                   parse_float=None,
                   parse_int=None,
-                  parse_constant=None):
+                  parse_constant=None,
+                  infer_missing=False):
         init_kwargs = json.loads(kvs,
                                  encoding=encoding,
                                  parse_float=parse_float,
                                  parse_int=parse_int,
                                  parse_constant=parse_constant)
+
+        if infer_missing:
+            init_kwargs = ChainMap(init_kwargs,
+                                   {field.name: None for field in fields(cls)
+                                    if field.name not in init_kwargs})
         return _decode_dataclass(cls, init_kwargs)
 
     @classmethod

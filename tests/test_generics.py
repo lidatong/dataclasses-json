@@ -67,6 +67,10 @@ class TestDecoder:
         assert (DataClassWithOptional.from_json('{"x": null}') ==
                 DataClassWithOptional(None))
 
+    def test_infer_missing(self):
+        actual = DataClassWithOptional.from_json('{}', infer_missing=True)
+        assert (actual == DataClassWithOptional(None))
+
     def test_my_collection(self):
         assert (DataClassWithMyCollection.from_json('{"xs": [1]}') ==
                 DataClassWithMyCollection(MyCollection([1])))

@@ -6,4 +6,4 @@ venv
 .idea
 .pytest_cache
 *.pyc
-
+.mypy_cache

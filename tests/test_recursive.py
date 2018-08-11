@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Optional
 
@@ -9,8 +11,8 @@ from dataclasses_json import DataClassJsonMixin
 @dataclass(frozen=True)
 class Tree(DataClassJsonMixin):
     value: str
-    left: Optional['Tree']
-    right: Optional['Tree']
+    left: Optional[Tree]
+    right: Optional[Tree]
 
 
 family_tree_json = """

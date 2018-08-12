@@ -1,5 +1,6 @@
-from hypothesis.strategies import lists, one_of, none
 from collections import deque
+
+from hypothesis.strategies import lists, none, one_of
 
 
 def deques(elements=None, min_size=None, average_size=None, max_size=None,

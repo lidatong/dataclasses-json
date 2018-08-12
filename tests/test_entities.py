@@ -65,7 +65,7 @@ class DataClassXs(DataClassJsonMixin):
 
 
 class MyCollection(Collection[A]):
-    def __init__(self, xs: Collection[A]):
+    def __init__(self, xs: Collection[A]) -> None:
         self.xs = xs
 
     def __contains__(self, item):

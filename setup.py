@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+with open('README.md', 'r', encoding='utf8') as f:
+    readme = f.read()
+
 setup(
     name="dataclasses-json",
     version="0.0.9",
@@ -7,6 +10,7 @@ setup(
     author="lidatong",
     author_email="charles.dt.li@gmail.com",
     description="Easily serialize dataclasses to and from JSON",
+    long_description=readme,
     url="https://github.com/lidatong/dataclasses-json",
     license="Unlicense",
     keywords="dataclasses json",

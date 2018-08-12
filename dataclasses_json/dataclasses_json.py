@@ -88,7 +88,7 @@ def _is_supported_generic(type_):
 
 
 def _decode_generic(type_, value):
-    if not value:
+    if value is None:
         res = value
     elif _issubclass_safe(type_.__origin__, Collection):
         # this is a tricky situation where we need to check both the annotated

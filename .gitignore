@@ -7,3 +7,4 @@ venv
 .pytest_cache
 *.pyc
 .mypy_cache
+.hypothesis

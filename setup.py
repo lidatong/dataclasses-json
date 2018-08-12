@@ -13,7 +13,7 @@ setup(
     install_requires=[],
     python_requires=">=3.7",
     extras_require={
-        "dev": ["pytest", "ipython", "mypy"]
+        "dev": ["pytest", "ipython", "mypy", "hypothesis"]
     },
     include_package_data=True
 )

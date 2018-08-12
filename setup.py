@@ -10,8 +10,10 @@ setup(
     url="https://github.com/lidatong/dataclasses-json",
     license="Unlicense",
     keywords="dataclasses json",
-    install_requires=[],
-    python_requires=">=3.7",
+    install_requires=[
+        "dataclasses;python_version=='3.6'"
+    ],
+    python_requires=">=3.6",
     extras_require={
         "dev": ["pytest", "ipython", "mypy", "hypothesis"]
     },

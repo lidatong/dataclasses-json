@@ -7,9 +7,7 @@ It's recursive (see caveats below), so you can easily work with nested dataclass
 In addition to the supported types in the [py to JSON table](https://docs.python.org/3/library/json.html#py-to-json-table), any arbitrary
 [Collection](https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection) type is supported (they are encoded into JSON arrays, but decoded into the original collection types).
 
-**The [latest release](https://github.com/lidatong/dataclasses-json/releases/latest) is only compatible with Python 3.7.** 
-If you're using the backport of dataclasses in Python 3.6, please use a release <=0.0.6. 
-Please note releases are only compatible with either Python 3.6 or 3.7 due to changes in the `typing` api.
+**The [latest release](https://github.com/lidatong/dataclasses-json/releases/latest) is compatible with both Python 3.7 and Python 3.6 (with the dataclasses backport).** 
 
 ## Quickstart
 `pip install dataclasses-json`

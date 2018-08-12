@@ -1,6 +1,6 @@
 build
 dist
-venv
+venv*
 *.egg-info
 .python-version
 .idea

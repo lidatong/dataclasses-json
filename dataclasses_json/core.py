@@ -1,6 +1,47 @@
 import json
 from dataclasses import fields, is_dataclass
 from typing import Collection, Optional
+import sys
+
+
+def _get_type_origin(type_):
+    """Some spaghetti logic to accommodate differences between 3.6 and 3.7 in
+    the typing api"""
+    try:
+        origin = type_.__origin__
+    except AttributeError:
+        if sys.version_info.minor == 6:
+            try:
+                origin = type_.__extra__
+            except AttributeError:
+                origin = type_
+            else:
+                origin = type_ if origin is None else origin
+        else:
+            origin = type_
+    return origin
+
+
+def _get_type_cons(type_):
+    """More spaghetti logic for 3.6 vs. 3.7"""
+    if sys.version_info.minor == 6:
+        try:
+            cons = type_.__extra__
+        except AttributeError:
+            try:
+                cons = type.__origin__
+            except AttributeError:
+                cons = type_
+            else:
+                cons = type_ if cons is None else cons
+        else:
+            try:
+                cons = type.__origin__ if cons is None else cons
+            except AttributeError:
+                cons = type_
+    else:
+        cons = type_.__origin__
+    return cons
 
 
 class _Encoder(json.JSONEncoder):
@@ -25,6 +66,7 @@ def _decode_dataclass(cls, kvs):
 
 def _is_supported_generic(type_):
     try:
+        # __origin__ exists in 3.7 on user defined generics
         is_collection = _issubclass_safe(type_.__origin__, Collection)
     except AttributeError:
         return False
@@ -36,7 +78,7 @@ def _is_supported_generic(type_):
 def _decode_generic(type_, value):
     if value is None:
         res = value
-    elif _issubclass_safe(type_.__origin__, Collection):
+    elif _issubclass_safe(_get_type_origin(type_), Collection):
         # this is a tricky situation where we need to check both the annotated
         # type info (which is usually a type from `typing`) and check the
         # value's type directly using `type()`.
@@ -54,7 +96,7 @@ def _decode_generic(type_, value):
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on the type returned by
         try:
-            res = type_.__origin__(xs)
+            res = _get_type_cons(type_)(xs)
         except TypeError:
             res = type_(xs)
     else:  # Optional

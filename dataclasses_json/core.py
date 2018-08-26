@@ -1,7 +1,9 @@
 import json
-from dataclasses import fields, is_dataclass
-from typing import Collection, Optional
 import sys
+from collections import ChainMap
+from dataclasses import fields, is_dataclass, MISSING
+from typing import Collection, Optional
+from functools import partial
 
 
 def _get_type_origin(type_):
@@ -51,14 +53,26 @@ class _Encoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-def _decode_dataclass(cls, kvs):
+def _decode_dataclass(cls, kvs, infer_missing):
+    kvs = {} if kvs is None and infer_missing else kvs
+    missing_fields = {field for field in fields(cls) if field.name not in kvs}
+    for field in missing_fields:
+        if field.default is not MISSING:
+            kvs[field.name] = field.default
+        elif infer_missing:
+            kvs[field.name] = None
+
     init_kwargs = {}
     for field in fields(cls):
         field_value = kvs[field.name]
         if is_dataclass(field.type):
-            init_kwargs[field.name] = _decode_dataclass(field.type, field_value)
+            init_kwargs[field.name] = _decode_dataclass(field.type,
+                                                        field_value,
+                                                        infer_missing)
         elif _is_supported_generic(field.type) and field.type != str:
-            init_kwargs[field.name] = _decode_generic(field.type, field_value)
+            init_kwargs[field.name] = _decode_generic(field.type,
+                                                      field_value,
+                                                      infer_missing)
         else:
             init_kwargs[field.name] = field_value
     return cls(**init_kwargs)
@@ -75,7 +89,7 @@ def _is_supported_generic(type_):
     return is_collection or is_optional
 
 
-def _decode_generic(type_, value):
+def _decode_generic(type_, value, infer_missing):
     if value is None:
         res = value
     elif _issubclass_safe(_get_type_origin(type_), Collection):
@@ -88,9 +102,9 @@ def _decode_generic(type_, value):
         # hence the check of `is_dataclass(value)`
         type_arg = type_.__args__[0]
         if is_dataclass(type_arg) or is_dataclass(value):
-            xs = (_decode_dataclass(type_arg, v) for v in value)
+            xs = (_decode_dataclass(type_arg, v, infer_missing) for v in value)
         elif _is_supported_generic(type_arg):
-            xs = (_decode_generic(type_arg, v) for v in value)
+            xs = (_decode_generic(type_arg, v, infer_missing) for v in value)
         else:
             xs = value
         # get the constructor if using corresponding generic type in `typing`
@@ -102,9 +116,9 @@ def _decode_generic(type_, value):
     else:  # Optional
         type_arg = type_.__args__[0]
         if is_dataclass(type_arg) or is_dataclass(value):
-            res = _decode_dataclass(type_arg, value)
+            res = _decode_dataclass(type_arg, value, infer_missing)
         elif _is_supported_generic(type_arg):
-            res = _decode_generic(type_arg, value)
+            res = _decode_generic(type_arg, value, infer_missing)
         else:
             res = value
     return res

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import (Collection,
                     Deque,
                     FrozenSet,
@@ -45,6 +45,11 @@ class DataClassWithOptional(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithOptionalRecursive(DataClassJsonMixin):
+    x: DataClassWithOptional
+
+
+@dataclass(frozen=True)
 class DataClassWithUnionIntNone(DataClassJsonMixin):
     x: Union[int, None]
 
@@ -62,6 +67,16 @@ class DataClassX(DataClassJsonMixin):
 @dataclass(frozen=True)
 class DataClassXs(DataClassJsonMixin):
     xs: List[DataClassX]
+
+
+@dataclass(frozen=True)
+class DataClassImmutableDefault(DataClassJsonMixin):
+    x: int = 0
+
+
+@dataclass(frozen=True)
+class DataClassMutableDefault(DataClassJsonMixin):
+    xs: List[int] = field(default_factory=list)
 
 
 class MyCollection(Collection[A]):

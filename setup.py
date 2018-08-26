@@ -11,6 +11,7 @@ setup(
     author_email="charles.dt.li@gmail.com",
     description="Easily serialize dataclasses to and from JSON",
     long_description=readme,
+    long_description_content_type='text/markdown',
     url="https://github.com/lidatong/dataclasses-json",
     license="Unlicense",
     keywords="dataclasses json",

@@ -35,24 +35,21 @@ class DataClassJsonMixin:
                                  parse_float=parse_float,
                                  parse_int=parse_int,
                                  parse_constant=parse_constant)
-
-        if infer_missing:
-            init_kwargs = ChainMap(init_kwargs,
-                                   {field.name: None for field in fields(cls)
-                                    if field.name not in init_kwargs})
-        return _decode_dataclass(cls, init_kwargs)
+        return _decode_dataclass(cls, init_kwargs, infer_missing)
 
     @classmethod
     def from_json_array(cls,
                         kvss,
+                        *,
                         encoding=None,
                         parse_float=None,
                         parse_int=None,
-                        parse_constant=None):
+                        parse_constant=None,
+                        infer_missing=False):
         init_kwargs_array = json.loads(kvss,
                                        encoding=encoding,
                                        parse_float=parse_float,
                                        parse_int=parse_int,
                                        parse_constant=parse_constant)
-        return [_decode_dataclass(cls, init_kwargs)
+        return [_decode_dataclass(cls, init_kwargs, infer_missing)
                 for init_kwargs in init_kwargs_array]

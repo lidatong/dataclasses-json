@@ -6,7 +6,7 @@ from hypothesis.strategies import (frozensets, integers, lists, one_of, sets,
 
 from tests.hypothesis2 import examples
 from tests.hypothesis2.strategies import deques, optionals
-from tests.test_entities import (DataClassWithDeque, DataClassWithFrozenSet,
+from tests.entities import (DataClassWithDeque, DataClassWithFrozenSet,
                                  DataClassWithList, DataClassWithOptional,
                                  DataClassWithSet, DataClassWithTuple)
 

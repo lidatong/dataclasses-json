@@ -1,14 +1,17 @@
 from collections import deque
 
-from tests.test_entities import (DataClassWithDeque,
-                                 DataClassWithFrozenSet,
-                                 DataClassWithList,
-                                 DataClassWithMyCollection,
-                                 DataClassWithOptional,
-                                 DataClassWithSet,
-                                 DataClassWithTuple,
-                                 DataClassWithUnionIntNone,
-                                 MyCollection)
+from tests.entities import (DataClassWithDeque,
+                            DataClassWithFrozenSet,
+                            DataClassWithList,
+                            DataClassWithMyCollection,
+                            DataClassWithOptional,
+                            DataClassWithOptionalRecursive,
+                            DataClassWithSet,
+                            DataClassWithTuple,
+                            DataClassWithUnionIntNone,
+                            MyCollection,
+                            DataClassImmutableDefault,
+                            DataClassMutableDefault)
 
 
 class TestEncoder:
@@ -38,6 +41,12 @@ class TestEncoder:
     def test_my_collection(self):
         assert DataClassWithMyCollection(
             MyCollection([1])).to_json() == '{"xs": [1]}'
+
+    def test_immutable_default(self):
+        assert DataClassImmutableDefault().to_json() == '{"x": 0}'
+
+    def test_mutable_default(self):
+        assert DataClassMutableDefault().to_json() == '{"xs": []}'
 
 
 class TestDecoder:
@@ -71,6 +80,12 @@ class TestDecoder:
         actual = DataClassWithOptional.from_json('{}', infer_missing=True)
         assert (actual == DataClassWithOptional(None))
 
+    def test_infer_missing_is_recursive(self):
+        actual = DataClassWithOptionalRecursive.from_json('{"x": null}',
+                                                          infer_missing=True)
+        assert (actual == DataClassWithOptionalRecursive(
+            DataClassWithOptional(None)))
+
     def test_my_collection(self):
         assert (DataClassWithMyCollection.from_json('{"xs": [1]}') ==
                 DataClassWithMyCollection(MyCollection([1])))
@@ -78,3 +93,11 @@ class TestDecoder:
     def test_my_list_collection(self):
         assert (DataClassWithMyCollection.from_json_array('[{"xs": [1]}]')
                 == [DataClassWithMyCollection(MyCollection([1]))])
+
+    def test_immutable_default(self):
+        assert (DataClassImmutableDefault.from_json('{"x": 0}')
+                == DataClassImmutableDefault())
+
+    def test_mutable_default(self):
+        assert (DataClassMutableDefault.from_json('{"xs": []}')
+                == DataClassMutableDefault())

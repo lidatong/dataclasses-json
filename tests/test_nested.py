@@ -1,4 +1,4 @@
-from tests.test_entities import (DataClassWithDataClass,
+from tests.entities import (DataClassWithDataClass,
                                  DataClassWithList,
                                  DataClassX,
                                  DataClassXs)

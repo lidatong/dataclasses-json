@@ -13,17 +13,32 @@ In addition to the supported types in the [py to JSON table](https://docs.python
 `pip install dataclasses-json`
 
 ```python
-my_dataclass_instance.to_json()
+from dataclasses import dataclass
+from dataclasses_json import DataClassJsonMixin
+
+@dataclass
+class MyDataClass(DataClassJsonMixin):
+    name: str
+
+my_dataclass_instance = MyDataClass('example')
+
+# Encoding to JSON
+some_json_string = my_dataclass_instance.to_json()
+
+# Decoding from JSON
 MyDataClass.from_json(some_json_string)
 ```
+
+## A larger example
 
 ```python
 from dataclasses import dataclass
 from dataclasses_json import DataClassJsonMixin
+from typing import List
 
 
 @dataclass(frozen=True)
-class Minion():
+class Minion(DataClassJsonMixin):
     name: str
 
 

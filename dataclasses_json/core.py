@@ -1,9 +1,7 @@
 import json
 import sys
-from collections import ChainMap
-from dataclasses import fields, is_dataclass, MISSING
+from dataclasses import MISSING, fields, is_dataclass
 from typing import Collection, Optional
-from functools import partial
 
 
 def _get_type_origin(type_):

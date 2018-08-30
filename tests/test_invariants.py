@@ -4,11 +4,11 @@ from hypothesis import given
 from hypothesis.strategies import (frozensets, integers, lists, one_of, sets,
                                    tuples)
 
+from tests.entities import (DataClassWithDeque, DataClassWithFrozenSet,
+                            DataClassWithList, DataClassWithOptional,
+                            DataClassWithSet, DataClassWithTuple)
 from tests.hypothesis2 import examples
 from tests.hypothesis2.strategies import deques, optionals
-from tests.entities import (DataClassWithDeque, DataClassWithFrozenSet,
-                                 DataClassWithList, DataClassWithOptional,
-                                 DataClassWithSet, DataClassWithTuple)
 
 dcconss_strategies_conss = [(DataClassWithList, lists, list),
                             (DataClassWithSet, sets, set),

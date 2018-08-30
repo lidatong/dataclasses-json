@@ -1,6 +1,5 @@
 import json
-from collections.__init__ import ChainMap
-from dataclasses import asdict, fields
+from dataclasses import asdict
 
 from dataclasses_json.core import _Encoder, _decode_dataclass
 

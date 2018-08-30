@@ -1,7 +1,7 @@
 from tests.entities import (DataClassWithDataClass,
-                                 DataClassWithList,
-                                 DataClassX,
-                                 DataClassXs)
+                            DataClassWithList,
+                            DataClassX,
+                            DataClassXs)
 
 
 class TestEncoder:

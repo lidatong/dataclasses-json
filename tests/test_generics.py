@@ -1,17 +1,12 @@
 from collections import deque
 
-from tests.entities import (DataClassWithDeque,
-                            DataClassWithFrozenSet,
-                            DataClassWithList,
-                            DataClassWithMyCollection,
+from tests.entities import (DataClassImmutableDefault, DataClassMutableDefault,
+                            DataClassWithDeque, DataClassWithFrozenSet,
+                            DataClassWithList, DataClassWithMyCollection,
                             DataClassWithOptional,
-                            DataClassWithOptionalRecursive,
-                            DataClassWithSet,
-                            DataClassWithTuple,
-                            DataClassWithUnionIntNone,
-                            MyCollection,
-                            DataClassImmutableDefault,
-                            DataClassMutableDefault)
+                            DataClassWithOptionalRecursive, DataClassWithSet,
+                            DataClassWithTuple, DataClassWithUnionIntNone,
+                            MyCollection)
 
 
 class TestEncoder:

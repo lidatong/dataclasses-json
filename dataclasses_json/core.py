@@ -63,7 +63,9 @@ def _decode_dataclass(cls, kvs, infer_missing):
     init_kwargs = {}
     for field in fields(cls):
         field_value = kvs[field.name]
-        if is_dataclass(field.type):
+        if field_value is None:
+            init_kwargs[field.name] = field_value
+        elif is_dataclass(field.type):
             init_kwargs[field.name] = _decode_dataclass(field.type,
                                                         field_value,
                                                         infer_missing)

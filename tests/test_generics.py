@@ -4,7 +4,7 @@ from tests.entities import (DataClassImmutableDefault, DataClassMutableDefault,
                             DataClassWithDeque, DataClassWithFrozenSet,
                             DataClassWithList, DataClassWithMyCollection,
                             DataClassWithOptional,
-                            DataClassWithOptionalRecursive, DataClassWithSet,
+                            DataClassWithSet,
                             DataClassWithTuple, DataClassWithUnionIntNone,
                             MyCollection)
 
@@ -70,16 +70,6 @@ class TestDecoder:
                 DataClassWithOptional(1))
         assert (DataClassWithOptional.from_json('{"x": null}') ==
                 DataClassWithOptional(None))
-
-    def test_infer_missing(self):
-        actual = DataClassWithOptional.from_json('{}', infer_missing=True)
-        assert (actual == DataClassWithOptional(None))
-
-    def test_infer_missing_is_recursive(self):
-        actual = DataClassWithOptionalRecursive.from_json('{"x": null}',
-                                                          infer_missing=True)
-        assert (actual == DataClassWithOptionalRecursive(
-            DataClassWithOptional(None)))
 
     def test_my_collection(self):
         assert (DataClassWithMyCollection.from_json('{"xs": [1]}') ==

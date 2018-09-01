@@ -1,47 +1,8 @@
 import json
 import sys
+import warnings
 from dataclasses import MISSING, fields, is_dataclass
 from typing import Collection, Optional
-
-
-def _get_type_origin(type_):
-    """Some spaghetti logic to accommodate differences between 3.6 and 3.7 in
-    the typing api"""
-    try:
-        origin = type_.__origin__
-    except AttributeError:
-        if sys.version_info.minor == 6:
-            try:
-                origin = type_.__extra__
-            except AttributeError:
-                origin = type_
-            else:
-                origin = type_ if origin is None else origin
-        else:
-            origin = type_
-    return origin
-
-
-def _get_type_cons(type_):
-    """More spaghetti logic for 3.6 vs. 3.7"""
-    if sys.version_info.minor == 6:
-        try:
-            cons = type_.__extra__
-        except AttributeError:
-            try:
-                cons = type.__origin__
-            except AttributeError:
-                cons = type_
-            else:
-                cons = type_ if cons is None else cons
-        else:
-            try:
-                cons = type.__origin__ if cons is None else cons
-            except AttributeError:
-                cons = type_
-    else:
-        cons = type_.__origin__
-    return cons
 
 
 class _Encoder(json.JSONEncoder):
@@ -63,12 +24,23 @@ def _decode_dataclass(cls, kvs, infer_missing):
     init_kwargs = {}
     for field in fields(cls):
         field_value = kvs[field.name]
-        if field_value is None:
+        if field_value is None and not _is_optional(field.type):
+            warning = (f"value of non-optional type {field.name} detected "
+                       f"when decoding {cls.__name__}")
+            if infer_missing:
+                warnings.warn(
+                    f"Missing {warning} and was defaulted to None by "
+                    f"infer_missing=True. "
+                    f"Set infer_missing=False (the default) to prevent this "
+                    f"behavior.", RuntimeWarning)
+            else:
+                warnings.warn(f"None {warning}.", RuntimeWarning)
             init_kwargs[field.name] = field_value
         elif is_dataclass(field.type):
             init_kwargs[field.name] = _decode_dataclass(field.type,
                                                         field_value,
                                                         infer_missing)
+
         elif _is_supported_generic(field.type) and field.type != str:
             init_kwargs[field.name] = _decode_generic(field.type,
                                                       field_value,
@@ -79,14 +51,12 @@ def _decode_dataclass(cls, kvs, infer_missing):
 
 
 def _is_supported_generic(type_):
-    try:
-        # __origin__ exists in 3.7 on user defined generics
-        is_collection = _issubclass_safe(type_.__origin__, Collection)
-    except AttributeError:
-        return False
-    is_optional = (_issubclass_safe(type_, Optional)
-                   or _hasargs(type_, type(None)))
-    return is_collection or is_optional
+    is_collection = _issubclass_safe(_get_type_origin(type_), Collection)
+    return is_collection or _is_optional(type_)
+
+
+def _is_optional(type_):
+    return _issubclass_safe(type_, Optional) or _hasargs(type_, type(None))
 
 
 def _decode_generic(type_, value, infer_missing):
@@ -149,3 +119,43 @@ def _hasargs(type_, *args):
         return False
     else:
         return res
+
+
+def _get_type_origin(type_):
+    """Some spaghetti logic to accommodate differences between 3.6 and 3.7 in
+    the typing api"""
+    try:
+        origin = type_.__origin__
+    except AttributeError:
+        if sys.version_info.minor == 6:
+            try:
+                origin = type_.__extra__
+            except AttributeError:
+                origin = type_
+            else:
+                origin = type_ if origin is None else origin
+        else:
+            origin = type_
+    return origin
+
+
+def _get_type_cons(type_):
+    """More spaghetti logic for 3.6 vs. 3.7"""
+    if sys.version_info.minor == 6:
+        try:
+            cons = type_.__extra__
+        except AttributeError:
+            try:
+                cons = type_.__origin__
+            except AttributeError:
+                cons = type_
+            else:
+                cons = type_ if cons is None else cons
+        else:
+            try:
+                cons = type_.__origin__ if cons is None else cons
+            except AttributeError:
+                cons = type_
+    else:
+        cons = type_.__origin__
+    return cons

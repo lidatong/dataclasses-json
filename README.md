@@ -30,7 +30,7 @@ encoded_lidatong = lidatong.to_json()
 assert encoded_lidatong == '{"name": "lidatong"}'
 
 # Decoding from JSON
-decoded_lidatong = Person.from_json(encoded_lidatong)
+decoded_lidatong = Person.from_json('{"name": "lidatong"}')
 assert decoded_lidatong == lidatong
 ```
 

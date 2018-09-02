@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf8') as f:
 
 setup(
     name="dataclasses-json",
-    version="0.0.12",
+    version="0.0.13",
     packages=find_packages(exclude=("tests*",)),
     author="lidatong",
     author_email="charles.dt.li@gmail.com",

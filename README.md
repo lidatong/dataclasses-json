@@ -48,6 +48,8 @@ class Person(DataClassJsonMixin):
     name: str
 
 lidatong = Person('lidatong')
+
+# A different example from Approach 1 above, but usage is the exact same
 assert Person.from_json(lidatong.to_json()) == lidatong
 ```
 

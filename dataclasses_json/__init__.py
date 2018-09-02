@@ -1,1 +1,2 @@
 from dataclasses_json.api import DataClassJsonMixin
+from dataclasses_json.api import dataclass_json

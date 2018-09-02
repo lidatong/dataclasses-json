@@ -14,6 +14,7 @@ class _Encoder(json.JSONEncoder):
 
 def _decode_dataclass(cls, kvs, infer_missing):
     kvs = {} if kvs is None and infer_missing else kvs
+    print(cls.__name__, is_dataclass(cls))
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
     for field in missing_fields:
         if field.default is not MISSING:

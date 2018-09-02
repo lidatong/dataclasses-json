@@ -2,7 +2,8 @@ import pytest
 
 from tests.entities import (DataClassWithDataClass, DataClassWithList,
                             DataClassWithOptional,
-                            DataClassWithOptionalRecursive)
+                            DataClassWithOptionalRecursive,
+                            DataClassJsonDecorator)
 
 
 class TestInferMissing:
@@ -42,3 +43,9 @@ class TestErrors:
             actual = DataClassWithDataClass.from_json('{"xs": {}}')
             expected = DataClassWithDataClass(DataClassWithList(None))
             assert (actual == expected)
+
+
+class TestDecorator:
+    def test_decorator(self):
+        json_s = '{"x": "x"}'
+        assert DataClassJsonDecorator.from_json(json_s).to_json() == json_s

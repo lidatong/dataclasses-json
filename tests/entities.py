@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json
 from typing import (Collection,
                     Deque,
                     FrozenSet,
@@ -99,3 +100,9 @@ class MyCollection(Collection[A]):
 @dataclass(frozen=True)
 class DataClassWithMyCollection(DataClassJsonMixin):
     xs: MyCollection[int]
+
+
+@dataclass_json
+@dataclass
+class DataClassJsonDecorator:
+    x: str

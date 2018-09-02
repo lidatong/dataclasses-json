@@ -12,22 +12,47 @@ In addition to the supported types in the [py to JSON table](https://docs.python
 ## Quickstart
 `pip install dataclasses-json`
 
+#### Approach 1: Class decorator
+
+```python
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
+
+@dataclass_json
+@dataclass
+class Person:
+    name: str
+
+lidatong = Person('lidatong')
+
+# Encoding to JSON
+encoded_lidatong = lidatong.to_json()
+assert encoded_lidatong == '{"name": "lidatong"}'
+
+# Decoding from JSON
+decoded_lidatong = Person.from_json(encoded_lidatong)
+assert decoded_lidatong == lidatong
+```
+
+Note that the `@dataclass_json` decorator must be stacked above the `@dataclass`
+decorator (order matters!)
+
+#### Approach 2: Inherit from a mixin
+
 ```python
 from dataclasses import dataclass
 from dataclasses_json import DataClassJsonMixin
 
 @dataclass
-class MyDataClass(DataClassJsonMixin):
+class Person(DataClassJsonMixin):
     name: str
 
-my_dataclass_instance = MyDataClass('example')
-
-# Encoding to JSON
-some_json_string = my_dataclass_instance.to_json()
-
-# Decoding from JSON
-MyDataClass.from_json(some_json_string)
+lidatong = Person('lidatong')
+assert Person.from_json(lidatong.to_json()) == lidatong
 ```
+
+Pick whichever approach suits your taste. The differences in implementation are
+invisible in usage.
 
 ## A larger example
 
@@ -66,4 +91,5 @@ assert Boss.from_json(boss_json) == boss
 
 
 ## Caveats
-Data Classes that contain forward references (e.g. recursive dataclasses) are not currently supported.
+Data Classes that contain forward references (e.g. recursive dataclasses) are
+not currently supported.

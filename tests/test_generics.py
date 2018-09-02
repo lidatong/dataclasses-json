@@ -75,10 +75,6 @@ class TestDecoder:
         assert (DataClassWithMyCollection.from_json('{"xs": [1]}') ==
                 DataClassWithMyCollection(MyCollection([1])))
 
-    def test_my_list_collection(self):
-        assert (DataClassWithMyCollection.from_json_array('[{"xs": [1]}]')
-                == [DataClassWithMyCollection(MyCollection([1]))])
-
     def test_immutable_default(self):
         assert (DataClassImmutableDefault.from_json('{"x": 0}')
                 == DataClassImmutableDefault())

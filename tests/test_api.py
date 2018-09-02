@@ -1,9 +1,8 @@
 import pytest
 
-from tests.entities import (DataClassWithDataClass, DataClassWithList,
-                            DataClassWithOptional,
-                            DataClassWithOptionalRecursive,
-                            DataClassJsonDecorator)
+from tests.entities import (DataClassJsonDecorator, DataClassWithDataClass,
+                            DataClassWithList, DataClassWithOptional,
+                            DataClassWithOptionalRecursive)
 
 
 class TestInferMissing:
@@ -49,3 +48,10 @@ class TestDecorator:
     def test_decorator(self):
         json_s = '{"x": "x"}'
         assert DataClassJsonDecorator.from_json(json_s).to_json() == json_s
+
+
+class TestSchema:
+    def test_loads_many(self):
+        json_s = '[{"xs": [1]}]'
+        assert (DataClassWithList.schema().loads(json_s, many=True)
+                == [DataClassWithList([1])])

@@ -1,8 +1,16 @@
 import abc
 import json
-from dataclasses import asdict
+from dataclasses import asdict, fields
+from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 
-from dataclasses_json.core import _Encoder, _decode_dataclass
+from marshmallow import Schema, post_load
+
+from dataclasses_json.core import _CollectionEncoder, _decode_dataclass
+
+A = TypeVar('A')
+B = TypeVar('B')
+C = TypeVar('C')
+Fields = List[Tuple[str, Any]]
 
 
 class DataClassJsonMixin(abc.ABC):
@@ -11,11 +19,20 @@ class DataClassJsonMixin(abc.ABC):
 
     As with other ABCs, it should not be instantiated directly.
     """
-    def to_json(self, *, skipkeys=False, ensure_ascii=True, check_circular=True,
-                allow_nan=True, indent=None, separators=None,
-                default=None, sort_keys=False, **kw):
+
+    def to_json(self,
+                *,
+                skipkeys: bool = False,
+                ensure_ascii: bool = True,
+                check_circular: bool = True,
+                allow_nan: bool = True,
+                indent: Optional[Union[int, str]] = None,
+                separators: Tuple[str, str] = None,
+                default: Callable = None,
+                sort_keys: bool = False,
+                **kw) -> str:
         return json.dumps(asdict(self),
-                          cls=_Encoder,
+                          cls=_CollectionEncoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,
                           check_circular=check_circular,
@@ -27,37 +44,75 @@ class DataClassJsonMixin(abc.ABC):
                           **kw)
 
     @classmethod
-    def from_json(cls,
-                  kvs,
+    def from_json(cls: A,
+                  s: str,
                   *,
                   encoding=None,
                   parse_float=None,
                   parse_int=None,
                   parse_constant=None,
-                  infer_missing=False):
-        init_kwargs = json.loads(kvs,
+                  infer_missing=False,
+                  **kw) -> A:
+        init_kwargs = json.loads(s,
                                  encoding=encoding,
                                  parse_float=parse_float,
                                  parse_int=parse_int,
-                                 parse_constant=parse_constant)
+                                 parse_constant=parse_constant,
+                                 **kw)
         return _decode_dataclass(cls, init_kwargs, infer_missing)
 
     @classmethod
-    def from_json_array(cls,
-                        kvss,
-                        *,
-                        encoding=None,
-                        parse_float=None,
-                        parse_int=None,
-                        parse_constant=None,
-                        infer_missing=False):
-        init_kwargs_array = json.loads(kvss,
-                                       encoding=encoding,
-                                       parse_float=parse_float,
-                                       parse_int=parse_int,
-                                       parse_constant=parse_constant)
-        return [_decode_dataclass(cls, init_kwargs, infer_missing)
-                for init_kwargs in init_kwargs_array]
+    def dump(cls,
+             kvs,
+             *,
+             many=False):
+        return [asdict(kwargs) for kwargs in kvs] if many else asdict(kvs)
+
+    @classmethod
+    def load(cls,
+             kvs,
+             many=False,
+             infer_missing=False):
+        parsed: Union[List[cls], cls]
+        if many:
+            parsed = [_decode_dataclass(cls, init_kwargs, infer_missing)
+                      for init_kwargs in kvs]
+        else:
+            parsed = _decode_dataclass(cls, kvs, infer_missing)
+        return parsed
+
+    @classmethod
+    def schema(cls,
+               only=None,
+               exclude=(),
+               prefix='',
+               many=False,
+               context=None,
+               load_only=(),
+               dump_only=(),
+               partial=False,
+               unknown=None):
+        Meta = type('Meta',
+                    (),
+                    {'fields': [field.name for field in fields(cls)]})
+
+        @post_load
+        def make_instance(self, kvs):
+            return _decode_dataclass(cls, kvs, infer_missing=partial)
+
+        DataClassSchema = type(f'{cls.__name__.capitalize()}Schema',
+                               (Schema,),
+                               {'Meta': Meta,
+                                f'make_{cls.__name__.lower()}': make_instance})
+        return DataClassSchema(only=only,
+                               exclude=exclude,
+                               prefix=prefix,
+                               many=many,
+                               context=context,
+                               load_only=load_only,
+                               dump_only=dump_only,
+                               partial=partial,
+                               unknown=unknown)
 
 
 def dataclass_json(cls):
@@ -65,8 +120,6 @@ def dataclass_json(cls):
     # unwrap and rewrap classmethod to tag it to cls, not the literal
     # DataClassJsonMixin mixin
     cls.from_json = classmethod(DataClassJsonMixin.from_json.__func__)
-    cls.from_json_array = classmethod(
-        DataClassJsonMixin.from_json_array.__func__)
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)
     return cls

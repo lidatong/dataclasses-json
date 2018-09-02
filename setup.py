@@ -16,7 +16,8 @@ setup(
     license="Unlicense",
     keywords="dataclasses json",
     install_requires=[
-        "dataclasses;python_version=='3.6'"
+        "dataclasses;python_version=='3.6'",
+        "marshmallow>=3.0.0b13"
     ],
     python_requires=">=3.6",
     extras_require={

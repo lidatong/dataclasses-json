@@ -62,26 +62,6 @@ class DataClassJsonMixin(abc.ABC):
         return _decode_dataclass(cls, init_kwargs, infer_missing)
 
     @classmethod
-    def dump(cls,
-             kvs,
-             *,
-             many=False):
-        return [asdict(kwargs) for kwargs in kvs] if many else asdict(kvs)
-
-    @classmethod
-    def load(cls,
-             kvs,
-             many=False,
-             infer_missing=False):
-        parsed: Union[List[cls], cls]
-        if many:
-            parsed = [_decode_dataclass(cls, init_kwargs, infer_missing)
-                      for init_kwargs in kvs]
-        else:
-            parsed = _decode_dataclass(cls, kvs, infer_missing)
-        return parsed
-
-    @classmethod
     def schema(cls,
                only=None,
                exclude=(),
@@ -117,9 +97,10 @@ class DataClassJsonMixin(abc.ABC):
 
 def dataclass_json(cls):
     cls.to_json = DataClassJsonMixin.to_json
-    # unwrap and rewrap classmethod to tag it to cls, not the literal
-    # DataClassJsonMixin mixin
+    # unwrap and rewrap classmethod to tag it to cls rather than the literal
+    # DataClassJsonMixin ABC
     cls.from_json = classmethod(DataClassJsonMixin.from_json.__func__)
+    cls.schema = classmethod(DataClassJsonMixin.schema.__func__)
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)
     return cls

@@ -17,7 +17,7 @@ A = TypeVar('A')
 
 @dataclass(frozen=True)
 class DataClassWithList(DataClassJsonMixin):
-    xs: List[int]
+    xs: List[str]
 
 
 @dataclass(frozen=True)

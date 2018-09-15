@@ -19,6 +19,9 @@ A = TypeVar('A')
 class DataClassWithList(DataClassJsonMixin):
     xs: List[int]
 
+@dataclass(frozen=True)
+class DataClassWithListStr(DataClassJsonMixin):
+    xs: List[str]
 
 @dataclass(frozen=True)
 class DataClassWithSet(DataClassJsonMixin):
@@ -43,6 +46,10 @@ class DataClassWithDeque(DataClassJsonMixin):
 @dataclass(frozen=True)
 class DataClassWithOptional(DataClassJsonMixin):
     x: Optional[int]
+
+@dataclass
+class DataClassWithOptionalStr(DataClassJsonMixin):
+    x: Optional[str] = None
 
 
 @dataclass(frozen=True)

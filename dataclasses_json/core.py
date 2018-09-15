@@ -41,7 +41,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
                                                         field_value,
                                                         infer_missing)
 
-        elif _is_supported_generic(field.type) and field.type != str:
+        elif _is_supported_generic(field.type) and field.type != str and field.type.__args__[0] != str:
             init_kwargs[field.name] = _decode_generic(field.type,
                                                       field_value,
                                                       infer_missing)

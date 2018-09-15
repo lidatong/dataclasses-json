@@ -51,8 +51,9 @@ def _decode_dataclass(cls, kvs, infer_missing):
 
 
 def _is_supported_generic(type_):
+    not_str = not _issubclass_safe(type_, str)
     is_collection = _issubclass_safe(_get_type_origin(type_), Collection)
-    return is_collection or _is_optional(type_)
+    return not_str and (is_collection or _is_optional(type_))
 
 
 def _is_optional(type_):

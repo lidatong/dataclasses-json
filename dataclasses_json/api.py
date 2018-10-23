@@ -69,7 +69,6 @@ class DataClassJsonMixin(abc.ABC):
     def schema(cls,
                only=None,
                exclude=(),
-               prefix='',
                many=False,
                context=None,
                load_only=(),
@@ -110,7 +109,6 @@ class DataClassJsonMixin(abc.ABC):
                                 **generated_nested_fields})
         return DataClassSchema(only=only,
                                exclude=exclude,
-                               prefix=prefix,
                                many=many,
                                context=context,
                                load_only=load_only,

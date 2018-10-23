@@ -1,8 +1,11 @@
 import json
-import sys
 import warnings
 from dataclasses import MISSING, fields, is_dataclass
-from typing import Collection, Optional
+from typing import Collection
+
+from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
+                                    _is_collection, _is_optional,
+                                    _isinstance_safe, _issubclass_safe)
 
 
 class _CollectionEncoder(json.JSONEncoder):
@@ -14,6 +17,8 @@ class _CollectionEncoder(json.JSONEncoder):
 
 def _decode_dataclass(cls, kvs, infer_missing):
     kvs = {} if kvs is None and infer_missing else kvs
+    # print(kvs)
+    # print({field for field in fields(cls) if field.name not in kvs})
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
     for field in missing_fields:
         if field.default is not MISSING:
@@ -34,12 +39,20 @@ def _decode_dataclass(cls, kvs, infer_missing):
                     f"Set infer_missing=False (the default) to prevent this "
                     f"behavior.", RuntimeWarning)
             else:
-                warnings.warn(f"None {warning}.", RuntimeWarning)
+                warnings.warn(f"`NoneType` object {warning}.", RuntimeWarning)
             init_kwargs[field.name] = field_value
         elif is_dataclass(field.type):
-            init_kwargs[field.name] = _decode_dataclass(field.type,
-                                                        field_value,
-                                                        infer_missing)
+            # FIXME this is a band-aid to deal with the value already being
+            # serialized when handling nested marshmallow schema
+            # proper fix is to investigate the marshmallow schema generation
+            # code
+            if is_dataclass(field_value):
+                value = field_value
+            else:
+                value = _decode_dataclass(field.type,
+                                          field_value,
+                                          infer_missing)
+            init_kwargs[field.name] = value
 
         elif _is_supported_generic(field.type) and field.type != str:
             init_kwargs[field.name] = _decode_generic(field.type,
@@ -52,12 +65,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
 
 def _is_supported_generic(type_):
     not_str = not _issubclass_safe(type_, str)
-    is_collection = _issubclass_safe(_get_type_origin(type_), Collection)
-    return not_str and (is_collection or _is_optional(type_))
-
-
-def _is_optional(type_):
-    return _issubclass_safe(type_, Optional) or _hasargs(type_, type(None))
+    return (not_str and _is_collection(type_)) or _is_optional(type_)
 
 
 def _decode_generic(type_, value, infer_missing):
@@ -95,68 +103,16 @@ def _decode_generic(type_, value, infer_missing):
     return res
 
 
-def _issubclass_safe(cls, classinfo):
-    try:
-        result = issubclass(cls, classinfo)
-    except Exception:
-        return False
-    else:
-        return result
-
-
-def _isinstance_safe(o, t):
-    try:
-        result = isinstance(o, t)
-    except Exception:
-        return False
-    else:
-        return result
-
-
-def _hasargs(type_, *args):
-    try:
-        res = all(arg in type_.__args__ for arg in args)
-    except AttributeError:
-        return False
-    else:
-        return res
-
-
-def _get_type_origin(type_):
-    """Some spaghetti logic to accommodate differences between 3.6 and 3.7 in
-    the typing api"""
-    try:
-        origin = type_.__origin__
-    except AttributeError:
-        if sys.version_info.minor == 6:
-            try:
-                origin = type_.__extra__
-            except AttributeError:
-                origin = type_
-            else:
-                origin = type_ if origin is None else origin
-        else:
-            origin = type_
-    return origin
-
-
-def _get_type_cons(type_):
-    """More spaghetti logic for 3.6 vs. 3.7"""
-    if sys.version_info.minor == 6:
-        try:
-            cons = type_.__extra__
-        except AttributeError:
-            try:
-                cons = type_.__origin__
-            except AttributeError:
-                cons = type_
-            else:
-                cons = type_ if cons is None else cons
-        else:
-            try:
-                cons = type_.__origin__ if cons is None else cons
-            except AttributeError:
-                cons = type_
-    else:
-        cons = type_.__origin__
-    return cons
+def _nested_fields(fields):
+    nested_dc_fields_and_is_many = []
+    for field in fields:
+        if _is_supported_generic(field.type):
+            type_arg = field.type.__args__[0]
+            if is_dataclass(type_arg):
+                if _is_collection(field.type):
+                    nested_dc_fields_and_is_many.append((field, True))
+                else:
+                    nested_dc_fields_and_is_many.append((field, False))
+        elif is_dataclass(field.type):
+            nested_dc_fields_and_is_many.append((field, False))
+    return nested_dc_fields_and_is_many

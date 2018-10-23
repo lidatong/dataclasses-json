@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json
 from typing import (Collection,
                     Deque,
                     FrozenSet,
@@ -10,7 +9,7 @@ from typing import (Collection,
                     TypeVar,
                     Union)
 
-from dataclasses_json import DataClassJsonMixin
+from dataclasses_json import DataClassJsonMixin, dataclass_json
 
 A = TypeVar('A')
 
@@ -19,9 +18,11 @@ A = TypeVar('A')
 class DataClassWithList(DataClassJsonMixin):
     xs: List[int]
 
+
 @dataclass(frozen=True)
 class DataClassWithListStr(DataClassJsonMixin):
     xs: List[str]
+
 
 @dataclass(frozen=True)
 class DataClassWithSet(DataClassJsonMixin):
@@ -47,6 +48,7 @@ class DataClassWithDeque(DataClassJsonMixin):
 class DataClassWithOptional(DataClassJsonMixin):
     x: Optional[int]
 
+
 @dataclass
 class DataClassWithOptionalStr(DataClassJsonMixin):
     x: Optional[str] = None
@@ -64,7 +66,7 @@ class DataClassWithUnionIntNone(DataClassJsonMixin):
 
 @dataclass(frozen=True)
 class DataClassWithDataClass(DataClassJsonMixin):
-    xs: DataClassWithList
+    dc_with_list: DataClassWithList
 
 
 @dataclass(frozen=True)

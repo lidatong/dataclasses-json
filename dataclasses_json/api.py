@@ -1,11 +1,15 @@
 import abc
 import json
+import warnings
 from dataclasses import asdict, fields
 from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 
+import marshmallow
 from marshmallow import Schema, post_load
 
-from dataclasses_json.core import _CollectionEncoder, _decode_dataclass
+from dataclasses_json.core import (_CollectionEncoder, _decode_dataclass,
+                                   _nested_fields)
+from dataclasses_json.utils import _is_collection, _issubclass_safe
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -72,9 +76,28 @@ class DataClassJsonMixin(abc.ABC):
                dump_only=(),
                partial=False,
                unknown=None):
+        nested_fields_and_is_many = _nested_fields(fields(cls))
+        generated_nested_fields = {}
+        for field, many in nested_fields_and_is_many:
+            if _issubclass_safe(field.type, DataClassJsonMixin):
+                many = _is_collection(field.type)
+                schema = marshmallow.fields.Nested(field.type.schema(),
+                                                   many=many,
+                                                   default=None)
+                generated_nested_fields[field.name] = schema
+            else:
+                warnings.warn(f"Nested dataclass field {field.name} of type "
+                              f"{field.type.__name__} detected in "
+                              f"{cls.__name__} that is not an instance of "
+                              f"dataclass_json. Did you mean to recursively "
+                              f"serialize this field? If so, make sure to "
+                              f"augment {field.type.name} with either the "
+                              f"`dataclass_json` decorator or mixin.")
+        all_fields = {field.name for field in fields(cls)}
+        non_nested_fields = all_fields - generated_nested_fields.keys()
         Meta = type('Meta',
                     (),
-                    {'fields': [field.name for field in fields(cls)]})
+                    {'fields': tuple(non_nested_fields)})
 
         @post_load
         def make_instance(self, kvs):
@@ -83,7 +106,8 @@ class DataClassJsonMixin(abc.ABC):
         DataClassSchema = type(f'{cls.__name__.capitalize()}Schema',
                                (Schema,),
                                {'Meta': Meta,
-                                f'make_{cls.__name__.lower()}': make_instance})
+                                f'make_{cls.__name__.lower()}': make_instance,
+                                **generated_nested_fields})
         return DataClassSchema(only=only,
                                exclude=exclude,
                                prefix=prefix,

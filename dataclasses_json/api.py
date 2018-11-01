@@ -102,7 +102,7 @@ class DataClassJsonMixin(abc.ABC):
         def make_instance(self, kvs):
             return _decode_dataclass(cls, kvs, infer_missing=partial)
 
-        DataClassSchema = type(f'{cls.__name__.capitalize()}Schema',
+        DataClassSchema = type('',
                                (Schema,),
                                {'Meta': Meta,
                                 f'make_{cls.__name__.lower()}': make_instance,

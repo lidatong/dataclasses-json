@@ -17,12 +17,12 @@ class _CollectionEncoder(json.JSONEncoder):
 
 def _decode_dataclass(cls, kvs, infer_missing):
     kvs = {} if kvs is None and infer_missing else kvs
-    # print(kvs)
-    # print({field for field in fields(cls) if field.name not in kvs})
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
     for field in missing_fields:
         if field.default is not MISSING:
             kvs[field.name] = field.default
+        elif field.default_factory is not MISSING:
+            kvs[field.name] = field.default_factory()
         elif infer_missing:
             kvs[field.name] = None
 

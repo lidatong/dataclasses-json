@@ -20,6 +20,11 @@ class DataClassWithList(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithDefaultList(DataClassJsonMixin):
+    xs: List[int] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
 class DataClassWithListStr(DataClassJsonMixin):
     xs: List[str]
 

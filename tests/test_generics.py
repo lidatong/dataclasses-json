@@ -99,7 +99,12 @@ class TestDecoder:
     def test_immutable_default(self):
         assert (DataClassImmutableDefault.from_json('{"x": 0}')
                 == DataClassImmutableDefault())
+        assert (DataClassMutableDefault.from_json('{}', infer_missing=True)
+                == DataClassMutableDefault())
 
     def test_mutable_default(self):
         assert (DataClassMutableDefault.from_json('{"xs": []}')
                 == DataClassMutableDefault())
+        assert (DataClassMutableDefault.from_json('{}', infer_missing=True)
+                == DataClassMutableDefault())
+

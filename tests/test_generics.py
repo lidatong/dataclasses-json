@@ -19,10 +19,10 @@ class TestEncoder:
         assert DataClassWithListStr(['1']).to_json() == '{"xs": ["1"]}'
 
     def test_dict(self):
-        assert DataClassWithDict({'1': 'a'}).to_json() == '{"xs": {"1": "a"}}'
+        assert DataClassWithDict({'1': 'a'}).to_json() == '{"kvs": {"1": "a"}}'
 
     def test_dict_int(self):
-        assert DataClassWithDictInt({1: 'a'}).to_json() == '{"xs": {"1": "a"}}'
+        assert DataClassWithDictInt({1: 'a'}).to_json() == '{"kvs": {"1": "a"}}'
 
     def test_set(self):
         assert DataClassWithSet({1}).to_json() == '{"xs": [1]}'
@@ -73,11 +73,11 @@ class TestDecoder:
                 DataClassWithListStr(["1"]))
 
     def test_dict(self):
-        assert (DataClassWithDict.from_json('{"xs": {"1": "a"}}') ==
+        assert (DataClassWithDict.from_json('{"kvs": {"1": "a"}}') ==
                 DataClassWithDict({'1': 'a'}))
 
     def test_dict_int(self):
-        assert (DataClassWithDictInt.from_json('{"xs": {"1": "a"}}') ==
+        assert (DataClassWithDictInt.from_json('{"kvs": {"1": "a"}}') ==
                 DataClassWithDictInt({1: 'a'}))
 
     def test_set(self):
@@ -127,7 +127,7 @@ class TestDecoder:
                 == DataClassMutableDefaultList())
 
     def test_mutable_default_dict(self):
-        assert (DataClassMutableDefaultDict.from_json('{"xs": {}}')
+        assert (DataClassMutableDefaultDict.from_json('{"kvs": {}}')
                 == DataClassMutableDefaultDict())
         assert (DataClassMutableDefaultDict.from_json('{}', infer_missing=True)
                 == DataClassMutableDefaultDict())

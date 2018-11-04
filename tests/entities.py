@@ -32,17 +32,17 @@ class DataClassWithListStr(DataClassJsonMixin):
 
 @dataclass(frozen=True)
 class DataClassWithDict(DataClassJsonMixin):
-    xs: Dict[str, str]
+    kvs: Dict[str, str]
 
 
 @dataclass(frozen=True)
 class DataClassWithDictInt(DataClassJsonMixin):
-    xs: Dict[int, str]
+    kvs: Dict[int, str]
 
 
 @dataclass(frozen=True)
 class DataClassWithDictDefaultFactory(DataClassJsonMixin):
-    xs: Dict[str, str] = field(default_factory=dict)
+    kvs: Dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

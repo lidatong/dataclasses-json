@@ -1,7 +1,7 @@
 import json
 import warnings
 from dataclasses import MISSING, fields, is_dataclass
-from typing import Collection
+from typing import Collection, Mapping
 
 from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _is_collection, _is_optional,
@@ -72,22 +72,19 @@ def _decode_generic(type_, value, infer_missing):
     if value is None:
         res = value
     elif _issubclass_safe(_get_type_origin(type_), Collection):
-        # this is a tricky situation where we need to check both the annotated
-        # type info (which is usually a type from `typing`) and check the
-        # value's type directly using `type()`.
-        #
-        # if the type_arg is a generic we can use the annotated type, but if the
-        # type_arg is a typevar we need to extract the reified type information
-        # hence the check of `is_dataclass(value)`
-        type_arg = type_.__args__[0]
-        if is_dataclass(type_arg) or is_dataclass(value):
-            xs = (_decode_dataclass(type_arg, v, infer_missing) for v in value)
-        elif _is_supported_generic(type_arg):
-            xs = (_decode_generic(type_arg, v, infer_missing) for v in value)
+        is_mapping = _issubclass_safe(_get_type_origin(type_), Mapping)
+
+        if is_mapping:
+            k_type, v_type = type_.__args__
+            # a mapping type has `.keys()` and `.values()` (see collections.abc)
+            ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
+            vs = _decode_items(v_type, value.values(), infer_missing)
+            xs = zip(ks, vs)
         else:
-            xs = value
+            xs = _decode_items(type_.__args__[0], value, infer_missing)
+
         # get the constructor if using corresponding generic type in `typing`
-        # otherwise fallback on the type returned by
+        # otherwise fallback on constructing using type_ itself
         try:
             res = _get_type_cons(type_)(xs)
         except TypeError:
@@ -101,6 +98,36 @@ def _decode_generic(type_, value, infer_missing):
         else:
             res = value
     return res
+
+
+def _decode_dict_keys(key_type, xs, infer_missing):
+    """
+    Because JSON object keys must be strs, we need the extra step of decoding
+    them back into the user's chosen python type
+    """
+    # handle NoneType keys... it's weird to type a Dict as NoneType keys
+    # but it's valid...
+    key_type = (lambda x: x) if key_type is type(None) else key_type
+    return map(key_type, _decode_items(key_type, xs, infer_missing))
+
+
+def _decode_items(type_arg, xs, infer_missing):
+    """
+    This is a tricky situation where we need to check both the annotated
+    type info (which is usually a type from `typing`) and check the
+    value's type directly using `type()`.
+
+    If the type_arg is a generic we can use the annotated type, but if the
+    type_arg is a typevar we need to extract the reified type information
+    hence the check of `is_dataclass(vs)`
+    """
+    if is_dataclass(type_arg) or is_dataclass(xs):
+        items = (_decode_dataclass(type_arg, x, infer_missing) for x in xs)
+    elif _is_supported_generic(type_arg):
+        items = (_decode_generic(type_arg, x, infer_missing) for x in xs)
+    else:
+        items = xs
+    return items
 
 
 def _nested_fields(fields):

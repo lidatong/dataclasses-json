@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import (Collection,
                     Deque,
+                    Dict,
                     FrozenSet,
                     List,
                     Optional,
@@ -20,13 +21,28 @@ class DataClassWithList(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassWithDefaultList(DataClassJsonMixin):
+class DataClassWithListDefaultFactory(DataClassJsonMixin):
     xs: List[int] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
 class DataClassWithListStr(DataClassJsonMixin):
     xs: List[str]
+
+
+@dataclass(frozen=True)
+class DataClassWithDict(DataClassJsonMixin):
+    xs: Dict[str, str]
+
+
+@dataclass(frozen=True)
+class DataClassWithDictInt(DataClassJsonMixin):
+    xs: Dict[int, str]
+
+
+@dataclass(frozen=True)
+class DataClassWithDictDefaultFactory(DataClassJsonMixin):
+    xs: Dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -90,8 +106,13 @@ class DataClassImmutableDefault(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassMutableDefault(DataClassJsonMixin):
+class DataClassMutableDefaultList(DataClassJsonMixin):
     xs: List[int] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class DataClassMutableDefaultDict(DataClassJsonMixin):
+    xs: Dict[str, int] = field(default_factory=dict)
 
 
 class MyCollection(Collection[A]):

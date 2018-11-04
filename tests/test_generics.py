@@ -1,13 +1,14 @@
 from collections import deque
 
-from tests.entities import (DataClassImmutableDefault, DataClassMutableDefault,
-                            DataClassWithDeque, DataClassWithFrozenSet,
-                            DataClassWithList, DataClassWithListStr,
-                            DataClassWithMyCollection,
+from tests.entities import (DataClassImmutableDefault,
+                            DataClassMutableDefaultDict,
+                            DataClassMutableDefaultList, DataClassWithDeque,
+                            DataClassWithDict, DataClassWithDictInt,
+                            DataClassWithFrozenSet, DataClassWithList,
+                            DataClassWithListStr, DataClassWithMyCollection,
                             DataClassWithOptional, DataClassWithOptionalStr,
-                            DataClassWithSet,
-                            DataClassWithTuple, DataClassWithUnionIntNone,
-                            MyCollection)
+                            DataClassWithSet, DataClassWithTuple,
+                            DataClassWithUnionIntNone, MyCollection)
 
 
 class TestEncoder:
@@ -16,6 +17,12 @@ class TestEncoder:
 
     def test_list_str(self):
         assert DataClassWithListStr(['1']).to_json() == '{"xs": ["1"]}'
+
+    def test_dict(self):
+        assert DataClassWithDict({'1': 'a'}).to_json() == '{"xs": {"1": "a"}}'
+
+    def test_dict_int(self):
+        assert DataClassWithDictInt({1: 'a'}).to_json() == '{"xs": {"1": "a"}}'
 
     def test_set(self):
         assert DataClassWithSet({1}).to_json() == '{"xs": [1]}'
@@ -49,8 +56,11 @@ class TestEncoder:
     def test_immutable_default(self):
         assert DataClassImmutableDefault().to_json() == '{"x": 0}'
 
-    def test_mutable_default(self):
-        assert DataClassMutableDefault().to_json() == '{"xs": []}'
+    def test_mutable_default_list(self):
+        assert DataClassMutableDefaultList().to_json() == '{"xs": []}'
+
+    def test_mutable_default_dict(self):
+        assert DataClassMutableDefaultDict().to_json() == '{"xs": {}}'
 
 
 class TestDecoder:
@@ -61,6 +71,14 @@ class TestDecoder:
     def test_list_str(self):
         assert (DataClassWithListStr.from_json('{"xs": ["1"]}') ==
                 DataClassWithListStr(["1"]))
+
+    def test_dict(self):
+        assert (DataClassWithDict.from_json('{"xs": {"1": "a"}}') ==
+                DataClassWithDict({'1': 'a'}))
+
+    def test_dict_int(self):
+        assert (DataClassWithDictInt.from_json('{"xs": {"1": "a"}}') ==
+                DataClassWithDictInt({1: 'a'}))
 
     def test_set(self):
         assert (DataClassWithSet.from_json('{"xs": [1]}') ==
@@ -99,12 +117,17 @@ class TestDecoder:
     def test_immutable_default(self):
         assert (DataClassImmutableDefault.from_json('{"x": 0}')
                 == DataClassImmutableDefault())
-        assert (DataClassMutableDefault.from_json('{}', infer_missing=True)
-                == DataClassMutableDefault())
+        assert (DataClassMutableDefaultList.from_json('{}', infer_missing=True)
+                == DataClassMutableDefaultList())
 
-    def test_mutable_default(self):
-        assert (DataClassMutableDefault.from_json('{"xs": []}')
-                == DataClassMutableDefault())
-        assert (DataClassMutableDefault.from_json('{}', infer_missing=True)
-                == DataClassMutableDefault())
+    def test_mutable_default_list(self):
+        assert (DataClassMutableDefaultList.from_json('{"xs": []}')
+                == DataClassMutableDefaultList())
+        assert (DataClassMutableDefaultList.from_json('{}', infer_missing=True)
+                == DataClassMutableDefaultList())
 
+    def test_mutable_default_dict(self):
+        assert (DataClassMutableDefaultDict.from_json('{"xs": {}}')
+                == DataClassMutableDefaultDict())
+        assert (DataClassMutableDefaultDict.from_json('{}', infer_missing=True)
+                == DataClassMutableDefaultDict())

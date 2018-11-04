@@ -73,5 +73,3 @@ class TestSchema:
         json_s = '[{"dc_with_list": {"xs": [1]}}]'
         assert (DataClassWithDataClass.schema().loads(json_s, many=True)
                 == [DataClassWithDataClass(DataClassWithList([1]))])
-
-

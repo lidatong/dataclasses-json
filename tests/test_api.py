@@ -3,7 +3,7 @@ import pytest
 from tests.entities import (DataClassJsonDecorator,
                             DataClassWithDataClass,
                             DataClassWithList, DataClassWithOptional,
-                            DataClassWithOptionalRecursive,
+                            DataClassWithOptionalNested,
                             DataClassImmutableDefault)
 
 
@@ -13,15 +13,15 @@ class TestInferMissing:
         assert (actual == DataClassWithOptional(None))
 
     def test_infer_missing_is_recursive(self):
-        actual = DataClassWithOptionalRecursive.from_json('{"x": {}}',
-                                                          infer_missing=True)
-        expected = DataClassWithOptionalRecursive(DataClassWithOptional(None))
+        actual = DataClassWithOptionalNested.from_json('{"x": {}}',
+                                                       infer_missing=True)
+        expected = DataClassWithOptionalNested(DataClassWithOptional(None))
         assert (actual == expected)
 
     def test_infer_missing_terminates_at_first_missing(self):
-        actual = DataClassWithOptionalRecursive.from_json('{"x": null}',
-                                                          infer_missing=True)
-        assert (actual == DataClassWithOptionalRecursive(None))
+        actual = DataClassWithOptionalNested.from_json('{"x": null}',
+                                                       infer_missing=True)
+        assert (actual == DataClassWithOptionalNested(None))
 
 
 class TestWarnings:
@@ -83,3 +83,13 @@ class TestSchema:
     def test_loads_default_many(self):
         assert (DataClassImmutableDefault.schema().loads('[{}]', many=True)
                 == [DataClassImmutableDefault()])
+
+    def test_loads_infer_missing(self):
+        assert (DataClassWithOptional
+                .schema(infer_missing=True)
+                .loads('[{}]', many=True) == [DataClassWithOptional(None)])
+
+    def test_loads_infer_missing_nested(self):
+        assert (DataClassWithOptionalNested
+                .schema(infer_missing=True)
+                .loads('[{}]', many=True) == [DataClassWithOptionalNested(None)])

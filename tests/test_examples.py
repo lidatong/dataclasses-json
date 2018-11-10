@@ -35,24 +35,6 @@ p = Professor(1, 'professor')
 c = Course(1, 'course', p, {s1})
 
 
-class StudentSchema(Schema):
-    class Meta:
-        fields = ('id', 'name')
-
-
-class ProfessorSchema(Schema):
-    class Meta:
-        fields = ('id', 'name')
-
-
-class CourseSchema(Schema):
-    class Meta:
-        fields = ('id', 'name', 'professor', 'students')
-
-    professor = fields.Nested(ProfessorSchema)
-    students = fields.Nested(StudentSchema, many=True)
-
-
 class TestEncoder:
     def test_student(self):
         assert s1.to_json() == '{"id": 1, "name": "student"}'

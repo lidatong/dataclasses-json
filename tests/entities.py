@@ -76,7 +76,7 @@ class DataClassWithOptionalStr(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassWithOptionalRecursive(DataClassJsonMixin):
+class DataClassWithOptionalNested(DataClassJsonMixin):
     x: Optional[DataClassWithOptional]
 
 

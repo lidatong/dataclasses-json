@@ -1,6 +1,7 @@
 import pytest
 
-from tests.entities import (DataClassJsonDecorator, DataClassWithDataClass,
+from tests.entities import (DataClassJsonDecorator,
+                            DataClassWithDataClass,
                             DataClassWithList, DataClassWithOptional,
                             DataClassWithOptionalRecursive)
 

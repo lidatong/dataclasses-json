@@ -1,5 +1,5 @@
 import sys
-from typing import Collection, Optional
+from typing import Collection, Mapping, Optional
 
 
 def _get_type_cons(type_):
@@ -73,5 +73,14 @@ def _is_optional(type_):
     return _issubclass_safe(type_, Optional) or _hasargs(type_, type(None))
 
 
+def _is_mapping(type_):
+    return _issubclass_safe(_get_type_origin(type_), Mapping)
+
+
 def _is_collection(type_):
     return _issubclass_safe(_get_type_origin(type_), Collection)
+
+
+def _is_nonstr_collection(type_):
+    return (_issubclass_safe(_get_type_origin(type_), Collection)
+            and not _issubclass_safe(type_, str))

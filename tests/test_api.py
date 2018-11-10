@@ -3,7 +3,8 @@ import pytest
 from tests.entities import (DataClassJsonDecorator,
                             DataClassWithDataClass,
                             DataClassWithList, DataClassWithOptional,
-                            DataClassWithOptionalRecursive)
+                            DataClassWithOptionalRecursive,
+                            DataClassImmutableDefault)
 
 
 class TestInferMissing:
@@ -74,3 +75,11 @@ class TestSchema:
         json_s = '[{"dc_with_list": {"xs": [1]}}]'
         assert (DataClassWithDataClass.schema().loads(json_s, many=True)
                 == [DataClassWithDataClass(DataClassWithList([1]))])
+
+    def test_loads_default(self):
+        assert (DataClassImmutableDefault.schema().loads('{}')
+                == DataClassImmutableDefault())
+
+    def test_loads_default_many(self):
+        assert (DataClassImmutableDefault.schema().loads('[{}]', many=True)
+                == [DataClassImmutableDefault()])

@@ -1,16 +1,13 @@
 import abc
 import json
-import warnings
 from dataclasses import fields
 from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 
-import marshmallow
 from marshmallow import Schema, post_load
 
-from dataclasses_json.core import (_CollectionEncoder, _decode_dataclass,
-                                   _nested_fields)
-from dataclasses_json.dataclasses2 import asdict2
-from dataclasses_json.utils import (_issubclass_safe)
+from dataclasses_json import mm
+from dataclasses_json.core import (_CollectionEncoder, _asdict,
+                                   _decode_dataclass)
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -36,7 +33,7 @@ class DataClassJsonMixin(abc.ABC):
                 default: Callable = None,
                 sort_keys: bool = False,
                 **kw) -> str:
-        return json.dumps(asdict2(self),
+        return json.dumps(_asdict(self),
                           cls=_CollectionEncoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,
@@ -68,6 +65,7 @@ class DataClassJsonMixin(abc.ABC):
 
     @classmethod
     def schema(cls,
+               *,
                only=None,
                exclude=(),
                many=False,
@@ -76,36 +74,25 @@ class DataClassJsonMixin(abc.ABC):
                dump_only=(),
                partial=False,
                unknown=None):
-        nested_fields_and_is_many = _nested_fields(fields(cls))
-        generated_nested_fields = {}
-        for field, type_, field_many in nested_fields_and_is_many:
-            if _issubclass_safe(type_, DataClassJsonMixin):
-                schema = marshmallow.fields.Nested(type_.schema(),
-                                                   many=field_many,
-                                                   default=None)
-                generated_nested_fields[field.name] = schema
-            else:
-                warnings.warn(f"Nested dataclass field {field.name} of type "
-                              f"{field.type} detected in "
-                              f"{cls.__name__} that is not an instance of "
-                              f"dataclass_json. Did you mean to recursively "
-                              f"serialize this field? If so, make sure to "
-                              f"augment {field.type} with either the "
-                              f"`dataclass_json` decorator or mixin.")
-        all_fields = {field.name for field in fields(cls)}
         Meta = type('Meta',
                     (),
-                    {'fields': tuple(all_fields)})
+                    {'fields': tuple(field.name for field in fields(cls))})
 
         @post_load
         def make_instance(self, kvs):
             return _decode_dataclass(cls, kvs, infer_missing=partial)
 
+        fields_ = fields(cls)
+        nested_fields = mm._make_nested_fields(fields_, DataClassJsonMixin)
+        primitive_fields = [field for field in fields_
+                            if field.name not in nested_fields]
+        default_fields = mm._make_default_fields(primitive_fields, cls)
         DataClassSchema = type(f'{cls.__name__.capitalize()}Schema',
                                (Schema,),
                                {'Meta': Meta,
                                 f'make_{cls.__name__.lower()}': make_instance,
-                                **generated_nested_fields})
+                                **nested_fields,
+                                **default_fields})
         return DataClassSchema(only=only,
                                exclude=exclude,
                                many=many,

@@ -1,11 +1,12 @@
+import copy
 import json
 import warnings
-from dataclasses import MISSING, fields, is_dataclass
+from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass
 from typing import Collection, Mapping
 
-from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
-                                    _is_collection, _is_optional,
-                                    _isinstance_safe, _issubclass_safe)
+from dataclasses_json.utils import (_get_type_cons, _is_collection, _is_mapping,
+                                    _is_optional, _isinstance_safe,
+                                    _issubclass_safe)
 
 
 class _CollectionEncoder(json.JSONEncoder):
@@ -72,9 +73,7 @@ def _decode_generic(type_, value, infer_missing):
     if value is None:
         res = value
     elif _is_collection(type_):
-        is_mapping = _issubclass_safe(_get_type_origin(type_), Mapping)
-
-        if is_mapping:
+        if _is_mapping(type_):
             k_type, v_type = type_.__args__
             # a mapping type has `.keys()` and `.values()` (see collections.abc)
             ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
@@ -130,16 +129,22 @@ def _decode_items(type_arg, xs, infer_missing):
     return items
 
 
-def _nested_fields(fields):
-    nested_dc_fields_and_is_many = []
-    for field in fields:
-        if _is_supported_generic(field.type):
-            t_arg = field.type.__args__[0]
-            if is_dataclass(t_arg):
-                if _is_collection(field.type):
-                    nested_dc_fields_and_is_many.append((field, t_arg, True))
-                else:
-                    nested_dc_fields_and_is_many.append((field, t_arg, False))
-        elif is_dataclass(field.type):
-            nested_dc_fields_and_is_many.append((field, field.type, False))
-    return nested_dc_fields_and_is_many
+def _asdict(obj):
+    """
+    A re-implementation of `asdict` (based on the original in the `dataclasses`
+    source) to support arbitrary Collection and Mapping types.
+    """
+    if _is_dataclass_instance(obj):
+        result = []
+        for f in fields(obj):
+            value = _asdict(getattr(obj, f.name))
+            result.append((f.name, value))
+        return dict(result)
+    elif isinstance(obj, Mapping):
+        return dict(
+            (_asdict(k), _asdict(v))
+            for k, v in obj.items())
+    elif isinstance(obj, Collection) and not isinstance(obj, str):
+        return list(_asdict(v) for v in obj)
+    else:
+        return copy.deepcopy(obj)

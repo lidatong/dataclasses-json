@@ -71,7 +71,7 @@ def _is_supported_generic(type_):
 def _decode_generic(type_, value, infer_missing):
     if value is None:
         res = value
-    elif _issubclass_safe(_get_type_origin(type_), Collection):
+    elif _is_collection(type_):
         is_mapping = _issubclass_safe(_get_type_origin(type_), Mapping)
 
         if is_mapping:
@@ -134,12 +134,12 @@ def _nested_fields(fields):
     nested_dc_fields_and_is_many = []
     for field in fields:
         if _is_supported_generic(field.type):
-            type_arg = field.type.__args__[0]
-            if is_dataclass(type_arg):
+            t_arg = field.type.__args__[0]
+            if is_dataclass(t_arg):
                 if _is_collection(field.type):
-                    nested_dc_fields_and_is_many.append((field, True))
+                    nested_dc_fields_and_is_many.append((field, t_arg, True))
                 else:
-                    nested_dc_fields_and_is_many.append((field, False))
+                    nested_dc_fields_and_is_many.append((field, t_arg, False))
         elif is_dataclass(field.type):
-            nested_dc_fields_and_is_many.append((field, False))
+            nested_dc_fields_and_is_many.append((field, field.type, False))
     return nested_dc_fields_and_is_many

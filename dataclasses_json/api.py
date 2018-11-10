@@ -8,8 +8,9 @@ import marshmallow
 from marshmallow import Schema, post_load
 
 from dataclasses_json.core import (_CollectionEncoder, _decode_dataclass,
-                                   _nested_fields)
-from dataclasses_json.utils import _is_collection, _issubclass_safe
+                                   _nested_fields, _is_supported_generic,
+                                   _get_type_origin)
+from dataclasses_json.utils import (_is_collection, _issubclass_safe)
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -77,11 +78,10 @@ class DataClassJsonMixin(abc.ABC):
                unknown=None):
         nested_fields_and_is_many = _nested_fields(fields(cls))
         generated_nested_fields = {}
-        for field, many in nested_fields_and_is_many:
-            if _issubclass_safe(field.type, DataClassJsonMixin):
-                many = _is_collection(field.type)
-                schema = marshmallow.fields.Nested(field.type.schema(),
-                                                   many=many,
+        for field, type_, field_many in nested_fields_and_is_many:
+            if _issubclass_safe(type_, DataClassJsonMixin):
+                schema = marshmallow.fields.Nested(type_.schema(),
+                                                   many=field_many,
                                                    default=None)
                 generated_nested_fields[field.name] = schema
             else:
@@ -93,10 +93,9 @@ class DataClassJsonMixin(abc.ABC):
                               f"augment {field.type.name} with either the "
                               f"`dataclass_json` decorator or mixin.")
         all_fields = {field.name for field in fields(cls)}
-        non_nested_fields = all_fields - generated_nested_fields.keys()
         Meta = type('Meta',
                     (),
-                    {'fields': tuple(non_nested_fields)})
+                    {'fields': tuple(all_fields)})
 
         @post_load
         def make_instance(self, kvs):

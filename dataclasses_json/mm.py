@@ -5,7 +5,8 @@ from marshmallow import fields
 
 from dataclasses_json.core import _is_supported_generic
 from dataclasses_json.utils import (_is_collection, _is_mapping,
-                                    _is_nonstr_collection, _issubclass_safe)
+                                    _is_nonstr_collection, _issubclass_safe,
+                                    _is_optional)
 
 _type_to_cons = {
     dict: fields.Dict,
@@ -17,13 +18,17 @@ _type_to_cons = {
 }
 
 
-def _make_nested_fields(fields_, dataclass_json_cls):
+def _make_nested_fields(fields_, dataclass_json_cls, infer_missing):
     nested_fields = {}
     for field, type_, field_many in _inspect_nested_fields(fields_):
         if _issubclass_safe(type_, dataclass_json_cls):
-            schema = fields.Nested(type_.schema(),
-                                   many=field_many,
-                                   default=None)
+            if infer_missing and _is_optional(field.type):
+                schema = fields.Nested(type_.schema(),
+                                       many=field_many,
+                                       missing=None)
+            else:
+                schema = fields.Nested(type_.schema(),
+                                       many=field_many)
             nested_fields[field.name] = schema
         else:
             warnings.warn(f"Nested dataclass field {field.name} of type "
@@ -51,7 +56,7 @@ def _inspect_nested_fields(fields_):
     return nested_dc_fields_and_is_many
 
 
-def _make_default_fields(fields_, cls):
+def _make_default_fields(fields_, cls, infer_missing):
     default_fields = {}
     for field in fields_:
         if field.default is not MISSING:
@@ -62,6 +67,10 @@ def _make_default_fields(fields_, cls):
             default_fields[field.name] = _make_default_field(field.type,
                                                              field.default_factory,
                                                              cls)
+        elif _is_optional(field.type) and infer_missing:
+            default_fields[field.name] = _make_default_field(field.type,
+                                                             None,
+                                                             cls)
     return default_fields
 
 
@@ -69,6 +78,7 @@ def _make_default_field(type_, default, cls):
     cons_type = type_
     cons_type = (list if _is_nonstr_collection(cons_type) else cons_type)
     cons_type = (dict if _is_mapping(cons_type) else cons_type)
+    cons_type = (type_.__args__[0] if _is_optional(cons_type) else cons_type)
     cons = _type_to_cons[cons_type]
     if cons is fields.List:
         type_arg = type_.___args__[0]

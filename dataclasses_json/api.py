@@ -66,6 +66,7 @@ class DataClassJsonMixin(abc.ABC):
     @classmethod
     def schema(cls,
                *,
+               infer_missing=False,
                only=None,
                exclude=(),
                many=False,
@@ -83,10 +84,14 @@ class DataClassJsonMixin(abc.ABC):
             return _decode_dataclass(cls, kvs, infer_missing=partial)
 
         fields_ = fields(cls)
-        nested_fields = mm._make_nested_fields(fields_, DataClassJsonMixin)
+        nested_fields = mm._make_nested_fields(fields_,
+                                               DataClassJsonMixin,
+                                               infer_missing)
         primitive_fields = [field for field in fields_
                             if field.name not in nested_fields]
-        default_fields = mm._make_default_fields(primitive_fields, cls)
+        default_fields = mm._make_default_fields(primitive_fields,
+                                                 cls,
+                                                 infer_missing)
         DataClassSchema = type(f'{cls.__name__.capitalize()}Schema',
                                (Schema,),
                                {'Meta': Meta,

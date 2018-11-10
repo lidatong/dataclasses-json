@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Set
 
+from marshmallow import Schema, fields
+
 from dataclasses_json import dataclass_json
-from marshmallow import fields, Schema
 
 
 @dataclass_json
@@ -59,4 +60,4 @@ class TestEncoder:
         assert p.to_json() == '{"id": 1, "name": "professor"}'
 
     def test_course(self):
-        assert c.to_json() == '{"id": 1, "name": "course", "professor": {"id": 1, "name": "professor"}}'
+        assert c.to_json() == '{"id": 1, "name": "course", "professor": {"id": 1, "name": "professor"}, "students": [{"id": 1, "name": "student"}]}}'

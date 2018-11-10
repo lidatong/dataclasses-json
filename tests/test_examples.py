@@ -10,7 +10,7 @@ from dataclasses_json import dataclass_json
 @dataclass(frozen=True)
 class Student:
     id: int
-    name: str
+    name: str = ""
 
 
 @dataclass_json
@@ -29,9 +29,10 @@ class Course:
     students: Set[Student]
 
 
-s = Student(1, 'student')
+s1 = Student(1, 'student')
+s2 = Student(2, 'student')
 p = Professor(1, 'professor')
-c = Course(1, 'course', p, {s})
+c = Course(1, 'course', p, {s1})
 
 
 class StudentSchema(Schema):
@@ -54,10 +55,18 @@ class CourseSchema(Schema):
 
 class TestEncoder:
     def test_student(self):
-        assert s.to_json() == '{"id": 1, "name": "student"}'
+        assert s1.to_json() == '{"id": 1, "name": "student"}'
 
     def test_professor(self):
         assert p.to_json() == '{"id": 1, "name": "professor"}'
 
     def test_course(self):
-        assert c.to_json() == '{"id": 1, "name": "course", "professor": {"id": 1, "name": "professor"}, "students": [{"id": 1, "name": "student"}]}}'
+        assert c.to_json() == '{"id": 1, "name": "course", "professor": {"id": 1, "name": "professor"}, "students": [{"id": 1, "name": "student"}]}'
+
+    def test_students_missing(self):
+        s1_anon = Student(1, '')
+        s2_anon = Student(2, '')
+        one = [s1_anon, s2_anon]
+        two = [s2_anon, s1_anon]
+        actual = Student.schema().loads('[{"id": 1}, {"id": 2}]', many=True)
+        assert actual == one or actual == two

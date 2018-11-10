@@ -1,16 +1,16 @@
 import abc
 import json
 import warnings
-from dataclasses import asdict, fields
+from dataclasses import fields
 from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 
 import marshmallow
 from marshmallow import Schema, post_load
 
 from dataclasses_json.core import (_CollectionEncoder, _decode_dataclass,
-                                   _nested_fields, _is_supported_generic,
-                                   _get_type_origin)
-from dataclasses_json.utils import (_is_collection, _issubclass_safe)
+                                   _nested_fields)
+from dataclasses_json.dataclasses2 import asdict2
+from dataclasses_json.utils import (_issubclass_safe)
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -36,7 +36,7 @@ class DataClassJsonMixin(abc.ABC):
                 default: Callable = None,
                 sort_keys: bool = False,
                 **kw) -> str:
-        return json.dumps(asdict(self),
+        return json.dumps(asdict2(self),
                           cls=_CollectionEncoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,

@@ -86,11 +86,11 @@ class DataClassJsonMixin(abc.ABC):
                 generated_nested_fields[field.name] = schema
             else:
                 warnings.warn(f"Nested dataclass field {field.name} of type "
-                              f"{field.type.__name__} detected in "
+                              f"{field.type} detected in "
                               f"{cls.__name__} that is not an instance of "
                               f"dataclass_json. Did you mean to recursively "
                               f"serialize this field? If so, make sure to "
-                              f"augment {field.type.name} with either the "
+                              f"augment {field.type} with either the "
                               f"`dataclass_json` decorator or mixin.")
         all_fields = {field.name for field in fields(cls)}
         Meta = type('Meta',

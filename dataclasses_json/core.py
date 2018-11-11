@@ -2,18 +2,32 @@ import copy
 import json
 import warnings
 from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass
-from typing import Collection, Mapping
+from datetime import datetime, timezone
+from typing import Collection, Mapping, Union
+from uuid import UUID
 
 from dataclasses_json.utils import (_get_type_cons, _is_collection, _is_mapping,
                                     _is_optional, _isinstance_safe,
                                     _issubclass_safe)
 
+JSON = Union[dict, list, str, int, float, bool, None]
 
-class _CollectionEncoder(json.JSONEncoder):
-    def default(self, o):
+
+class _ExtendedEncoder(json.JSONEncoder):
+    def default(self, o) -> JSON:
+        result: JSON
         if _isinstance_safe(o, Collection):
-            return list(o)
-        return json.JSONEncoder.default(self, o)
+            if _isinstance_safe(o, Mapping):
+                result = dict(o)
+            else:
+                result = list(o)
+        elif _isinstance_safe(o, datetime):
+            result = o.timestamp()
+        elif _isinstance_safe(o, UUID):
+            result = str(o)
+        else:
+            result = json.JSONEncoder.default(self, o)
+        return result
 
 
 def _decode_dataclass(cls, kvs, infer_missing):
@@ -59,6 +73,20 @@ def _decode_dataclass(cls, kvs, infer_missing):
             init_kwargs[field.name] = _decode_generic(field.type,
                                                       field_value,
                                                       infer_missing)
+        elif _issubclass_safe(field.type, datetime):
+            # FIXME this is a hack to deal with mm already decoding
+            # the issue is we want to leverage mm fields' missing argument
+            # but need this for the object creation hook
+            if isinstance(field_value, datetime):
+                dt = field_value
+            else:
+                tz = datetime.now(timezone.utc).astimezone().tzinfo
+                dt = datetime.fromtimestamp(field_value, tz=tz)
+            init_kwargs[field.name] = dt
+        elif _issubclass_safe(field.type, UUID):
+            init_kwargs[field.name] = (field_value
+                                       if isinstance(field_value, UUID)
+                                       else UUID(field_value))
         else:
             init_kwargs[field.name] = field_value
     return cls(**init_kwargs)
@@ -141,9 +169,7 @@ def _asdict(obj):
             result.append((f.name, value))
         return dict(result)
     elif isinstance(obj, Mapping):
-        return dict(
-            (_asdict(k), _asdict(v))
-            for k, v in obj.items())
+        return dict((_asdict(k), _asdict(v)) for k, v in obj.items())
     elif isinstance(obj, Collection) and not isinstance(obj, str):
         return list(_asdict(v) for v in obj)
     else:

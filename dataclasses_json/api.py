@@ -1,13 +1,14 @@
 import abc
 import json
 from dataclasses import fields
+from datetime import datetime
 from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 
 from marshmallow import Schema, post_load
 
 from dataclasses_json import mm
-from dataclasses_json.core import (_CollectionEncoder, _asdict,
-                                   _decode_dataclass)
+from dataclasses_json.core import (_ExtendedEncoder, _asdict,
+                                   _decode_dataclass, _issubclass_safe)
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -34,7 +35,7 @@ class DataClassJsonMixin(abc.ABC):
                 sort_keys: bool = False,
                 **kw) -> str:
         return json.dumps(_asdict(self),
-                          cls=_CollectionEncoder,
+                          cls=_ExtendedEncoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,
                           check_circular=check_circular,
@@ -87,17 +88,27 @@ class DataClassJsonMixin(abc.ABC):
         nested_fields = mm._make_nested_fields(fields_,
                                                DataClassJsonMixin,
                                                infer_missing)
+
         primitive_fields = [field for field in fields_
                             if field.name not in nested_fields]
         default_fields = mm._make_default_fields(primitive_fields,
                                                  cls,
                                                  infer_missing)
+
+        # datetime codec is different from what's specified by `fields.DateTime`
+        # so need to override what is inferred by `class Meta`
+        datetime_fields = {field.name: mm._TimestampField(cls)
+                           for field in primitive_fields
+                           if _issubclass_safe(field.type, datetime)
+                           and field.name not in default_fields}
+
         DataClassSchema = type(f'{cls.__name__.capitalize()}Schema',
                                (Schema,),
                                {'Meta': Meta,
                                 f'make_{cls.__name__.lower()}': make_instance,
                                 **nested_fields,
-                                **default_fields})
+                                **default_fields,
+                                **datetime_fields})
         return DataClassSchema(only=only,
                                exclude=exclude,
                                many=many,

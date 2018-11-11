@@ -1,12 +1,23 @@
 import warnings
 from dataclasses import MISSING, is_dataclass
+from datetime import datetime
+from uuid import UUID
 
 from marshmallow import fields
 
 from dataclasses_json.core import _is_supported_generic
 from dataclasses_json.utils import (_is_collection, _is_mapping,
-                                    _is_nonstr_collection, _issubclass_safe,
-                                    _is_optional)
+                                    _is_nonstr_collection, _is_optional,
+                                    _issubclass_safe, _timestamp_to_dt_aware)
+
+
+class _TimestampField(fields.Field):
+    def _serialize(self, value, attr, obj, **kwargs):
+        return value.timestamp()
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        return _timestamp_to_dt_aware(value)
+
 
 _type_to_cons = {
     dict: fields.Dict,
@@ -14,7 +25,9 @@ _type_to_cons = {
     str: fields.Str,
     int: fields.Int,
     float: fields.Float,
-    bool: fields.Bool
+    bool: fields.Bool,
+    datetime: _TimestampField,
+    UUID: fields.UUID
 }
 
 

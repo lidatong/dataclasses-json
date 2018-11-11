@@ -3,8 +3,24 @@
 This library provides a simple API for encoding and decoding [dataclasses](https://docs.python.org/3/library/dataclasses.html) to and from JSON.
 
 It's recursive (see caveats below), so you can easily work with nested dataclasses.
-In addition to the supported types in the [py to JSON table](https://docs.python.org/3/library/json.html#py-to-json-table), any arbitrary
-[Collection](https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection) type is supported (they are encoded into JSON arrays, but decoded into the original collection types).
+In addition to the supported types in the 
+[py to JSON table](https://docs.python.org/3/library/json.html#py-to-json-table), this library supports the following:
+- any arbitrary [Collection](https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection) type is supported.
+[Mapping](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) types are encoded as JSON objects and `str` types as JSON strings. 
+Any other Collection types are encoded into JSON arrays, but decoded into the original collection types.
+- [datetime](https://docs.python.org/3/library/datetime.html#available-types) 
+objects. `datetime` objects are encoded to `float` (JSON number) using 
+[timestamp](https://docs.python.org/3/library/datetime.html#datetime.datetime.timestamp).
+As specified in the `datetime` docs, if your `datetime` object is naive, it will 
+assume your system local timezone when calling `.timestamp()`. JSON nunbers 
+corresponding to a `datetime` field in your dataclass are decoded 
+into a datetime-aware object, with `tzinfo` set to your system local timezone.
+Thus, if you encode a datetime-naive object, you will decode into a 
+datetime-aware object. This is important, because encoding and decoding won't 
+strictly be inverses.
+- [UUID](https://docs.python.org/3/library/uuid.html#uuid.UUID) objects. They 
+are encoded as `str` (JSON string).
+
 
 **The [latest release](https://github.com/lidatong/dataclasses-json/releases/latest) is compatible with both Python 3.7 and Python 3.6 (with the dataclasses backport).**
 

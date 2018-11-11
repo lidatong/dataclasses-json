@@ -11,6 +11,8 @@ from typing import (Collection,
                     Union)
 
 from dataclasses_json import DataClassJsonMixin, dataclass_json
+from uuid import UUID
+from datetime import datetime
 
 A = TypeVar('A')
 
@@ -141,3 +143,15 @@ class DataClassWithMyCollection(DataClassJsonMixin):
 @dataclass
 class DataClassJsonDecorator:
     x: str
+
+@dataclass_json
+@dataclass
+class DataClassWithDatetime:
+    created_at: datetime
+
+
+@dataclass_json
+@dataclass
+class DataClassWithUuid:
+    id: UUID
+

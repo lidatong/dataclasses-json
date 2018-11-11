@@ -1,10 +1,44 @@
+from datetime import datetime, timezone
+from uuid import UUID
+
 import pytest
 
-from tests.entities import (DataClassJsonDecorator,
-                            DataClassWithDataClass,
+from tests.entities import (DataClassImmutableDefault, DataClassJsonDecorator,
+                            DataClassWithDataClass, DataClassWithDatetime,
                             DataClassWithList, DataClassWithOptional,
-                            DataClassWithOptionalNested,
-                            DataClassImmutableDefault)
+                            DataClassWithOptionalNested, DataClassWithUuid)
+
+
+class TestTypes:
+    uuid_s = 'd1d61dd7-c036-47d3-a6ed-91cc2e885fc8'
+    dc_uuid_json = f'{{"id": "{uuid_s}"}}'
+
+    def test_uuid_encode(self):
+        assert (DataClassWithUuid(UUID(self.uuid_s)).to_json()
+                == self.dc_uuid_json)
+
+    def test_uuid_decode(self):
+        assert (DataClassWithUuid.from_json(self.dc_uuid_json)
+                == DataClassWithUuid(UUID(self.uuid_s)))
+
+    ts = 1541957079.470721
+    tz = datetime.now(timezone.utc).astimezone().tzinfo
+    dc_ts_json = f'{{"created_at": {ts}}}'
+    dc_ts = DataClassWithDatetime(datetime.fromtimestamp(ts, tz=tz))
+
+    def test_datetime_encode(self):
+        assert (self.dc_ts.to_json() == self.dc_ts_json)
+
+    def test_datetime_decode(self):
+        assert (DataClassWithDatetime.from_json(self.dc_ts_json) == self.dc_ts)
+
+    def test_datetime_schema_encode(self):
+        assert (DataClassWithDatetime.schema().dumps(self.dc_ts)
+                == self.dc_ts_json)
+
+    def test_datetime_schema_decode(self):
+        assert (DataClassWithDatetime.schema().loads(self.dc_ts_json)
+                == self.dc_ts)
 
 
 class TestInferMissing:
@@ -92,4 +126,5 @@ class TestSchema:
     def test_loads_infer_missing_nested(self):
         assert (DataClassWithOptionalNested
                 .schema(infer_missing=True)
-                .loads('[{}]', many=True) == [DataClassWithOptionalNested(None)])
+                .loads('[{}]', many=True) == [
+                    DataClassWithOptionalNested(None)])

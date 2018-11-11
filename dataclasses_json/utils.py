@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime, timezone
 from typing import Collection, Mapping, Optional
 
 
@@ -84,3 +85,9 @@ def _is_collection(type_):
 def _is_nonstr_collection(type_):
     return (_issubclass_safe(_get_type_origin(type_), Collection)
             and not _issubclass_safe(type_, str))
+
+
+def _timestamp_to_dt_aware(timestamp: float):
+    tz = datetime.now(timezone.utc).astimezone().tzinfo
+    dt = datetime.fromtimestamp(timestamp, tz=tz)
+    return dt

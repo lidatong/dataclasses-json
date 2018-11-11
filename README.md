@@ -55,7 +55,8 @@ invisible in usage.
 
 ## How do I...
 
-### Encode or decode a JSON array containing instances of my Data Class?
+
+### Use my dataclass with JSON arrays or objects?
 
 ```python
 from dataclasses import dataclass
@@ -67,19 +68,67 @@ class Person:
     name: str
 ```
 
-**Encode**
+**Encode into a JSON array containing instances of my Data Class**
 
 ```python
 people_json = [Person('lidatong')]
 Person.schema().dumps(people_json, many=True)  # '[{"name": "lidatong"}]'
 ```
 
-**Decode**
+**Decode a JSON array containing instances of my Data Class**
 
 ```python
 people_json = '[{"name": "lidatong"}]'
 Person.schema().loads(people_json, many=True)  # [Person(name='lidatong')]
 ```
+
+**Encode as part of a larger JSON object containing my Data Class (e.g. an HTTP 
+request/response)**
+
+```python
+import json
+
+person_dict = Person.schema().dump(Person('lidatong'))
+
+response_dict = {
+    'response': {
+        'person': person_dict
+    }
+}
+
+response_json = json.dumps(response_dict)
+```
+
+In this case, we do two steps. First, we encode the dataclass into a 
+**python dictionary** rather than a JSON string, using `schema()` and `dump`. 
+Scroll down for a section addressing that.
+
+Second, we leverage the built-in `json.dumps` to serialize our `dataclass` into 
+a JSON string.
+
+**Decode as part of a larger JSON object containing my Data Class (e.g. an HTTP 
+response)**
+
+```python
+import json
+
+response_dict = json.loads('{"response": {"person": {"name": "lidatong"}}}')
+
+person_dict = response_dict['response']
+
+person = Person.schema().load(person_dict)
+```
+
+In a similar vein to encoding above, we leverage the built-in `json` module.
+
+First, call `json.loads` to read the entire JSON object into a 
+dictionary. We then access the key of the value containing the encoded dict of 
+our `Person` that we want to decode (`response_dict['response']`).
+
+Second, we load in the dictionary using `Person.schema().load`.
+
+
+
 
 ### Encode or decode into Python lists/dictionaries rather than JSON?
 
@@ -114,6 +163,47 @@ people_dicts = [{"name": "lidatong"}]
 Person.schema().load(people_dicts, many=True)  # [Person(name='lidatong')]
 ```
 
+### Handle missing or optional field values when decoding?
+
+By default, any fields in your dataclass that use `default` or 
+`default_factory` will have the values filled with the provided default, if the
+corresponding field is missing from the JSON you're decoding.
+
+**Decode JSON with missing field**
+
+```python
+@dataclass_json
+@dataclass
+class Student
+    id: int
+    name: str = 'student'
+
+Student.from_json({"id": 1})  # Student(id=1, name='student')
+```
+
+Notice `from_json` filled the field `name` with the specified default 'student'
+when it was missing from the JSON.
+
+Sometimes you have fields that are typed as `Optional`, but you don't 
+necessarily want to assign a default. In that case, you can use the 
+`infer_missing` kwarg to make `from_json` infer the missing field value as `None`.
+
+**Decode optional field without default**
+
+```python
+@dataclass_json
+@dataclass
+class Tutor:
+    id: int
+    student: Optional[Student]
+
+Tutor.from_json({"id": 1})  # Tutor(id=1, student=None)
+```
+
+Personally I recommend you leverage dataclass defaults rather than using 
+`infer_missing`, but if for some reason you need to decouple the behavior of 
+JSON decoding from the field's default value, this will allow you to do so.
+
 ### Explanation
 
 Briefly, on what's going on under the hood in the above examples: calling 
@@ -123,6 +213,21 @@ for you. It also fills in the corresponding object hook, so that marshmallow
 will create an instance of your Data Class on `load` (e.g.
 `Person.schema().load` returns a `Person`) rather than a `dict`, which it does
 by default in marshmallow.
+
+**Performance note**
+
+`.schema()` is not cached (it generates the schema on every call), so if you
+have a nested Data Class you may want to save the result to a variable to 
+avoid re-generation of the schema on every usage.
+
+```python
+person_schema = Person.schema()
+person_schema.dump(people, many=True)
+
+# later in the code...
+
+person_schema.dump(person)
+```
 
 
 ## Marshmallow interop

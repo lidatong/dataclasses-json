@@ -1,15 +1,13 @@
 from dataclasses import dataclass
 from typing import Set
 
-from marshmallow import Schema, fields
-
 from dataclasses_json import dataclass_json
 
 
 @dataclass_json
 @dataclass(frozen=True)
 class Student:
-    id: int
+    id: int = 0
     name: str = ""
 
 

@@ -44,7 +44,9 @@ def _decode_dataclass(cls, kvs, infer_missing):
     init_kwargs = {}
     for field in fields(cls):
         field_value = kvs[field.name]
-        if field_value is None and not _is_optional(field.type):
+        if 'mm' in field.metadata:
+            init_kwargs[field.name] = field_value
+        elif field_value is None and not _is_optional(field.type):
             warning = (f"value of non-optional type {field.name} detected "
                        f"when decoding {cls.__name__}")
             if infer_missing:

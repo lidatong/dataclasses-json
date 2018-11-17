@@ -7,8 +7,9 @@ from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 from marshmallow import Schema, post_load
 
 from dataclasses_json import mm
-from dataclasses_json.core import (_ExtendedEncoder, _asdict,
-                                   _decode_dataclass, _issubclass_safe)
+from dataclasses_json.core import (_ExtendedEncoder, _asdict, _decode_dataclass,
+                                   _field_overrides, _issubclass_safe,
+                                   _override)
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -34,7 +35,8 @@ class DataClassJsonMixin(abc.ABC):
                 default: Callable = None,
                 sort_keys: bool = False,
                 **kw) -> str:
-        return json.dumps(_asdict(self),
+        kvs = _override(_asdict(self), _field_overrides(self), 'encoder')
+        return json.dumps(kvs,
                           cls=_ExtendedEncoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,
@@ -56,13 +58,14 @@ class DataClassJsonMixin(abc.ABC):
                   parse_constant=None,
                   infer_missing=False,
                   **kw) -> A:
-        init_kwargs = json.loads(s,
-                                 encoding=encoding,
-                                 parse_float=parse_float,
-                                 parse_int=parse_int,
-                                 parse_constant=parse_constant,
-                                 **kw)
-        return _decode_dataclass(cls, init_kwargs, infer_missing)
+        kvs = json.loads(s,
+                         encoding=encoding,
+                         parse_float=parse_float,
+                         parse_int=parse_int,
+                         parse_constant=parse_constant,
+                         **kw)
+        overriden_kvs = _override(kvs, _field_overrides(cls), 'decoder')
+        return _decode_dataclass(cls, overriden_kvs, infer_missing)
 
     @classmethod
     def schema(cls,
@@ -84,12 +87,14 @@ class DataClassJsonMixin(abc.ABC):
         def make_instance(self, kvs):
             return _decode_dataclass(cls, kvs, infer_missing=partial)
 
-        fields_ = fields(cls)
-        nested_fields = mm._make_nested_fields(fields_,
+        overriden_fields = {k: v.mm_field
+                            for k, v in _field_overrides(cls).items()}
+        generated_fields = {field for field in fields(cls)
+                            if field.name not in overriden_fields}
+        nested_fields = mm._make_nested_fields(generated_fields,
                                                DataClassJsonMixin,
                                                infer_missing)
-
-        primitive_fields = [field for field in fields_
+        primitive_fields = [field for field in generated_fields
                             if field.name not in nested_fields]
         default_fields = mm._make_default_fields(primitive_fields,
                                                  cls,
@@ -106,6 +111,7 @@ class DataClassJsonMixin(abc.ABC):
                                (Schema,),
                                {'Meta': Meta,
                                 f'make_{cls.__name__.lower()}': make_instance,
+                                **overriden_fields,
                                 **nested_fields,
                                 **default_fields,
                                 **datetime_fields})

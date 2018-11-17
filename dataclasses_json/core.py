@@ -4,6 +4,7 @@ import warnings
 from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass
 from datetime import datetime, timezone
 from typing import Collection, Mapping, Union
+from collections import namedtuple
 from uuid import UUID
 
 from dataclasses_json.utils import (_get_type_cons, _is_collection, _is_mapping,
@@ -28,6 +29,30 @@ class _ExtendedEncoder(json.JSONEncoder):
         else:
             result = json.JSONEncoder.default(self, o)
         return result
+
+
+def _field_overrides(dc):
+    overrides = {}
+    attrs = ['encoder', 'decoder', 'mm_field']
+    FieldOverride = namedtuple('FieldOverride', attrs)
+    for field in fields(dc):
+        # if the field has dataclasses_json metadata, we cons a FieldOverride
+        # so there's a distinction between FieldOverride with all Nones
+        # and field that just doesn't appear in overrides
+        if field.metadata is not None and 'dataclasses_json' in field.metadata:
+            metadata = field.metadata['dataclasses_json']
+            overrides[field.name] = FieldOverride(*map(metadata.get, attrs))
+    return overrides
+
+
+def _override(kvs, overrides, attr):
+    override_kvs = {}
+    for k, v in kvs.items():
+        if k in overrides and getattr(overrides[k], attr) is not None:
+            override_kvs[k] = getattr(overrides[k], attr)(v)
+        else:
+            override_kvs[k] = v
+    return override_kvs
 
 
 def _decode_dataclass(cls, kvs, infer_missing):

@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import (Collection,
                     Deque,
                     Dict,
@@ -9,10 +10,11 @@ from typing import (Collection,
                     Tuple,
                     TypeVar,
                     Union)
+from uuid import UUID
+
+from marshmallow import fields
 
 from dataclasses_json import DataClassJsonMixin, dataclass_json
-from uuid import UUID
-from datetime import datetime
 
 A = TypeVar('A')
 
@@ -144,6 +146,7 @@ class DataClassWithMyCollection(DataClassJsonMixin):
 class DataClassJsonDecorator:
     x: str
 
+
 @dataclass_json
 @dataclass
 class DataClassWithDatetime:
@@ -152,6 +155,25 @@ class DataClassWithDatetime:
 
 @dataclass_json
 @dataclass
+class DataClassWithOverride:
+    id: float = field(
+        metadata={'dataclasses_json': {
+            'mm_field': fields.Integer()
+        }})
+
+
+@dataclass_json
+@dataclass
+class DataClassWithIsoDatetime:
+    created_at: datetime = field(
+        metadata={'dataclasses_json': {
+            'encoder': datetime.isoformat,
+            'decoder': datetime.fromisoformat,
+            'mm_field': fields.DateTime(format='iso')
+        }})
+
+
+@dataclass_json
+@dataclass
 class DataClassWithUuid:
     id: UUID
-

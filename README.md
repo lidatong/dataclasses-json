@@ -17,7 +17,8 @@ corresponding to a `datetime` field in your dataclass are decoded
 into a datetime-aware object, with `tzinfo` set to your system local timezone.
 Thus, if you encode a datetime-naive object, you will decode into a 
 datetime-aware object. This is important, because encoding and decoding won't 
-strictly be inverses.
+strictly be inverses. See this section if you want to override this default
+behavior (for example, if you want to use ISO).
 - [UUID](https://docs.python.org/3/library/uuid.html#uuid.UUID) objects. They 
 are encoded as `str` (JSON string).
 
@@ -246,6 +247,12 @@ person_schema.dump(person)
 ```
 
 
+### Override the default encode / decode / marshmallow field of a specific field?
+
+See [Overriding](#Overriding)
+
+
+
 ## Marshmallow interop
 
 Using the `dataclass_json` decorator or mixing in `DataClassJsonMixin` will
@@ -274,6 +281,33 @@ from marshmallow import Schema, fields
 class PersonSchema(Schema):
     name = fields.Str()
 ```
+
+## Overriding
+
+For example, you might want to encode/decode `datetime` objects using ISO format
+rather than the default `timestamp`.
+
+```python
+from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json
+from datetime import datetime
+from marshmallow import fields
+
+@dataclass_json
+@dataclass
+class DataClassWithIsoDatetime:
+    created_at: datetime = field(
+        metadata={'dataclasses_json': {
+            'encoder': datetime.isoformat,
+            'decoder': datetime.fromisoformat,
+            'mm_field': fields.DateTime(format='iso')
+        }})
+```
+
+As you can see, you can override:
+- `encoder`: a callable, which will be invoked to convert the field value when calling `to_json`
+- `decoder`: a callable, which will be invoked to convert the JSON value when calling `from_json`
+- `mm_field`: a marshmallow field, which will affect the behavior of any operations involving `.schema()`
 
 ## A larger example
 

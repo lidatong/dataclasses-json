@@ -15,6 +15,7 @@ from uuid import UUID
 from marshmallow import fields
 
 from dataclasses_json import DataClassJsonMixin, dataclass_json
+from dataclasses_json.mm import _IsoField
 
 A = TypeVar('A')
 
@@ -171,6 +172,17 @@ class DataClassWithIsoDatetime:
             'decoder': datetime.fromisoformat,
             'mm_field': fields.DateTime(format='iso')
         }})
+
+@dataclass_json
+@dataclass
+class DataClassWithCustomIsoDatetime:
+    created_at: datetime = field(
+        metadata={'dataclasses_json': {
+            'encoder': datetime.isoformat,
+            'decoder': datetime.fromisoformat,
+            'mm_field': _IsoField()
+        }})
+
 
 
 @dataclass_json

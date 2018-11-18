@@ -31,7 +31,7 @@ class _ExtendedEncoder(json.JSONEncoder):
         return result
 
 
-def _field_overrides(dc):
+def _overrides(dc):
     overrides = {}
     attrs = ['encoder', 'decoder', 'mm_field']
     FieldOverride = namedtuple('FieldOverride', attrs)
@@ -56,6 +56,7 @@ def _override(kvs, overrides, attr):
 
 
 def _decode_dataclass(cls, kvs, infer_missing):
+    overrides = _overrides(cls)
     kvs = {} if kvs is None and infer_missing else kvs
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
     for field in missing_fields:
@@ -81,6 +82,14 @@ def _decode_dataclass(cls, kvs, infer_missing):
             else:
                 warnings.warn(f"`NoneType` object {warning}.", RuntimeWarning)
             init_kwargs[field.name] = field_value
+        elif (field.name in overrides
+              and overrides[field.name].decoder is not None):
+            # FIXME hack
+            if field.type is type(field_value):
+                init_kwargs[field.name] = field_value
+            else:
+                init_kwargs[field.name] = overrides[field.name].decoder(
+                    field_value)
         elif is_dataclass(field.type):
             # FIXME this is a band-aid to deal with the value already being
             # serialized when handling nested marshmallow schema
@@ -89,8 +98,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
             if is_dataclass(field_value):
                 value = field_value
             else:
-                value = _decode_dataclass(field.type,
-                                          field_value,
+                value = _decode_dataclass(field.type, field_value,
                                           infer_missing)
             init_kwargs[field.name] = value
 
@@ -174,7 +182,8 @@ def _decode_items(type_arg, xs, infer_missing):
     hence the check of `is_dataclass(vs)`
     """
     if is_dataclass(type_arg) or is_dataclass(xs):
-        items = (_decode_dataclass(type_arg, x, infer_missing) for x in xs)
+        items = (_decode_dataclass(type_arg, x, infer_missing)
+                 for x in xs)
     elif _is_supported_generic(type_arg):
         items = (_decode_generic(type_arg, x, infer_missing) for x in xs)
     else:

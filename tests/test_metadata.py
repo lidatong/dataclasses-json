@@ -9,12 +9,20 @@ from dataclasses_json import DataClassJsonMixin
 
 @dataclass
 class Car(DataClassJsonMixin):
-    license_number: str = field(metadata={'mm': fields.String(required=False)})
+    license_number: str = field(
+        metadata={'dataclasses_json': {
+            'mm_field': fields.String(required=False)}
+        })
 
 
 @dataclass
 class StringDate(DataClassJsonMixin):
-    string_date: datetime.datetime = field(metadata={'mm': fields.String(required=False)})
+    string_date: datetime.datetime = field(
+        metadata={'dataclasses_json': {
+            'encoder': str,
+            'decoder': str,
+            'mm_field': fields.String(required=False)}
+        })
 
 
 car_schema = Car.schema()

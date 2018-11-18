@@ -7,7 +7,8 @@ from tests.entities import (DataClassImmutableDefault, DataClassJsonDecorator,
                             DataClassWithDataClass, DataClassWithDatetime,
                             DataClassWithList, DataClassWithOptional,
                             DataClassWithOptionalNested, DataClassWithUuid,
-                            DataClassWithIsoDatetime, DataClassWithOverride)
+                            DataClassWithIsoDatetime, DataClassWithOverride,
+                            DataClassWithCustomIsoDatetime)
 
 
 class TestTypes:
@@ -60,12 +61,20 @@ class TestTypes:
 
     def test_datetime_override_schema_decode(self):
         iso = DataClassWithIsoDatetime.schema().loads(self.dc_iso_json)
-        # FIXME bug in marshmallow currently returns naive instead of the
-        # document aware. also seems to drop microseconds?
+        # FIXME bug in marshmallow currently returns datetime-naive instead of
+        # datetime-aware. also seems to drop microseconds?
         # #955
         iso.created_at = iso.created_at.replace(microsecond=456753,
                                                 tzinfo=self.tz)
         assert (iso == self.dc_iso)
+
+    def test_datetime_custom_iso_fieldoverride_schema_encode(self):
+        assert (DataClassWithCustomIsoDatetime.schema().dumps(self.dc_iso)
+                == self.dc_iso_json)
+
+    def test_datetime_custom_iso_field_override_schema_decode(self):
+        iso = DataClassWithCustomIsoDatetime.schema().loads(self.dc_iso_json)
+        assert (iso == DataClassWithCustomIsoDatetime(self.dt))
 
 
 class TestInferMissing:

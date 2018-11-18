@@ -304,10 +304,17 @@ class DataClassWithIsoDatetime:
         }})
 ```
 
-As you can see, you can override:
-- `encoder`: a callable, which will be invoked to convert the field value when calling `to_json`
-- `decoder`: a callable, which will be invoked to convert the JSON value when calling `from_json`
+As you can see, you can override the default codecs by providing a "hook" via a
+callable:
+- `encoder`: a callable, which will be invoked to convert the field value when encoding to JSON
+- `decoder`: a callable, which will be invoked to convert the JSON value when decoding from JSON
 - `mm_field`: a marshmallow field, which will affect the behavior of any operations involving `.schema()`
+
+Note that these hooks will be invoked regardless if you're using 
+`.to_json`/`dump`/`dumps
+and `.from_json`/`load`/`loads`. So apply overrides judiciously, making sure to 
+carefully consider whether the interaction of the encode/decode/mm_field 
+overrides is consistent with what you expect!
 
 ## A larger example
 

@@ -8,7 +8,7 @@ from marshmallow import Schema, post_load
 
 from dataclasses_json import mm
 from dataclasses_json.core import (_ExtendedEncoder, _asdict, _decode_dataclass,
-                                   _field_overrides, _issubclass_safe,
+                                   _overrides, _issubclass_safe,
                                    _override)
 
 A = TypeVar('A')
@@ -35,7 +35,7 @@ class DataClassJsonMixin(abc.ABC):
                 default: Callable = None,
                 sort_keys: bool = False,
                 **kw) -> str:
-        kvs = _override(_asdict(self), _field_overrides(self), 'encoder')
+        kvs = _override(_asdict(self), _overrides(self), 'encoder')
         return json.dumps(kvs,
                           cls=_ExtendedEncoder,
                           skipkeys=skipkeys,
@@ -64,8 +64,7 @@ class DataClassJsonMixin(abc.ABC):
                          parse_int=parse_int,
                          parse_constant=parse_constant,
                          **kw)
-        overriden_kvs = _override(kvs, _field_overrides(cls), 'decoder')
-        return _decode_dataclass(cls, overriden_kvs, infer_missing)
+        return _decode_dataclass(cls, kvs, infer_missing)
 
     @classmethod
     def schema(cls,
@@ -85,10 +84,10 @@ class DataClassJsonMixin(abc.ABC):
 
         @post_load
         def make_instance(self, kvs):
-            return _decode_dataclass(cls, kvs, infer_missing=partial)
+            return _decode_dataclass(cls, kvs, partial)
 
         overriden_fields = {k: v.mm_field
-                            for k, v in _field_overrides(cls).items()}
+                            for k, v in _overrides(cls).items()}
         generated_fields = {field for field in fields(cls)
                             if field.name not in overriden_fields}
         nested_fields = mm._make_nested_fields(generated_fields,

@@ -19,6 +19,14 @@ class _TimestampField(fields.Field):
         return _timestamp_to_dt_aware(value)
 
 
+class _IsoField(fields.Field):
+    def _serialize(self, value, attr, obj, **kwargs):
+        return value.isoformat()
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        return datetime.fromisoformat(value)
+
+
 _type_to_cons = {
     dict: fields.Dict,
     list: fields.List,

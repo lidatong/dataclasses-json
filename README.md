@@ -311,7 +311,7 @@ callable:
 - `mm_field`: a marshmallow field, which will affect the behavior of any operations involving `.schema()`
 
 Note that these hooks will be invoked regardless if you're using 
-`.to_json`/`dump`/`dumps
+`.to_json`/`dump`/`dumps`
 and `.from_json`/`load`/`loads`. So apply overrides judiciously, making sure to 
 carefully consider whether the interaction of the encode/decode/mm_field 
 overrides is consistent with what you expect!

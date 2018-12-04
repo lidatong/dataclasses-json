@@ -191,11 +191,11 @@ corresponding field is missing from the JSON you're decoding.
 ```python
 @dataclass_json
 @dataclass
-class Student
+class Student:
     id: int
     name: str = 'student'
 
-Student.from_json({"id": 1})  # Student(id=1, name='student')
+Student.from_json('{"id": 1}')  # Student(id=1, name='student')
 ```
 
 Notice `from_json` filled the field `name` with the specified default 'student'
@@ -214,7 +214,7 @@ class Tutor:
     id: int
     student: Optional[Student]
 
-Tutor.from_json({"id": 1})  # Tutor(id=1, student=None)
+Tutor.from_json('{"id": 1}')  # Tutor(id=1, student=None)
 ```
 
 Personally I recommend you leverage dataclass defaults rather than using 

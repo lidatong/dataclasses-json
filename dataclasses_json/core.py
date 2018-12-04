@@ -1,6 +1,8 @@
 import copy
 import json
 import warnings
+from enum import Enum
+
 from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass
 from datetime import datetime, timezone
 from typing import Collection, Mapping, Union
@@ -26,6 +28,8 @@ class _ExtendedEncoder(json.JSONEncoder):
             result = o.timestamp()
         elif _isinstance_safe(o, UUID):
             result = str(o)
+        elif _isinstance_safe(o, Enum):
+            result = o.value
         else:
             result = json.JSONEncoder.default(self, o)
         return result
@@ -127,7 +131,8 @@ def _decode_dataclass(cls, kvs, infer_missing):
 
 def _is_supported_generic(type_):
     not_str = not _issubclass_safe(type_, str)
-    return (not_str and _is_collection(type_)) or _is_optional(type_)
+    is_enum = _issubclass_safe(type_, Enum)
+    return (not_str and _is_collection(type_)) or _is_optional(type_) or is_enum
 
 
 def _decode_generic(type_, value, infer_missing):
@@ -149,6 +154,9 @@ def _decode_generic(type_, value, infer_missing):
             res = _get_type_cons(type_)(xs)
         except TypeError:
             res = type_(xs)
+    elif _issubclass_safe(type_, Enum):
+        # Convert to an Enum using the type as a constructor. Assumes a direct match is found.
+        res = type_(value)
     else:  # Optional
         type_arg = type_.__args__[0]
         if is_dataclass(type_arg) or is_dataclass(value):

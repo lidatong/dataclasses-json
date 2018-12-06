@@ -26,7 +26,7 @@ d1_json = '{"name": "name1", "my_enum": "str1"}'
 
 # Make sure the enum is set to the default value defined by MyEnum
 d2_using_default_value = DataWithEnum('name2')
-d2_json = '{"name": "name2"}'
+d2_json = '{"name": "name2", "my_enum": "str3"}'
 
 d3_int = DataWithEnum('name1', MyEnum.INT1)
 d3_int_json = '{"name": "name1", "my_enum": 1}'
@@ -54,10 +54,9 @@ class TestEncoder:
         assert d4_float.to_json() == d4_float_json, f'Actual: {d4_float.to_json()}, Expected: {d4_float_json}'
 
     def test_data_with_enum_default_value(self):
-        # FIXME: Need to implement: https://github.com/lidatong/dataclasses-json/issues/49
         d2_to_json = d2_using_default_value.to_json()
-        # assert d2_to_json == d2_json, f"A default value was not included in the JSON encode. " \
-        #                               f"Expected: {d2_json}, Actual: {d2_to_json}"
+        assert d2_to_json == d2_json, f"A default value was not included in the JSON encode. " \
+                                      f"Expected: {d2_json}, Actual: {d2_to_json}"
 
     def test_collection_with_enum(self):
         assert container.to_json() == container_json
@@ -80,10 +79,9 @@ class TestDecoder:
     def test_data_with_enum_default_value(self):
         d2_from_json = DataWithEnum.from_json(d2_json)
         assert d2_using_default_value == d2_from_json
-        # FIXME: Need to implement: https://github.com/lidatong/dataclasses-json/issues/49
         json_from_d2 = d2_from_json.to_json()
-        # assert json_from_d2 == d2_json, f"A default value was not included in the JSON encode. " \
-        #                                 f"Expected: {d2_json}, Actual: {json_from_d2}"
+        assert json_from_d2 == d2_json, f"A default value was not included in the JSON encode. " \
+                                        f"Expected: {d2_json}, Actual: {json_from_d2}"
 
     def test_collection_with_enum(self):
         container_from_json = EnumContainer.from_json(container_json)

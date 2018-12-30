@@ -54,7 +54,7 @@ def _make_nested_fields(fields_, dataclass_json_cls, infer_missing):
         else:
             warnings.warn(f"Nested dataclass field {field.name} of type "
                           f"{field.type} detected in "
-                          f"{cls.__name__} that is not an instance of "
+                          f"{dataclass_json_cls.__name__} that is not an instance of "
                           f"dataclass_json. Did you mean to recursively "
                           f"serialize this field? If so, make sure to "
                           f"augment {field.type} with either the "

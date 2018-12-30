@@ -17,6 +17,13 @@ from marshmallow import fields
 from dataclasses_json import DataClassJsonMixin, dataclass_json
 from dataclasses_json.mm import _IsoField
 
+if not hasattr(datetime, 'fromisoformat'):
+    # datetime.fromisoformat is only available in Python 3.7
+    # Use the back port if this function is not detected.
+    from backports.datetime_fromisoformat import MonkeyPatch
+
+    MonkeyPatch.patch_fromisoformat()
+
 A = TypeVar('A')
 
 
@@ -173,6 +180,7 @@ class DataClassWithIsoDatetime:
             'mm_field': fields.DateTime(format='iso')
         }})
 
+
 @dataclass_json
 @dataclass
 class DataClassWithCustomIsoDatetime:
@@ -182,7 +190,6 @@ class DataClassWithCustomIsoDatetime:
             'decoder': datetime.fromisoformat,
             'mm_field': _IsoField()
         }})
-
 
 
 @dataclass_json

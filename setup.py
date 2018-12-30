@@ -23,5 +23,10 @@ setup(
     extras_require={
         "dev": ["pytest", "ipython", "mypy", "hypothesis"]
     },
+    tests_require=[
+        "pytest",
+        "hypothesis",
+        "backports-datetime-fromisoformat;python_version<'3.7'",
+    ],
     include_package_data=True
 )

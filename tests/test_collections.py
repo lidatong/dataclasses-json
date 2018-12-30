@@ -1,6 +1,6 @@
 from collections import deque
 
-from tests.entities import (DataClassImmutableDefault,
+from tests.entities import (DataClassIntImmutableDefault,
                             DataClassMutableDefaultDict,
                             DataClassMutableDefaultList, DataClassWithDeque,
                             DataClassWithDict, DataClassWithDictInt,
@@ -54,7 +54,7 @@ class TestEncoder:
             MyCollection([1])).to_json() == '{"xs": [1]}'
 
     def test_immutable_default(self):
-        assert DataClassImmutableDefault().to_json() == '{"x": 0}'
+        assert DataClassIntImmutableDefault().to_json() == '{"x": 0}'
 
     def test_mutable_default_list(self):
         assert DataClassMutableDefaultList().to_json() == '{"xs": []}'
@@ -115,8 +115,8 @@ class TestDecoder:
                 DataClassWithMyCollection(MyCollection([1])))
 
     def test_immutable_default(self):
-        assert (DataClassImmutableDefault.from_json('{"x": 0}')
-                == DataClassImmutableDefault())
+        assert (DataClassIntImmutableDefault.from_json('{"x": 0}')
+                == DataClassIntImmutableDefault())
         assert (DataClassMutableDefaultList.from_json('{}', infer_missing=True)
                 == DataClassMutableDefaultList())
 

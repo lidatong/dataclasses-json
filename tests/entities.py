@@ -106,8 +106,13 @@ class DataClassXs(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassImmutableDefault(DataClassJsonMixin):
+class DataClassIntImmutableDefault(DataClassJsonMixin):
     x: int = 0
+
+
+@dataclass(frozen=True)
+class DataClassBoolImmutableDefault(DataClassJsonMixin):
+    x: bool = False
 
 
 @dataclass(frozen=True)

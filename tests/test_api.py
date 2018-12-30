@@ -3,12 +3,12 @@ from uuid import UUID
 
 import pytest
 
-from tests.entities import (DataClassImmutableDefault, DataClassJsonDecorator,
+from tests.entities import (DataClassIntImmutableDefault, DataClassJsonDecorator,
                             DataClassWithDataClass, DataClassWithDatetime,
                             DataClassWithList, DataClassWithOptional,
                             DataClassWithOptionalNested, DataClassWithUuid,
                             DataClassWithIsoDatetime, DataClassWithOverride,
-                            DataClassWithCustomIsoDatetime)
+                            DataClassWithCustomIsoDatetime, DataClassBoolImmutableDefault)
 
 
 class TestTypes:
@@ -147,12 +147,32 @@ class TestSchema:
                 == [DataClassWithDataClass(DataClassWithList([1]))])
 
     def test_loads_default(self):
-        assert (DataClassImmutableDefault.schema().loads('{}')
-                == DataClassImmutableDefault())
+        assert (DataClassIntImmutableDefault.schema().loads('{}')
+                == DataClassIntImmutableDefault())
+        assert (DataClassBoolImmutableDefault.schema().loads('{}')
+                == DataClassBoolImmutableDefault())
 
     def test_loads_default_many(self):
-        assert (DataClassImmutableDefault.schema().loads('[{}]', many=True)
-                == [DataClassImmutableDefault()])
+        assert (DataClassIntImmutableDefault.schema().loads('[{}]', many=True)
+                == [DataClassIntImmutableDefault()])
+        assert (DataClassBoolImmutableDefault.schema().loads('[{}]', many=True)
+                == [DataClassBoolImmutableDefault()])
+
+    def test_dumps_default(self):
+        d_int = DataClassIntImmutableDefault()
+        assert d_int.x == 0
+        assert DataClassIntImmutableDefault.schema().dumps(d_int) == '{"x": 0}'
+        d_bool = DataClassBoolImmutableDefault()
+        assert d_bool.x is False
+        assert DataClassBoolImmutableDefault.schema().dumps(d_bool) == '{"x": false}'
+
+    def test_dumps_default_many(self):
+        d_int = DataClassIntImmutableDefault()
+        assert d_int.x == 0
+        assert DataClassIntImmutableDefault.schema().dumps([d_int], many=True) == '[{"x": 0}]'
+        d_bool = DataClassBoolImmutableDefault()
+        assert d_bool.x is False
+        assert DataClassBoolImmutableDefault.schema().dumps([d_bool], many=True) == '[{"x": false}]'
 
     def test_loads_infer_missing(self):
         assert (DataClassWithOptional

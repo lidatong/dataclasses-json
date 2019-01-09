@@ -109,4 +109,4 @@ def _make_default_field(type_, default, cls):
                             f"instance?")
         arg_cons = _type_to_cons[type_arg]
         return cons(cls, arg_cons, missing=default)
-    return cons(cls, missing=default)
+    return cons(missing=default)

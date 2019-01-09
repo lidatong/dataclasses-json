@@ -282,7 +282,9 @@ class PersonSchema(Schema):
     name = fields.Str()
 ```
 
-## Overriding
+## Overriding / Extending
+
+#### Overriding
 
 For example, you might want to encode/decode `datetime` objects using ISO format
 rather than the default `timestamp`.
@@ -304,7 +306,28 @@ class DataClassWithIsoDatetime:
         }})
 ```
 
-As you can see, you can override the default codecs by providing a "hook" via a
+#### Extending
+
+Similarly, you might want to extend `dataclasses_json` to encode `date` objects.
+
+```python
+from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json
+from datetime import date
+from marshmallow import fields
+
+@dataclass_json
+@dataclass
+class DataClassWithIsoDatetime:
+    created_at: date = field(
+        metadata={'dataclasses_json': {
+            'encoder': date.isoformat,
+            'decoder': date.fromisoformat,
+            'mm_field': fields.DateTime(format='iso')
+        }})
+```
+
+As you can see, you can **override** or **extend** the default codecs by providing a "hook" via a 
 callable:
 - `encoder`: a callable, which will be invoked to convert the field value when encoding to JSON
 - `decoder`: a callable, which will be invoked to convert the JSON value when decoding from JSON
@@ -312,9 +335,8 @@ callable:
 
 Note that these hooks will be invoked regardless if you're using 
 `.to_json`/`dump`/`dumps`
-and `.from_json`/`load`/`loads`. So apply overrides judiciously, making sure to 
-carefully consider whether the interaction of the encode/decode/mm_field 
-overrides is consistent with what you expect!
+and `.from_json`/`load`/`loads`. So apply overrides / extensions judiciously, making sure to 
+carefully consider whether the interaction of the encode/decode/mm_field is consistent with what you expect!
 
 ## A larger example
 

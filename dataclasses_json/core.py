@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from typing import Collection, Mapping, Union
 from collections import namedtuple
 from uuid import UUID
+from decimal import Decimal
 
 from dataclasses_json.utils import (_get_type_cons, _is_collection, _is_mapping,
                                     _is_optional, _isinstance_safe,
@@ -27,6 +28,8 @@ class _ExtendedEncoder(json.JSONEncoder):
         elif _isinstance_safe(o, datetime):
             result = o.timestamp()
         elif _isinstance_safe(o, UUID):
+            result = str(o)
+        elif _isinstance_safe(o, Decimal):
             result = str(o)
         elif _isinstance_safe(o, Enum):
             result = o.value
@@ -124,6 +127,10 @@ def _decode_dataclass(cls, kvs, infer_missing):
             init_kwargs[field.name] = (field_value
                                        if isinstance(field_value, UUID)
                                        else UUID(field_value))
+        elif _issubclass_safe(field.type, Decimal):
+            init_kwargs[field.name] = (field_value
+                                       if isinstance(field_value, UUID)
+                                       else Decimal(field_value))
         else:
             init_kwargs[field.name] = field_value
     return cls(**init_kwargs)

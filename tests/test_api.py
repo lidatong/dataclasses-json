@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from uuid import UUID
+from decimal import Decimal
 
 import pytest
 
@@ -8,7 +9,8 @@ from tests.entities import (DataClassIntImmutableDefault, DataClassJsonDecorator
                             DataClassWithList, DataClassWithOptional,
                             DataClassWithOptionalNested, DataClassWithUuid,
                             DataClassWithIsoDatetime, DataClassWithOverride,
-                            DataClassWithCustomIsoDatetime, DataClassBoolImmutableDefault)
+                            DataClassWithDecimal, DataClassWithCustomIsoDatetime,
+                            DataClassBoolImmutableDefault)
 
 
 class TestTypes:
@@ -33,6 +35,17 @@ class TestTypes:
     iso = dt.isoformat()
     dc_iso_json = f'{{"created_at": "{iso}"}}'
     dc_iso = DataClassWithIsoDatetime(datetime.fromisoformat(iso))
+
+    dec = Decimal("0.04")
+    dec_ts_json = f'{{"price": "{dec}"}}'
+    print(dec_ts_json)
+    dec_ts = DataClassWithDecimal(dec)
+
+    def test_decimal_encode(self):
+        assert self.dec_ts.to_json() == self.dec_ts_json
+
+    def test_decimal_decode(self):
+        assert DataClassWithDecimal.from_json(self.dec_ts_json) == self.dec_ts
 
     def test_datetime_encode(self):
         assert (self.dc_ts.to_json() == self.dc_ts_json)

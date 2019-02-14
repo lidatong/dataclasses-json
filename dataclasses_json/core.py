@@ -30,7 +30,7 @@ class _ExtendedEncoder(json.JSONEncoder):
         elif _isinstance_safe(o, UUID):
             result = str(o)
         elif _isinstance_safe(o, Decimal):
-            result = str(o)
+            result = float(o)
         elif _isinstance_safe(o, Enum):
             result = o.value
         else:

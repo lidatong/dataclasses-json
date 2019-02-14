@@ -37,15 +37,15 @@ class TestTypes:
     dc_iso = DataClassWithIsoDatetime(datetime.fromisoformat(iso))
 
     dec = Decimal("0.04")
-    dec_ts_json = f'{{"price": "{dec}"}}'
-    print(dec_ts_json)
+    dec_ts_json_in = f'{{"price": "{dec}"}}'
+    dec_ts_json_out = f'{{"price": {dec}}}'
     dec_ts = DataClassWithDecimal(dec)
 
     def test_decimal_encode(self):
-        assert self.dec_ts.to_json() == self.dec_ts_json
+        assert self.dec_ts.to_json() == self.dec_ts_json_out
 
     def test_decimal_decode(self):
-        assert DataClassWithDecimal.from_json(self.dec_ts_json) == self.dec_ts
+        assert DataClassWithDecimal.from_json(self.dec_ts_json_in) == self.dec_ts
 
     def test_datetime_encode(self):
         assert (self.dc_ts.to_json() == self.dc_ts_json)

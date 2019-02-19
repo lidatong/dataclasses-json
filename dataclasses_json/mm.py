@@ -102,7 +102,7 @@ def _make_default_field(type_, default, cls):
     cons_type = (type_.__args__[0] if _is_optional(cons_type) else cons_type)
     cons = _type_to_cons[cons_type]
     if cons is fields.List:
-        type_arg = type_.___args__[0]
+        type_arg = type_.__args__[0]
         if type_arg not in _type_to_cons:
             raise TypeError(f"Unsupported {type_arg} detected. Is it "
                             f"a supported JSON type or dataclass_json "

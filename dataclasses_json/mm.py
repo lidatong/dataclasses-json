@@ -98,8 +98,10 @@ def _make_default_fields(fields_, cls, infer_missing):
 def _make_default_field(type_, default, cls):
     type_ = (type_.__args__[0] if _is_optional(type_) else type_)
     cons_type = type_
-    cons_type = (list if _is_nonstr_collection(cons_type) else cons_type)
-    cons_type = (dict if _is_mapping(cons_type) else cons_type)
+    if _is_mapping(cons_type):
+        cons_type = dict
+    elif _is_nonstr_collection(cons_type):
+        cons_type = list
     cons = _type_to_cons[cons_type]
     if cons is fields.List:
         type_arg = type_.__args__[0]

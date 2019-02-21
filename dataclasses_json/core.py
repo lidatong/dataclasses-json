@@ -60,6 +60,8 @@ def _override(kvs, overrides, attr):
 
 
 def _decode_dataclass(cls, kvs, infer_missing):
+    if isinstance(kvs, cls):
+        return kvs
     overrides = _overrides(cls)
     kvs = {} if kvs is None and infer_missing else kvs
     missing_fields = {field for field in fields(cls) if field.name not in kvs}

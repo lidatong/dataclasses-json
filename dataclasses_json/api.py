@@ -4,8 +4,6 @@ from dataclasses import fields
 from datetime import datetime
 from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 
-from marshmallow import Schema, post_load
-
 from dataclasses_json import mm
 from dataclasses_json.core import (_ExtendedEncoder, _asdict, _decode_dataclass,
                                    _overrides, _issubclass_safe,
@@ -78,50 +76,15 @@ class DataClassJsonMixin(abc.ABC):
                dump_only=(),
                partial=False,
                unknown=None):
-        Meta = type('Meta',
-                    (),
-                    {'fields': tuple(field.name for field in fields(cls))})
-
-        @post_load
-        def make_instance(self, kvs):
-            return _decode_dataclass(cls, kvs, partial)
-
-        overriden_fields = {k: v.mm_field
-                            for k, v in _overrides(cls).items()}
-        generated_fields = {field for field in fields(cls)
-                            if field.name not in overriden_fields}
-        nested_fields = mm._make_nested_fields(generated_fields,
-                                               DataClassJsonMixin,
-                                               infer_missing)
-        primitive_fields = [field for field in generated_fields
-                            if field.name not in nested_fields]
-        default_fields = mm._make_default_fields(primitive_fields,
-                                                 cls,
-                                                 infer_missing)
-
-        # datetime codec is different from what's specified by `fields.DateTime`
-        # so need to override what is inferred by `class Meta`
-        datetime_fields = {field.name: mm._TimestampField(cls)
-                           for field in primitive_fields
-                           if _issubclass_safe(field.type, datetime)
-                           and field.name not in default_fields}
-
-        DataClassSchema = type(f'{cls.__name__.capitalize()}Schema',
-                               (Schema,),
-                               {'Meta': Meta,
-                                f'make_{cls.__name__.lower()}': make_instance,
-                                **overriden_fields,
-                                **nested_fields,
-                                **default_fields,
-                                **datetime_fields})
-        return DataClassSchema(only=only,
-                               exclude=exclude,
-                               many=many,
-                               context=context,
-                               load_only=load_only,
-                               dump_only=dump_only,
-                               partial=partial,
-                               unknown=unknown)
+        Schema = mm.build_schema(cls, DataClassJsonMixin, infer_missing, partial)
+        return Schema(only=only,
+                      exclude=exclude,
+                      many=many,
+                      context=context,
+                      load_only=load_only,
+                      dump_only=dump_only,
+                      partial=partial,
+                      unknown=unknown)
 
 
 def dataclass_json(cls):

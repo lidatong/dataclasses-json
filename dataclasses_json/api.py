@@ -1,13 +1,10 @@
 import abc
 import json
-from dataclasses import fields
-from datetime import datetime
 from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 
-from dataclasses_json import mm
+from dataclasses_json.mm import build_schema
 from dataclasses_json.core import (_ExtendedEncoder, _asdict, _decode_dataclass,
-                                   _overrides, _issubclass_safe,
-                                   _override)
+                                   _overrides, _override)
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -76,7 +73,7 @@ class DataClassJsonMixin(abc.ABC):
                dump_only=(),
                partial=False,
                unknown=None):
-        Schema = mm.build_schema(cls, DataClassJsonMixin, infer_missing, partial)
+        Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
         return Schema(only=only,
                       exclude=exclude,
                       many=many,

@@ -1,14 +1,12 @@
-from datetime import datetime, timezone
 from uuid import UUID
 
 import pytest
 
 from tests.entities import (DataClassIntImmutableDefault, DataClassJsonDecorator,
-                            DataClassWithDataClass, DataClassWithDatetime,
-                            DataClassWithList, DataClassWithOptional,
-                            DataClassWithOptionalNested, DataClassWithUuid,
-                            DataClassWithIsoDatetime, DataClassWithOverride,
-                            DataClassWithCustomIsoDatetime, DataClassBoolImmutableDefault)
+                            DataClassWithDataClass, DataClassWithList,
+                            DataClassWithOptional, DataClassWithOptionalNested,
+                            DataClassWithUuid, DataClassWithOverride,
+                            DataClassBoolImmutableDefault)
 
 
 class TestTypes:
@@ -22,59 +20,6 @@ class TestTypes:
     def test_uuid_decode(self):
         assert (DataClassWithUuid.from_json(self.dc_uuid_json)
                 == DataClassWithUuid(UUID(self.uuid_s)))
-
-    dt = datetime(2018, 11, 17, 16, 55, 28, 456753, tzinfo=timezone.utc)
-    tz = timezone.utc
-
-    ts = dt.timestamp()
-    dc_ts_json = f'{{"created_at": {ts}}}'
-    dc_ts = DataClassWithDatetime(datetime.fromtimestamp(ts, tz=tz))
-
-    iso = dt.isoformat()
-    dc_iso_json = f'{{"created_at": "{iso}"}}'
-    dc_iso = DataClassWithIsoDatetime(datetime.fromisoformat(iso))
-
-    def test_datetime_encode(self):
-        assert (self.dc_ts.to_json() == self.dc_ts_json)
-
-    def test_datetime_decode(self):
-        assert (DataClassWithDatetime.from_json(self.dc_ts_json) == self.dc_ts)
-
-    def test_datetime_override_encode(self):
-        assert (self.dc_iso.to_json() == self.dc_iso_json)
-
-    def test_datetime_override_decode(self):
-        assert (DataClassWithIsoDatetime.from_json(
-            self.dc_iso_json) == self.dc_iso)
-
-    def test_datetime_schema_encode(self):
-        assert (DataClassWithDatetime.schema().dumps(self.dc_ts)
-                == self.dc_ts_json)
-
-    def test_datetime_schema_decode(self):
-        assert (DataClassWithDatetime.schema().loads(self.dc_ts_json)
-                == self.dc_ts)
-
-    def test_datetime_override_schema_encode(self):
-        assert (DataClassWithIsoDatetime.schema().dumps(self.dc_iso)
-                == self.dc_iso_json)
-
-    def test_datetime_override_schema_decode(self):
-        iso = DataClassWithIsoDatetime.schema().loads(self.dc_iso_json)
-        # FIXME bug in marshmallow currently returns datetime-naive instead of
-        # datetime-aware. also seems to drop microseconds?
-        # #955
-        iso.created_at = iso.created_at.replace(microsecond=456753,
-                                                tzinfo=self.tz)
-        assert (iso == self.dc_iso)
-
-    def test_datetime_custom_iso_fieldoverride_schema_encode(self):
-        assert (DataClassWithCustomIsoDatetime.schema().dumps(self.dc_iso)
-                == self.dc_iso_json)
-
-    def test_datetime_custom_iso_field_override_schema_decode(self):
-        iso = DataClassWithCustomIsoDatetime.schema().loads(self.dc_iso_json)
-        assert (iso == DataClassWithCustomIsoDatetime(self.dt))
 
 
 class TestInferMissing:

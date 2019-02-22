@@ -178,6 +178,7 @@ class DataClassWithIsoDatetime:
             'mm_field': fields.DateTime(format='iso')
         }})
 
+
 @dataclass_json
 @dataclass
 class DataClassWithCustomIsoDatetime:
@@ -189,8 +190,38 @@ class DataClassWithCustomIsoDatetime:
         }})
 
 
-
 @dataclass_json
 @dataclass
 class DataClassWithUuid:
     id: UUID
+
+
+@dataclass_json
+@dataclass
+class DataClassDefaultListStr:
+    value: List[str] = field(default_factory=list)
+
+
+@dataclass_json
+@dataclass
+class DataClassChild:
+    name: str
+
+
+@dataclass_json
+@dataclass
+class DataClassDefaultOptionalList:
+    children: Optional[List[DataClassChild]] = None
+
+
+@dataclass_json
+@dataclass
+class DataClassList:
+    children: List[DataClassChild]
+
+
+@dataclass_json
+@dataclass
+class DataClassOptional:
+    a: int
+    b: Optional[int]

@@ -35,8 +35,7 @@ class DataClassJsonMixin(abc.ABC):
                 default: Callable = None,
                 sort_keys: bool = False,
                 **kw) -> str:
-        kvs = _override(_asdict(self), _overrides(self), 'encoder')
-        return json.dumps(kvs,
+        return json.dumps(_asdict(self),
                           cls=_ExtendedEncoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,

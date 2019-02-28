@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import (Collection,
                     Deque,
                     Dict,
@@ -15,7 +14,6 @@ from uuid import UUID
 from marshmallow import fields
 
 from dataclasses_json import DataClassJsonMixin, dataclass_json
-from dataclasses_json.mm import _IsoField
 
 A = TypeVar('A')
 
@@ -155,12 +153,6 @@ class DataClassJsonDecorator:
 
 @dataclass_json
 @dataclass
-class DataClassWithDatetime:
-    created_at: datetime
-
-
-@dataclass_json
-@dataclass
 class DataClassWithOverride:
     id: float = field(
         metadata={'dataclasses_json': {
@@ -170,27 +162,36 @@ class DataClassWithOverride:
 
 @dataclass_json
 @dataclass
-class DataClassWithIsoDatetime:
-    created_at: datetime = field(
-        metadata={'dataclasses_json': {
-            'encoder': datetime.isoformat,
-            'decoder': datetime.fromisoformat,
-            'mm_field': fields.DateTime(format='iso')
-        }})
-
-@dataclass_json
-@dataclass
-class DataClassWithCustomIsoDatetime:
-    created_at: datetime = field(
-        metadata={'dataclasses_json': {
-            'encoder': datetime.isoformat,
-            'decoder': datetime.fromisoformat,
-            'mm_field': _IsoField()
-        }})
-
-
-
-@dataclass_json
-@dataclass
 class DataClassWithUuid:
     id: UUID
+
+
+@dataclass_json
+@dataclass
+class DataClassDefaultListStr:
+    value: List[str] = field(default_factory=list)
+
+
+@dataclass_json
+@dataclass
+class DataClassChild:
+    name: str
+
+
+@dataclass_json
+@dataclass
+class DataClassDefaultOptionalList:
+    children: Optional[List[DataClassChild]] = None
+
+
+@dataclass_json
+@dataclass
+class DataClassList:
+    children: List[DataClassChild]
+
+
+@dataclass_json
+@dataclass
+class DataClassOptional:
+    a: int
+    b: Optional[int]

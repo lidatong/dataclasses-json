@@ -35,7 +35,3 @@ jobs:
           command: |
             . venv/bin/activate
             pytest -rpP --verbose
-
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports

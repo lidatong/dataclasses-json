@@ -211,7 +211,7 @@ def _asdict(obj):
         for f in fields(obj):
             value = _asdict(getattr(obj, f.name))
             result.append((f.name, value))
-        return dict(result)
+        return _override(dict(result), _overrides(obj), 'encoder')
     elif isinstance(obj, Mapping):
         return dict((_asdict(k), _asdict(v)) for k, v in obj.items())
     elif isinstance(obj, Collection) and not isinstance(obj, str):

@@ -140,6 +140,9 @@ def _is_supported_generic(type_):
 def _decode_generic(type_, value, infer_missing):
     if value is None:
         res = value
+    elif _issubclass_safe(type_, Enum):
+        # Convert to an Enum using the type as a constructor. Assumes a direct match is found.
+        res = type_(value)
     elif _is_collection(type_):
         if _is_mapping(type_):
             k_type, v_type = type_.__args__
@@ -156,9 +159,6 @@ def _decode_generic(type_, value, infer_missing):
             res = _get_type_cons(type_)(xs)
         except TypeError:
             res = type_(xs)
-    elif _issubclass_safe(type_, Enum):
-        # Convert to an Enum using the type as a constructor. Assumes a direct match is found.
-        res = type_(value)
     else:  # Optional
         type_arg = type_.__args__[0]
         if is_dataclass(type_arg) or is_dataclass(value):

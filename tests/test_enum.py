@@ -13,6 +13,8 @@ class MyEnum(Enum):
     INT1 = 1
     FLOAT1 = 1.23
 
+class MyStrEnum(str, Enum):
+    STR1 = "str1"
 
 @dataclass_json
 @dataclass(frozen=True)
@@ -33,6 +35,13 @@ d3_int_json = '{"name": "name1", "my_enum": 1}'
 d4_float = DataWithEnum('name1', MyEnum.FLOAT1)
 d4_float_json = '{"name": "name1", "my_enum": 1.23}'
 
+@dataclass_json
+@dataclass(frozen=True)
+class DataWithStrEnum:
+    my_str_enum: MyStrEnum = MyEnum.STR1
+
+ds = DataWithStrEnum(MyStrEnum.STR1)
+ds_json = '{"my_str_enum": "str1"}'
 
 @dataclass_json
 @dataclass(frozen=True)
@@ -52,6 +61,9 @@ class TestEncoder:
         assert d1.to_json() == d1_json, f'Actual: {d1.to_json()}, Expected: {d1_json}'
         assert d3_int.to_json() == d3_int_json, f'Actual: {d3_int.to_json()}, Expected: {d3_int_json}'
         assert d4_float.to_json() == d4_float_json, f'Actual: {d4_float.to_json()}, Expected: {d4_float_json}'
+
+    def test_data_with_str_enum(self):
+        assert ds.to_json() == ds_json, f'Actual: {ds.to_json()}, Expected: {ds_json}'
 
     def test_data_with_enum_default_value(self):
         d2_to_json = d2_using_default_value.to_json()
@@ -75,6 +87,11 @@ class TestDecoder:
         d4_float_from_json = DataWithEnum.from_json(d4_float_json)
         assert d4_float == d4_float_from_json
         assert d4_float_from_json.to_json() == d4_float_json
+
+    def test_data_with_str_enum(self):
+        ds_from_json = DataWithStrEnum.from_json(ds_json)
+        assert ds == ds_from_json
+        assert ds_from_json.to_json() == ds_json
 
     def test_data_with_enum_default_value(self):
         d2_from_json = DataWithEnum.from_json(d2_json)

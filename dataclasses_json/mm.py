@@ -69,7 +69,7 @@ def build_type(type_, options, mixin, field, cls):
             return TYPES[origin](*args, **options)
         warnings.warn(f"Unknown type {type_} at {cls.__name__}.{field.name}: {field.type} "
                       f"It's advised to pass the correct marshmallow type to `mm_field`.")
-        return field.Field(**options)
+        return fields.Field(**options)
     return inner(type_, options)
 
 

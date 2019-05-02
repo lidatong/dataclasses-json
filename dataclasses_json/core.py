@@ -1,17 +1,21 @@
 import copy
 import json
 import warnings
-from enum import Enum
-
+from collections import namedtuple
 from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass
 from datetime import datetime, timezone
+from enum import Enum
 from typing import Collection, Mapping, Union
-from collections import namedtuple
 from uuid import UUID
 
-from dataclasses_json.utils import (_get_type_cons, _is_collection, _is_mapping,
-                                    _is_optional, _isinstance_safe,
-                                    _issubclass_safe)
+from dataclasses_json.utils import (
+    _get_type_cons,
+    _is_collection,
+    _is_mapping,
+    _is_optional,
+    _isinstance_safe,
+    _issubclass_safe,
+)
 
 JSON = Union[dict, list, str, int, float, bool, None]
 
@@ -75,6 +79,11 @@ def _decode_dataclass(cls, kvs, infer_missing):
 
     init_kwargs = {}
     for field in fields(cls):
+        # The field should be skipped from being added
+        # to init_kwargs as it's not intended as a constructor argument.
+        if not field.init:
+            continue
+
         field_value = kvs[field.name]
         if field_value is None and not _is_optional(field.type):
             warning = (f"value of non-optional type {field.name} detected "

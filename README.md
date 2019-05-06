@@ -373,9 +373,3 @@ boss_json = """
 assert boss.to_json(indent=4) == boss_json
 assert Boss.from_json(boss_json) == boss
 ```
-
-
-## Caveats
-Data Classes that contain forward references (e.g. recursive dataclasses) are
-not currently supported.
-

@@ -4,6 +4,8 @@ import warnings
 from collections import namedtuple
 from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass
 from datetime import datetime, timezone
+from typing import Collection, Mapping, Union, get_type_hints
+from collections import namedtuple
 from enum import Enum
 from typing import Collection, Mapping, Union
 from uuid import UUID
@@ -78,6 +80,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
             kvs[field.name] = None
 
     init_kwargs = {}
+    types = get_type_hints(cls)
     for field in fields(cls):
         # The field should be skipped from being added
         # to init_kwargs as it's not intended as a constructor argument.
@@ -85,7 +88,8 @@ def _decode_dataclass(cls, kvs, infer_missing):
             continue
 
         field_value = kvs[field.name]
-        if field_value is None and not _is_optional(field.type):
+        field_type = types[field.name]
+        if field_value is None and not _is_optional(field_type):
             warning = (f"value of non-optional type {field.name} detected "
                        f"when decoding {cls.__name__}")
             if infer_missing:
@@ -100,12 +104,12 @@ def _decode_dataclass(cls, kvs, infer_missing):
         elif (field.name in overrides
               and overrides[field.name].decoder is not None):
             # FIXME hack
-            if field.type is type(field_value):
+            if field_type is type(field_value):
                 init_kwargs[field.name] = field_value
             else:
                 init_kwargs[field.name] = overrides[field.name].decoder(
                     field_value)
-        elif is_dataclass(field.type):
+        elif is_dataclass(field_type):
             # FIXME this is a band-aid to deal with the value already being
             # serialized when handling nested marshmallow schema
             # proper fix is to investigate the marshmallow schema generation
@@ -113,15 +117,15 @@ def _decode_dataclass(cls, kvs, infer_missing):
             if is_dataclass(field_value):
                 value = field_value
             else:
-                value = _decode_dataclass(field.type, field_value,
+                value = _decode_dataclass(field_type, field_value,
                                           infer_missing)
             init_kwargs[field.name] = value
 
-        elif _is_supported_generic(field.type) and field.type != str:
-            init_kwargs[field.name] = _decode_generic(field.type,
+        elif _is_supported_generic(field_type) and field_type != str:
+            init_kwargs[field.name] = _decode_generic(field_type,
                                                       field_value,
                                                       infer_missing)
-        elif _issubclass_safe(field.type, datetime):
+        elif _issubclass_safe(field_type, datetime):
             # FIXME this is a hack to deal with mm already decoding
             # the issue is we want to leverage mm fields' missing argument
             # but need this for the object creation hook
@@ -131,7 +135,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
                 tz = datetime.now(timezone.utc).astimezone().tzinfo
                 dt = datetime.fromtimestamp(field_value, tz=tz)
             init_kwargs[field.name] = dt
-        elif _issubclass_safe(field.type, UUID):
+        elif _issubclass_safe(field_type, UUID):
             init_kwargs[field.name] = (field_value
                                        if isinstance(field_value, UUID)
                                        else UUID(field_value))

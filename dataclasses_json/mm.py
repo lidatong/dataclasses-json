@@ -3,13 +3,16 @@ import warnings
 
 from dataclasses import MISSING, is_dataclass, fields as dc_fields
 from datetime import datetime
+from decimal import Decimal
 from uuid import UUID
 
 from marshmallow import fields, Schema, post_load
 
-from dataclasses_json.core import _is_supported_generic, _decode_dataclass
+from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
+                                   _ExtendedEncoder)
 from dataclasses_json.utils import (_is_collection, _is_optional,
-                                    _issubclass_safe, _timestamp_to_dt_aware)
+                                    _issubclass_safe, _timestamp_to_dt_aware,
+                                    _is_new_type)
 
 
 
@@ -43,7 +46,8 @@ TYPES = {
     float: fields.Float,
     bool: fields.Bool,
     datetime: _TimestampField,
-    UUID: fields.UUID
+    UUID: fields.UUID,
+    Decimal: fields.Decimal
 }
 
 def build_type(type_, options, mixin, field, cls):
@@ -61,6 +65,12 @@ def build_type(type_, options, mixin, field, cls):
                               f"augment {type_} with either the "
                               f"`dataclass_json` decorator or mixin.")
                 return fields.Field(**options)
+
+        while True:
+            if not _is_new_type(type_):
+                break
+
+            type_ = type_.__supertype__
 
         origin = getattr(type_, '__origin__', type_)
         args = [inner(a, {}) for a in getattr(type_, '__args__', [])]
@@ -110,11 +120,18 @@ def build_schema(cls, mixin, infer_missing, partial):
     def make_instance(self, kvs):
         return _decode_dataclass(cls, kvs, partial)
 
+    def dumps(self, *args, **kwargs):
+        if 'cls' not in kwargs:
+            kwargs['cls'] = _ExtendedEncoder
+
+        return Schema.dumps(self, *args, **kwargs)
+
     schema_ = schema(cls, mixin, infer_missing)
     DataClassSchema = type(f'{cls.__name__.capitalize()}Schema',
                            (Schema,),
                            {'Meta': Meta,
                             f'make_{cls.__name__.lower()}': make_instance,
+                            'dumps': dumps,
                             **schema_})
 
     return DataClassSchema

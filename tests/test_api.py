@@ -154,6 +154,22 @@ class TestSchema:
         assert d_bool.x is False
         assert DataClassBoolImmutableDefault.schema().dumps([d_bool], many=True) == '[{"x": false}]'
 
+    def test_dumps_new_type(self):
+        raw_value = 'd1d61dd7-c036-47d3-a6ed-91cc2e885fc8'
+        id_value = Id(UUID(raw_value))
+
+        d_new_type = DataClassWithNewType(id_value)
+
+        assert DataClassWithNewType.schema().dumps(d_new_type) == f'{{"id": "{raw_value}"}}'
+
+    def test_dumps_nested_new_type(self):
+        raw_value = 'd1d61dd7-c036-47d3-a6ed-91cc2e885fc8'
+        id_value = ProductId(Id(UUID(raw_value)))
+
+        d_new_type = DataClassWithNestedNewType(id_value)
+
+        assert DataClassWithNestedNewType.schema().dumps(d_new_type) == f'{{"id": "{raw_value}"}}'
+
     def test_loads_infer_missing(self):
         assert (DataClassWithOptional
                 .schema(infer_missing=True)

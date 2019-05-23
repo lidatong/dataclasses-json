@@ -1,3 +1,4 @@
+import inspect
 import sys
 from datetime import datetime, timezone
 from typing import Collection, Mapping, Optional
@@ -63,11 +64,19 @@ def _isinstance_safe(o, t):
 
 def _issubclass_safe(cls, classinfo):
     try:
-        result = issubclass(cls, classinfo)
+        return issubclass(cls, classinfo)
     except Exception:
+        if _is_new_type(cls):
+            try:
+                return issubclass(cls.__supertype__, classinfo)
+            except Exception:
+                pass
+
         return False
-    else:
-        return result
+
+
+def _is_new_type(type_):
+    return inspect.isfunction(type_) and hasattr(type_, "__supertype__")
 
 
 def _is_optional(type_):

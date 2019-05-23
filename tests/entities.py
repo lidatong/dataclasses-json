@@ -1,9 +1,11 @@
 from dataclasses import dataclass, field
+from decimal import Decimal
 from typing import (Collection,
                     Deque,
                     Dict,
                     FrozenSet,
                     List,
+                    NewType,
                     Optional,
                     Set,
                     Tuple,
@@ -16,6 +18,17 @@ from marshmallow import fields
 from dataclasses_json import DataClassJsonMixin, dataclass_json
 
 A = TypeVar('A')
+Id = NewType('Id', UUID)
+
+
+@dataclass(frozen=True)
+class DataClassWithDecimal(DataClassJsonMixin):
+    x: Decimal
+
+
+@dataclass(frozen=True)
+class DataClassWithNewType(DataClassJsonMixin):
+    id: Id
 
 
 @dataclass(frozen=True)

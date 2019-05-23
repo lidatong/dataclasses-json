@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf8') as f:
 
 setup(
     name="dataclasses-json",
-    version="0.2.3",
+    version="0.2.4",
     packages=find_packages(exclude=("tests*",)),
     author="lidatong",
     author_email="charles.dt.li@gmail.com",
@@ -17,7 +17,7 @@ setup(
     keywords="dataclasses json",
     install_requires=[
         "dataclasses;python_version=='3.6'",
-        "marshmallow>=3.0.0b20"
+        "marshmallow>=3.0.0rc6"
     ],
     python_requires=">=3.6",
     extras_require={

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from uuid import UUID
 
 import pytest
@@ -6,12 +7,24 @@ from tests.entities import (DataClassIntImmutableDefault, DataClassJsonDecorator
                             DataClassWithDataClass, DataClassWithList,
                             DataClassWithOptional, DataClassWithOptionalNested,
                             DataClassWithUuid, DataClassWithOverride,
-                            DataClassBoolImmutableDefault)
+                            DataClassBoolImmutableDefault, DataClassWithDecimal,
+                            DataClassWithNewType, Id)
 
 
 class TestTypes:
+    decimal_s = "12345.12345"
+    dc_decimal_json = f'{{"x": "{decimal_s}"}}'
+
     uuid_s = 'd1d61dd7-c036-47d3-a6ed-91cc2e885fc8'
     dc_uuid_json = f'{{"id": "{uuid_s}"}}'
+
+    def test_decimal_encode(self):
+        assert (DataClassWithDecimal(Decimal(self.decimal_s)).to_json()
+                == self.dc_decimal_json)
+
+    def test_decimal_decode(self):
+        assert (DataClassWithDecimal.from_json(self.dc_decimal_json)
+                == DataClassWithDecimal(Decimal(self.decimal_s)))
 
     def test_uuid_encode(self):
         assert (DataClassWithUuid(UUID(self.uuid_s)).to_json()
@@ -20,6 +33,19 @@ class TestTypes:
     def test_uuid_decode(self):
         assert (DataClassWithUuid.from_json(self.dc_uuid_json)
                 == DataClassWithUuid(UUID(self.uuid_s)))
+
+
+class TestNewType:
+    new_type_s = 'd1d61dd7-c036-47d3-a6ed-91cc2e885fc8'
+    dc_new_type_json = f'{{"id": "{new_type_s}"}}'
+
+    def test_new_type_encode(self):
+        assert (DataClassWithNewType(Id(UUID(self.new_type_s))).to_json()
+                == self.dc_new_type_json)
+
+    def test_new_type_decode(self):
+        assert (DataClassWithNewType.from_json(self.dc_new_type_json)
+                == DataClassWithNewType(Id(UUID(self.new_type_s))))
 
 
 class TestInferMissing:

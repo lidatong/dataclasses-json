@@ -19,6 +19,7 @@ from dataclasses_json import DataClassJsonMixin, dataclass_json
 
 A = TypeVar('A')
 Id = NewType('Id', UUID)
+ProductId = NewType('ProductId', Id)
 
 
 @dataclass(frozen=True)
@@ -29,6 +30,11 @@ class DataClassWithDecimal(DataClassJsonMixin):
 @dataclass(frozen=True)
 class DataClassWithNewType(DataClassJsonMixin):
     id: Id
+
+
+@dataclass(frozen=True)
+class DataClassWithNestedNewType(DataClassJsonMixin):
+    id: ProductId
 
 
 @dataclass(frozen=True)

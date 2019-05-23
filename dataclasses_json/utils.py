@@ -66,12 +66,20 @@ def _issubclass_safe(cls, classinfo):
     try:
         return issubclass(cls, classinfo)
     except Exception:
-        if _is_new_type(cls):
-            try:
-                return issubclass(cls.__supertype__, classinfo)
-            except Exception:
-                pass
+        return (_is_new_type_subclass_safe(cls, classinfo)
+                if _is_new_type(cls)
+                else False)
 
+
+def _is_new_type_subclass_safe(cls, classinfo):
+    super_type = getattr(cls, "__supertype__", None)
+
+    if super_type:
+        return _is_new_type_subclass_safe(super_type, classinfo)
+
+    try:
+        return issubclass(cls, classinfo)
+    except Exception:
         return False
 
 

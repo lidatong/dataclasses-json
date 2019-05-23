@@ -8,7 +8,8 @@ from tests.entities import (DataClassIntImmutableDefault, DataClassJsonDecorator
                             DataClassWithOptional, DataClassWithOptionalNested,
                             DataClassWithUuid, DataClassWithOverride,
                             DataClassBoolImmutableDefault, DataClassWithDecimal,
-                            DataClassWithNewType, Id)
+                            DataClassWithNestedNewType, DataClassWithNewType,
+                            Id, ProductId)
 
 
 class TestTypes:
@@ -46,6 +47,14 @@ class TestNewType:
     def test_new_type_decode(self):
         assert (DataClassWithNewType.from_json(self.dc_new_type_json)
                 == DataClassWithNewType(Id(UUID(self.new_type_s))))
+
+    def test_nested_new_type_encode(self):
+        assert (DataClassWithNestedNewType(ProductId(Id(UUID(self.new_type_s)))).to_json()
+                == self.dc_new_type_json)
+
+    def test_nested_new_type_decode(self):
+        assert (DataClassWithNestedNewType.from_json(self.dc_new_type_json)
+                == DataClassWithNestedNewType(ProductId(Id(UUID(self.new_type_s)))))
 
 
 class TestInferMissing:

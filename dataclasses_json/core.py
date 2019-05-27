@@ -65,7 +65,32 @@ def _override(kvs, overrides, attr):
     return override_kvs
 
 
+class JsonTypeInfo:
+    def __init__(self, type_parameter):
+        self.type_parameter = type_parameter
+        self.type_map = {}
+
+    def add_subtype(self, key, subtype):
+        assert key not in self.type_map, "Duplicate key in type map: " + key
+        self.type_map[key] = subtype
+
+    def select_cls(self, cls, kvs):
+        # Todo: errors.
+        if self.type_parameter in kvs:
+          return self.type_map[kvs[self.type_parameter]]
+        return cls
+
+
+class JsonSubtypeInfo:
+    def __init__(self, typeinfo, key):
+        self.typeinfo = typeinfo
+        self.key = key
+
+
 def _decode_dataclass(cls, kvs, infer_missing):
+    if hasattr(cls, '_jsontypeinfo_'):
+      cls = cls._jsontypeinfo_.select_cls(cls, kvs)
+
     if isinstance(kvs, cls):
         return kvs
     overrides = _overrides(cls)
@@ -224,7 +249,13 @@ def _asdict(obj):
         for f in fields(obj):
             value = _asdict(getattr(obj, f.name))
             result.append((f.name, value))
-        return _override(dict(result), _overrides(obj), 'encoder')
+        d = _override(dict(result), _overrides(obj), 'encoder')
+
+        if hasattr(obj, '_jsonsubtypeinfo_'):
+            subtypeinfo = obj._jsonsubtypeinfo_
+            d[subtypeinfo.typeinfo.type_parameter] = subtypeinfo.key
+
+        return d
     elif isinstance(obj, Mapping):
         return dict((_asdict(k), _asdict(v)) for k, v in obj.items())
     elif isinstance(obj, Collection) and not isinstance(obj, str):

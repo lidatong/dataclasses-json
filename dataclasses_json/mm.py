@@ -5,15 +5,16 @@ from dataclasses import MISSING, is_dataclass, fields as dc_fields
 from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
+from enum import Enum
 
 from marshmallow import fields, Schema, post_load
+from marshmallow_enum import EnumField
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
                                    _ExtendedEncoder)
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
                                     _is_new_type)
-
 
 
 class _TimestampField(fields.Field):
@@ -50,6 +51,7 @@ TYPES = {
     Decimal: fields.Decimal
 }
 
+
 def build_type(type_, options, mixin, field, cls):
     def inner(type_, options):
         if is_dataclass(type_):
@@ -77,6 +79,10 @@ def build_type(type_, options, mixin, field, cls):
 
         if origin in TYPES:
             return TYPES[origin](*args, **options)
+
+        if _issubclass_safe(origin, Enum):
+            return EnumField(enum=origin, by_value=True, *args, **options)
+
         warnings.warn(f"Unknown type {type_} at {cls.__name__}.{field.name}: {field.type} "
                       f"It's advised to pass the correct marshmallow type to `mm_field`.")
         return fields.Field(**options)

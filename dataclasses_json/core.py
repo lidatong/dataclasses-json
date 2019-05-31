@@ -13,10 +13,10 @@ from dataclasses_json.utils import (
     _get_type_cons,
     _is_collection,
     _is_mapping,
+    _is_new_type,
     _is_optional,
     _isinstance_safe,
-    _issubclass_safe,
-)
+    _issubclass_safe)
 
 JSON = Union[dict, list, str, int, float, bool, None]
 
@@ -102,7 +102,15 @@ def _decode_dataclass(cls, kvs, infer_missing):
             else:
                 warnings.warn(f"`NoneType` object {warning}.", RuntimeWarning)
             init_kwargs[field.name] = field_value
-        elif (field.name in overrides
+            continue
+
+        while True:
+            if not _is_new_type(field_type):
+                break
+
+            field_type = field_type.__supertype__
+
+        if (field.name in overrides
               and overrides[field.name].decoder is not None):
             # FIXME hack
             if field_type is type(field_value):

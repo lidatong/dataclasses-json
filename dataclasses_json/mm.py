@@ -54,6 +54,12 @@ TYPES = {
 
 def build_type(type_, options, mixin, field, cls):
     def inner(type_, options):
+        while True:
+            if not _is_new_type(type_):
+                break
+
+            type_ = type_.__supertype__
+
         if is_dataclass(type_):
             if _issubclass_safe(type_, mixin):
                 options['field_many'] = bool(_is_supported_generic(field.type) and _is_collection(field.type))
@@ -67,12 +73,6 @@ def build_type(type_, options, mixin, field, cls):
                               f"augment {type_} with either the "
                               f"`dataclass_json` decorator or mixin.")
                 return fields.Field(**options)
-
-        while True:
-            if not _is_new_type(type_):
-                break
-
-            type_ = type_.__supertype__
 
         origin = getattr(type_, '__origin__', type_)
         args = [inner(a, {}) for a in getattr(type_, '__args__', [])]

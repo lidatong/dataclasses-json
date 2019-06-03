@@ -4,20 +4,19 @@ import warnings
 from collections import namedtuple
 from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass
 from datetime import datetime, timezone
-from typing import Collection, Mapping, Union, get_type_hints
-from collections import namedtuple
+from decimal import Decimal
 from enum import Enum
-from typing import Collection, Mapping, Union
+from typing import Collection, Mapping, Union, get_type_hints
 from uuid import UUID
 
 from dataclasses_json.utils import (
     _get_type_cons,
     _is_collection,
     _is_mapping,
+    _is_new_type,
     _is_optional,
     _isinstance_safe,
-    _issubclass_safe,
-)
+    _issubclass_safe)
 
 JSON = Union[dict, list, str, int, float, bool, None]
 
@@ -36,6 +35,8 @@ class _ExtendedEncoder(json.JSONEncoder):
             result = str(o)
         elif _isinstance_safe(o, Enum):
             result = o.value
+        elif _isinstance_safe(o, Decimal):
+            result = str(o)
         else:
             result = json.JSONEncoder.default(self, o)
         return result
@@ -101,7 +102,15 @@ def _decode_dataclass(cls, kvs, infer_missing):
             else:
                 warnings.warn(f"`NoneType` object {warning}.", RuntimeWarning)
             init_kwargs[field.name] = field_value
-        elif (field.name in overrides
+            continue
+
+        while True:
+            if not _is_new_type(field_type):
+                break
+
+            field_type = field_type.__supertype__
+
+        if (field.name in overrides
               and overrides[field.name].decoder is not None):
             # FIXME hack
             if field_type is type(field_value):
@@ -120,7 +129,6 @@ def _decode_dataclass(cls, kvs, infer_missing):
                 value = _decode_dataclass(field_type, field_value,
                                           infer_missing)
             init_kwargs[field.name] = value
-
         elif _is_supported_generic(field_type) and field_type != str:
             init_kwargs[field.name] = _decode_generic(field_type,
                                                       field_value,
@@ -135,6 +143,10 @@ def _decode_dataclass(cls, kvs, infer_missing):
                 tz = datetime.now(timezone.utc).astimezone().tzinfo
                 dt = datetime.fromtimestamp(field_value, tz=tz)
             init_kwargs[field.name] = dt
+        elif _issubclass_safe(field_type, Decimal):
+            init_kwargs[field.name] = (field_value
+                                       if isinstance(field_value, Decimal)
+                                       else Decimal(field_value))
         elif _issubclass_safe(field_type, UUID):
             init_kwargs[field.name] = (field_value
                                        if isinstance(field_value, UUID)

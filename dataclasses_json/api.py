@@ -42,7 +42,7 @@ class DataClassJsonMixin(abc.ABC):
                           **kw)
 
     @classmethod
-    def from_json(cls: A,
+    def from_json(cls: Type[A],
                   s: str,
                   *,
                   encoding=None,
@@ -60,17 +60,17 @@ class DataClassJsonMixin(abc.ABC):
         return _decode_dataclass(cls, kvs, infer_missing)
 
     @classmethod
-    def schema(cls,
+    def schema(cls: Type[A],
                *,
-               infer_missing=False,
+               infer_missing: bool = False,
                only=None,
                exclude=(),
-               many=False,
+               many: bool = False,
                context=None,
                load_only=(),
                dump_only=(),
-               partial=False,
-               unknown=None):
+               partial: bool = False,
+               unknown=None) -> MMSchema:
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
         return Schema(only=only,
                       exclude=exclude,

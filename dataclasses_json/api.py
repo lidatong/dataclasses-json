@@ -2,7 +2,7 @@ import abc
 import json
 from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union, Type
 
-from dataclasses_json.mm import build_schema, SchemaHelper
+from dataclasses_json.mm import build_schema, SchemaHelper, JsonData
 from dataclasses_json.core import _ExtendedEncoder, _asdict, _decode_dataclass
 
 A = TypeVar('A')
@@ -43,7 +43,7 @@ class DataClassJsonMixin(abc.ABC):
 
     @classmethod
     def from_json(cls: Type[A],
-                  s: str,
+                  s: JsonData,
                   *,
                   encoding=None,
                   parse_float=None,

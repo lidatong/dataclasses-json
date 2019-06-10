@@ -52,6 +52,7 @@ TYPES = {
 }
 
 T = typing.TypeVar('T')
+JsonData = typing.Union[str, bytes, bytearray]
 TEncoded = typing.Dict[str, typing.Any]
 TOneOrMulti = typing.Union[typing.List[T], T]
 TOneOrMultiEncoded = typing.Union[typing.List[TEncoded], TEncoded]
@@ -96,16 +97,16 @@ class SchemaHelper(Schema, typing.Generic[T]):
         pass
 
     @typing.overload
-    def loads(self, json_data: str,
+    def loads(self, json_data: JsonData,
               many: bool = True, partial: bool = None, unknown: bool = None,
               **kwargs) -> typing.List[T]:
         pass
     @typing.overload
-    def loads(self, json_data: str,
+    def loads(self, json_data: JsonData,
               many: None = None, partial: bool = None, unknown: bool = None,
               **kwargs) -> T:
         pass
-    def loads(self, json_data: str,
+    def loads(self, json_data: JsonData,
               many: bool = None, partial: bool = None, unknown: bool = None,
               **kwargs) -> TOneOrMulti:
         pass

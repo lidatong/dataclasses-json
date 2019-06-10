@@ -212,7 +212,7 @@ necessarily want to assign a default. In that case, you can use the
 @dataclass
 class Tutor:
     id: int
-    student: Optional[Student]
+    student: Optional[Student] = None
 
 Tutor.from_json('{"id": 1}')  # Tutor(id=1, student=None)
 ```

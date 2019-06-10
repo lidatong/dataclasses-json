@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Set
+from typing import Set, Optional
 
 from dataclasses_json import dataclass_json
 
@@ -9,6 +9,13 @@ from dataclasses_json import dataclass_json
 class Student:
     id: int = 0
     name: str = ""
+
+
+@dataclass_json
+@dataclass
+class Tutor:
+    id: int
+    student: Optional[Student] = None
 
 
 @dataclass_json
@@ -29,6 +36,7 @@ class Course:
 
 s1 = Student(1, 'student')
 s2 = Student(2, 'student')
+t = Tutor(id=1, student=None)
 p = Professor(1, 'professor')
 c = Course(1, 'course', p, {s1})
 
@@ -50,3 +58,8 @@ class TestEncoder:
         two = [s2_anon, s1_anon]
         actual = Student.schema().loads('[{"id": 1}, {"id": 2}]', many=True)
         assert actual == one or actual == two
+
+
+class TestDecoder:
+    def test_tutor(self):
+        assert Tutor.from_json('{"id": 1}') == t

@@ -18,7 +18,8 @@ setup(
     install_requires=[
         "dataclasses;python_version=='3.6'",
         "marshmallow>=3.0.0rc6",
-        "marshmallow-enum>=1.4.1"
+        "marshmallow-enum>=1.4.1",
+        "typing-inspect>=0.4.0"
     ],
     python_requires=">=3.6",
     extras_require={

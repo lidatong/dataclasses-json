@@ -15,7 +15,7 @@ class Student:
 @dataclass
 class Tutor:
     id: int
-    student: Optional[Student] = None
+    student: Optional[Student]
 
 
 @dataclass_json
@@ -62,4 +62,4 @@ class TestEncoder:
 
 class TestDecoder:
     def test_tutor(self):
-        assert Tutor.from_json('{"id": 1}') == t
+        assert Tutor.from_json('{"id": 1}', infer_missing=True) == t

@@ -1,8 +1,8 @@
 import abc
 import json
-from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union, Type
 
-from dataclasses_json.mm import build_schema
+from dataclasses_json.mm import build_schema, SchemaHelper, JsonData
 from dataclasses_json.core import _ExtendedEncoder, _asdict, _decode_dataclass
 
 A = TypeVar('A')
@@ -42,8 +42,8 @@ class DataClassJsonMixin(abc.ABC):
                           **kw)
 
     @classmethod
-    def from_json(cls: A,
-                  s: str,
+    def from_json(cls: Type[A],
+                  s: JsonData,
                   *,
                   encoding=None,
                   parse_float=None,
@@ -60,17 +60,17 @@ class DataClassJsonMixin(abc.ABC):
         return _decode_dataclass(cls, kvs, infer_missing)
 
     @classmethod
-    def schema(cls,
+    def schema(cls: Type[A],
                *,
-               infer_missing=False,
+               infer_missing: bool = False,
                only=None,
                exclude=(),
-               many=False,
+               many: bool = False,
                context=None,
                load_only=(),
                dump_only=(),
-               partial=False,
-               unknown=None):
+               partial: bool = False,
+               unknown=None) -> SchemaHelper[A]:
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
         return Schema(only=only,
                       exclude=exclude,

@@ -51,6 +51,66 @@ TYPES = {
     Decimal: fields.Decimal
 }
 
+T = typing.TypeVar('T')
+JsonData = typing.Union[str, bytes, bytearray]
+TEncoded = typing.Dict[str, typing.Any]
+TOneOrMulti = typing.Union[typing.List[T], T]
+TOneOrMultiEncoded = typing.Union[typing.List[TEncoded], TEncoded]
+class SchemaHelper(Schema, typing.Generic[T]):
+    def __init__(self, *args, **kwargs):
+        """
+        Raises exception because this class should not be inherited.
+        This class is helper only.
+        """
+
+        super().__init__(*args, **kwargs)
+        raise NotImplementedError()
+
+    @typing.overload
+    def dump(self, obj: typing.List[T], many: bool = None) -> typing.List[TEncoded]:
+        pass
+    @typing.overload
+    def dump(self, obj: T, many: bool = None) -> TEncoded:
+        pass
+    def dump(self, obj: TOneOrMulti, many: bool = None) -> TOneOrMultiEncoded:
+        pass
+
+    @typing.overload
+    def dumps(self, obj: typing.List[T], many: bool = None, *args, **kwargs) -> str:
+        pass
+    @typing.overload
+    def dumps(self, obj: T, many: bool = None, *args, **kwargs) -> str:
+        pass
+    def dumps(self, obj: TOneOrMulti, many: bool = None, *args, **kwargs) -> str:
+        pass
+
+    @typing.overload
+    def load(self, data: typing.List[TEncoded],
+             many: bool = True, partial: bool = None, unknown: bool = None) -> typing.List[T]:
+        pass
+    @typing.overload
+    def load(self, data: TEncoded,
+             many: None = None, partial: bool = None, unknown: bool = None) -> T:
+        pass
+    def load(self, data: TOneOrMultiEncoded,
+             many: bool = None, partial: bool = None, unknown: bool = None) -> TOneOrMulti:
+        pass
+
+    @typing.overload
+    def loads(self, json_data: JsonData,
+              many: bool = True, partial: bool = None, unknown: bool = None,
+              **kwargs) -> typing.List[T]:
+        pass
+    @typing.overload
+    def loads(self, json_data: JsonData,
+              many: None = None, partial: bool = None, unknown: bool = None,
+              **kwargs) -> T:
+        pass
+    def loads(self, json_data: JsonData,
+              many: bool = None, partial: bool = None, unknown: bool = None,
+              **kwargs) -> TOneOrMulti:
+        pass
+
 
 def build_type(type_, options, mixin, field, cls):
     def inner(type_, options):
@@ -116,8 +176,7 @@ def schema(cls, mixin, infer_missing):
             schema[field.name] = t
     return schema
 
-
-def build_schema(cls, mixin, infer_missing, partial):
+def build_schema(cls: typing.Type[T], mixin, infer_missing, partial) -> typing.Type[SchemaHelper[T]]:
     Meta = type('Meta',
                 (),
                 {'fields': tuple(field.name for field in dc_fields(cls))})
@@ -133,9 +192,9 @@ def build_schema(cls, mixin, infer_missing, partial):
         return Schema.dumps(self, *args, **kwargs)
 
     schema_ = schema(cls, mixin, infer_missing)
-    DataClassSchema = type(f'{cls.__name__.capitalize()}Schema',
-                           (Schema,),
-                           {'Meta': Meta,
+    DataClassSchema: typing.Type[SchemaHelper[T]] = type(f'{cls.__name__.capitalize()}Schema',
+                                                         (Schema,),
+                                                         {'Meta': Meta,
                             f'make_{cls.__name__.lower()}': make_instance,
                             'dumps': dumps,
                             **schema_})

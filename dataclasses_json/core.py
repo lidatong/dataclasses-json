@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Collection, Mapping, Union, get_type_hints
+from typing_inspect import is_union_type
 from uuid import UUID
 
 from dataclasses_json.utils import (
@@ -159,7 +160,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
 def _is_supported_generic(type_):
     not_str = not _issubclass_safe(type_, str)
     is_enum = _issubclass_safe(type_, Enum)
-    return (not_str and _is_collection(type_)) or _is_optional(type_) or is_enum
+    return (not_str and _is_collection(type_)) or _is_optional(type_) or is_union_type(type_) or is_enum
 
 
 def _decode_generic(type_, value, infer_missing):
@@ -184,13 +185,16 @@ def _decode_generic(type_, value, infer_missing):
             res = _get_type_cons(type_)(xs)
         except TypeError:
             res = type_(xs)
-    else:  # Optional
-        type_arg = type_.__args__[0]
-        if is_dataclass(type_arg) or is_dataclass(value):
-            res = _decode_dataclass(type_arg, value, infer_missing)
-        elif _is_supported_generic(type_arg):
-            res = _decode_generic(type_arg, value, infer_missing)
-        else:
+    else:  # Optional or Union
+        if _is_optional(type_) and len(type_.__args__) == 2:  # Optional
+            type_arg = type_.__args__[0]
+            if is_dataclass(type_arg) or is_dataclass(value):
+                res = _decode_dataclass(type_arg, value, infer_missing)
+            elif _is_supported_generic(type_arg):
+                res = _decode_generic(type_arg, value, infer_missing)
+            else:
+                res = value
+        else:  # Union (already decoded or unsupported 'from_json' used)
             res = value
     return res
 

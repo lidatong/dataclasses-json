@@ -7,6 +7,8 @@ from decimal import Decimal
 from uuid import UUID
 from enum import Enum
 
+from typing_inspect import is_union_type
+
 from marshmallow import fields, Schema, post_load
 from marshmallow_enum import EnumField
 
@@ -14,7 +16,7 @@ from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
                                    _ExtendedEncoder)
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
-                                    _is_new_type)
+                                    _is_new_type, _get_type_origin)
 
 
 class _TimestampField(fields.Field):
@@ -31,6 +33,50 @@ class _IsoField(fields.Field):
 
     def _deserialize(self, value, attr, data, **kwargs):
         return datetime.fromisoformat(value)
+
+
+class _UnionField(fields.Field):
+    def __init__(self, desc, cls, field, *args, **kwargs):
+        self.desc = desc
+        self.cls = cls
+        self.field = field
+        super().__init__(*args, **kwargs)
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        if self.allow_none and value is None:
+            return None
+        for type_, schema_ in self.desc.items():
+            if _issubclass_safe(type(value), type_):
+                if is_dataclass(value):
+                    res = schema_._serialize(value, attr, obj, **kwargs)
+                    res['__type'] = str(type_.__name__)
+                    return res
+                break
+            elif isinstance(value, _get_type_origin(type_)):
+                return schema_._serialize(value, attr, obj, **kwargs)
+        else:
+            warnings.warn(f'The type "{type(value).__name__}" (value: "{value}") '
+                          f'is not in the list of possible types of typing.Union '
+                          f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
+                          f'Value cannot be serialized properly.')
+        return super()._serialize(value, attr, obj, **kwargs)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        if isinstance(value, dict) and '__type' in value:
+            dc_name = value['__type']
+            for type_, schema_ in self.desc.items():
+                if is_dataclass(type_) and type_.__name__ == dc_name:
+                    del value['__type']
+                    return schema_._deserialize(value, attr, data, **kwargs)
+        for type_, schema_ in self.desc.items():
+            if isinstance(value, _get_type_origin(type_)):
+                return schema_._deserialize(value, attr, data, **kwargs)
+        else:
+            warnings.warn(f'The type "{type(value).__name__}" (value: "{value}") '
+                          f'is not in the list of possible types of typing.Union '
+                          f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
+                          f'Value cannot be deserialized properly.')
+        return super()._deserialize(value, attr, data, **kwargs)
 
 
 TYPES = {
@@ -135,13 +181,18 @@ def build_type(type_, options, mixin, field, cls):
                 return fields.Field(**options)
 
         origin = getattr(type_, '__origin__', type_)
-        args = [inner(a, {}) for a in getattr(type_, '__args__', [])]
+        args = [inner(a, {}) for a in getattr(type_, '__args__', []) if a is not type(None)]
 
         if origin in TYPES:
             return TYPES[origin](*args, **options)
 
         if _issubclass_safe(origin, Enum):
             return EnumField(enum=origin, by_value=True, *args, **options)
+
+        if is_union_type(type_):
+            union_types = [a for a in getattr(type_, '__args__', []) if a is not type(None)]
+            union_desc = dict(zip(union_types, args))
+            return _UnionField(union_desc, cls, field, **options)
 
         warnings.warn(f"Unknown type {type_} at {cls.__name__}.{field.name}: {field.type} "
                       f"It's advised to pass the correct marshmallow type to `mm_field`.")
@@ -168,8 +219,10 @@ def schema(cls, mixin, infer_missing):
 
             if _is_optional(type_):
                 options.setdefault(missing_key, None)
-                type_ = type_.__args__[0]
                 options['allow_none'] = True
+                if len(type_.__args__) == 2:
+                    # Union[str, int, None] is optional too, but it has more than 1 typed field.
+                    type_ = type_.__args__[0]
 
             t = build_type(type_, options, mixin, field, cls)
             #if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.

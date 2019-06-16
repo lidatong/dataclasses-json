@@ -1,5 +1,6 @@
 import typing
 import warnings
+import sys
 
 from dataclasses import MISSING, is_dataclass, fields as dc_fields
 from datetime import datetime
@@ -55,10 +56,11 @@ class _UnionField(fields.Field):
             elif isinstance(value, _get_type_origin(type_)):
                 return schema_._serialize(value, attr, obj, **kwargs)
         else:
-            warnings.warn(f'The type "{type(value).__name__}" (value: "{value}") '
-                          f'is not in the list of possible types of typing.Union '
-                          f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
-                          f'Value cannot be serialized properly.')
+            warnings.warn(
+                f'The type "{type(value).__name__}" (value: "{value}") '
+                f'is not in the list of possible types of typing.Union '
+                f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
+                f'Value cannot be serialized properly.')
         return super()._serialize(value, attr, obj, **kwargs)
 
     def _deserialize(self, value, attr, data, **kwargs):
@@ -72,10 +74,11 @@ class _UnionField(fields.Field):
             if isinstance(value, _get_type_origin(type_)):
                 return schema_._deserialize(value, attr, data, **kwargs)
         else:
-            warnings.warn(f'The type "{type(value).__name__}" (value: "{value}") '
-                          f'is not in the list of possible types of typing.Union '
-                          f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
-                          f'Value cannot be deserialized properly.')
+            warnings.warn(
+                f'The type "{type(value).__name__}" (value: "{value}") '
+                f'is not in the list of possible types of typing.Union '
+                f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
+                f'Value cannot be deserialized properly.')
         return super()._deserialize(value, attr, data, **kwargs)
 
 
@@ -97,65 +100,90 @@ TYPES = {
     Decimal: fields.Decimal
 }
 
-T = typing.TypeVar('T')
+A = typing.TypeVar('A')
 JsonData = typing.Union[str, bytes, bytearray]
 TEncoded = typing.Dict[str, typing.Any]
-TOneOrMulti = typing.Union[typing.List[T], T]
+TOneOrMulti = typing.Union[typing.List[A], A]
 TOneOrMultiEncoded = typing.Union[typing.List[TEncoded], TEncoded]
-class SchemaHelper(Schema, typing.Generic[T]):
-    def __init__(self, *args, **kwargs):
-        """
-        Raises exception because this class should not be inherited.
-        This class is helper only.
-        """
 
-        super().__init__(*args, **kwargs)
-        raise NotImplementedError()
+if sys.version_info >= (3, 7):
+    class SchemaF(Schema, typing.Generic[A]):
+        """Lift Schema into a type constructor"""
 
-    @typing.overload
-    def dump(self, obj: typing.List[T], many: bool = None) -> typing.List[TEncoded]:
-        pass
-    @typing.overload
-    def dump(self, obj: T, many: bool = None) -> TEncoded:
-        pass
-    def dump(self, obj: TOneOrMulti, many: bool = None) -> TOneOrMultiEncoded:
-        pass
+        def __init__(self, *args, **kwargs):
+            """
+            Raises exception because this class should not be inherited.
+            This class is helper only.
+            """
 
-    @typing.overload
-    def dumps(self, obj: typing.List[T], many: bool = None, *args, **kwargs) -> str:
-        pass
-    @typing.overload
-    def dumps(self, obj: T, many: bool = None, *args, **kwargs) -> str:
-        pass
-    def dumps(self, obj: TOneOrMulti, many: bool = None, *args, **kwargs) -> str:
-        pass
+            super().__init__(*args, **kwargs)
+            raise NotImplementedError()
 
-    @typing.overload
-    def load(self, data: typing.List[TEncoded],
-             many: bool = True, partial: bool = None, unknown: bool = None) -> typing.List[T]:
-        pass
-    @typing.overload
-    def load(self, data: TEncoded,
-             many: None = None, partial: bool = None, unknown: bool = None) -> T:
-        pass
-    def load(self, data: TOneOrMultiEncoded,
-             many: bool = None, partial: bool = None, unknown: bool = None) -> TOneOrMulti:
-        pass
+        @typing.overload
+        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[
+            TEncoded]:
+            pass
 
-    @typing.overload
-    def loads(self, json_data: JsonData,
-              many: bool = True, partial: bool = None, unknown: bool = None,
-              **kwargs) -> typing.List[T]:
-        pass
-    @typing.overload
-    def loads(self, json_data: JsonData,
-              many: None = None, partial: bool = None, unknown: bool = None,
-              **kwargs) -> T:
-        pass
-    def loads(self, json_data: JsonData,
-              many: bool = None, partial: bool = None, unknown: bool = None,
-              **kwargs) -> TOneOrMulti:
-        pass
+        @typing.overload
+        def dump(self, obj: A, many: bool = None) -> TEncoded:
+            pass
+
+        def dump(self, obj: TOneOrMulti,
+                 many: bool = None) -> TOneOrMultiEncoded:
+            pass
+
+        @typing.overload
+        def dumps(self, obj: typing.List[A], many: bool = None, *args,
+                  **kwargs) -> str:
+            pass
+
+        @typing.overload
+        def dumps(self, obj: A, many: bool = None, *args, **kwargs) -> str:
+            pass
+
+        def dumps(self, obj: TOneOrMulti, many: bool = None, *args,
+                  **kwargs) -> str:
+            pass
+
+        @typing.overload
+        def load(self, data: typing.List[TEncoded],
+                 many: bool = True, partial: bool = None,
+                 unknown: bool = None) -> \
+                typing.List[A]:
+            pass
+
+        @typing.overload
+        def load(self, data: TEncoded,
+                 many: None = None, partial: bool = None,
+                 unknown: bool = None) -> A:
+            pass
+
+        def load(self, data: TOneOrMultiEncoded,
+                 many: bool = None, partial: bool = None,
+                 unknown: bool = None) -> TOneOrMulti:
+            pass
+
+        @typing.overload
+        def loads(self, json_data: JsonData,
+                  many: bool = True, partial: bool = None, unknown: bool = None,
+                  **kwargs) -> typing.List[A]:
+            pass
+
+        @typing.overload
+        def loads(self, json_data: JsonData,
+                  many: None = None, partial: bool = None, unknown: bool = None,
+                  **kwargs) -> A:
+            pass
+
+        def loads(self, json_data: JsonData,
+                  many: bool = None, partial: bool = None, unknown: bool = None,
+                  **kwargs) -> TOneOrMulti:
+            pass
+
+
+    SchemaType = SchemaF[A]
+else:
+    SchemaType = Schema
 
 
 def build_type(type_, options, mixin, field, cls):
@@ -168,7 +196,9 @@ def build_type(type_, options, mixin, field, cls):
 
         if is_dataclass(type_):
             if _issubclass_safe(type_, mixin):
-                options['field_many'] = bool(_is_supported_generic(field.type) and _is_collection(field.type))
+                options['field_many'] = bool(
+                    _is_supported_generic(field.type) and _is_collection(
+                        field.type))
                 return fields.Nested(type_.schema(), **options)
             else:
                 warnings.warn(f"Nested dataclass field {field.name} of type "
@@ -181,7 +211,8 @@ def build_type(type_, options, mixin, field, cls):
                 return fields.Field(**options)
 
         origin = getattr(type_, '__origin__', type_)
-        args = [inner(a, {}) for a in getattr(type_, '__args__', []) if a is not type(None)]
+        args = [inner(a, {}) for a in getattr(type_, '__args__', []) if
+                a is not type(None)]
 
         if origin in TYPES:
             return TYPES[origin](*args, **options)
@@ -190,13 +221,16 @@ def build_type(type_, options, mixin, field, cls):
             return EnumField(enum=origin, by_value=True, *args, **options)
 
         if is_union_type(type_):
-            union_types = [a for a in getattr(type_, '__args__', []) if a is not type(None)]
+            union_types = [a for a in getattr(type_, '__args__', []) if
+                           a is not type(None)]
             union_desc = dict(zip(union_types, args))
             return _UnionField(union_desc, cls, field, **options)
 
-        warnings.warn(f"Unknown type {type_} at {cls.__name__}.{field.name}: {field.type} "
-                      f"It's advised to pass the correct marshmallow type to `mm_field`.")
+        warnings.warn(
+            f"Unknown type {type_} at {cls.__name__}.{field.name}: {field.type} "
+            f"It's advised to pass the correct marshmallow type to `mm_field`.")
         return fields.Field(**options)
+
     return inner(type_, options)
 
 
@@ -204,7 +238,8 @@ def schema(cls, mixin, infer_missing):
     schema = {}
     for field in dc_fields(cls):
         if 'dataclasses_json' in (field.metadata or {}):
-            schema[field.name] = field.metadata['dataclasses_json'].get('mm_field')
+            schema[field.name] = field.metadata['dataclasses_json'].get(
+                'mm_field')
         else:
             type_ = field.type
             options = {}
@@ -225,11 +260,15 @@ def schema(cls, mixin, infer_missing):
                     type_ = type_.__args__[0]
 
             t = build_type(type_, options, mixin, field, cls)
-            #if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
+            # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
             schema[field.name] = t
     return schema
 
-def build_schema(cls: typing.Type[T], mixin, infer_missing, partial) -> typing.Type[SchemaHelper[T]]:
+
+def build_schema(cls: typing.Type[A],
+                 mixin,
+                 infer_missing,
+                 partial) -> typing.Type[SchemaType]:
     Meta = type('Meta',
                 (),
                 {'fields': tuple(field.name for field in dc_fields(cls))})
@@ -245,11 +284,12 @@ def build_schema(cls: typing.Type[T], mixin, infer_missing, partial) -> typing.T
         return Schema.dumps(self, *args, **kwargs)
 
     schema_ = schema(cls, mixin, infer_missing)
-    DataClassSchema: typing.Type[SchemaHelper[T]] = type(f'{cls.__name__.capitalize()}Schema',
-                                                         (Schema,),
-                                                         {'Meta': Meta,
-                            f'make_{cls.__name__.lower()}': make_instance,
-                            'dumps': dumps,
-                            **schema_})
+    DataClassSchema: SchemaType = type(
+        f'{cls.__name__.capitalize()}Schema',
+        (Schema,),
+        {'Meta': Meta,
+         f'make_{cls.__name__.lower()}': make_instance,
+         'dumps': dumps,
+         **schema_})
 
     return DataClassSchema

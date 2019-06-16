@@ -2,7 +2,7 @@ import abc
 import json
 from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union, Type
 
-from dataclasses_json.mm import build_schema, SchemaHelper, JsonData
+from dataclasses_json.mm import build_schema, SchemaType, JsonData
 from dataclasses_json.core import _ExtendedEncoder, _asdict, _decode_dataclass
 
 A = TypeVar('A')
@@ -70,7 +70,7 @@ class DataClassJsonMixin(abc.ABC):
                load_only=(),
                dump_only=(),
                partial: bool = False,
-               unknown=None) -> SchemaHelper[A]:
+               unknown=None) -> SchemaType:
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
         return Schema(only=only,
                       exclude=exclude,

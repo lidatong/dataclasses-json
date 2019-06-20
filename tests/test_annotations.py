@@ -36,6 +36,10 @@ class TestAnnotations:
     j3: List[Dict[str, Any]] = sch.dump([u2, u3], many=True)
     j4: str = sch.dumps(u2)
 
+    j4_dict: Dict[str, Any] = json.loads(j4)
+    u4a: User = User.from_json(j4)
+    u4b: User = User.from_json(j4_dict)
+
     def filter_errors(self, errors: List[str]) -> List[str]:
         real_errors: List[str] = list()
         current_file = __file__

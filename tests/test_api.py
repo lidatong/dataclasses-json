@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 from uuid import UUID
 
@@ -30,6 +31,22 @@ class TestTypes:
     def test_uuid_encode(self):
         assert (DataClassWithUuid(UUID(self.uuid_s)).to_json()
                 == self.dc_uuid_json)
+
+    def test_uuid_decode(self):
+        assert (DataClassWithUuid.from_json(self.dc_uuid_json)
+                == DataClassWithUuid(UUID(self.uuid_s)))
+
+
+class TestDictDecode:
+    decimal_s = "12345.12345"
+    dc_decimal_json = {"x": decimal_s}
+
+    uuid_s = 'd1d61dd7-c036-47d3-a6ed-91cc2e885fc8'
+    dc_uuid_json = {"id": uuid_s}
+
+    def test_decimal_decode(self):
+        assert (DataClassWithDecimal.from_json(self.dc_decimal_json)
+                == DataClassWithDecimal(Decimal(self.decimal_s)))
 
     def test_uuid_decode(self):
         assert (DataClassWithUuid.from_json(self.dc_uuid_json)

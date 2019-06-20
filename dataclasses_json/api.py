@@ -1,6 +1,6 @@
 import abc
 import json
-from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union, Type
+from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union, Type, overload
 
 from dataclasses_json.mm import build_schema, SchemaType, JsonData
 from dataclasses_json.core import _ExtendedEncoder, _asdict, _decode_dataclass
@@ -42,6 +42,7 @@ class DataClassJsonMixin(abc.ABC):
                           **kw)
 
     @classmethod
+    @overload
     def from_json(cls: Type[A],
                   s: JsonData,
                   *,
@@ -51,12 +52,36 @@ class DataClassJsonMixin(abc.ABC):
                   parse_constant=None,
                   infer_missing=False,
                   **kw) -> A:
-        kvs = json.loads(s,
-                         encoding=encoding,
-                         parse_float=parse_float,
-                         parse_int=parse_int,
-                         parse_constant=parse_constant,
-                         **kw)
+        pass
+
+    @classmethod
+    @overload
+    def from_json(cls: Type[A],
+                  s: dict,
+                  *,
+                  infer_missing=False,
+                  ) -> A:
+        pass
+
+    @classmethod
+    def from_json(cls: Type[A],
+                  s: Union[JsonData, dict],
+                  *,
+                  encoding=None,
+                  parse_float=None,
+                  parse_int=None,
+                  parse_constant=None,
+                  infer_missing=False,
+                  **kw) -> A:
+        if (isinstance(s, dict)):
+            kvs = s
+        else:
+            kvs = json.loads(s,
+                             encoding=encoding,
+                             parse_float=parse_float,
+                             parse_int=parse_int,
+                             parse_constant=parse_constant,
+                             **kw)
         return _decode_dataclass(cls, kvs, infer_missing)
 
     @classmethod

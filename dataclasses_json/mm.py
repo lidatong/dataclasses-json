@@ -284,7 +284,7 @@ def build_schema(cls: typing.Type[A],
         return Schema.dumps(self, *args, **kwargs)
 
     schema_ = schema(cls, mixin, infer_missing)
-    DataClassSchema: SchemaType = type(
+    DataClassSchema: typing.Type[SchemaType] = type(
         f'{cls.__name__.capitalize()}Schema',
         (Schema,),
         {'Meta': Meta,

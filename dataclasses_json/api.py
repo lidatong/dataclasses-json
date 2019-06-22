@@ -1,9 +1,10 @@
 import abc
 import json
-from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union, Type
+from typing import (Any, Callable, List, Optional, Tuple, Type, TypeVar, Union)
 
-from dataclasses_json.mm import build_schema, SchemaType, JsonData
-from dataclasses_json.core import _ExtendedEncoder, _asdict, _decode_dataclass
+from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
+                                   _decode_dataclass)
+from dataclasses_json.mm import JsonData, SchemaType, build_schema
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -57,7 +58,17 @@ class DataClassJsonMixin(abc.ABC):
                          parse_int=parse_int,
                          parse_constant=parse_constant,
                          **kw)
+        return cls.from_dict(kvs, infer_missing=infer_missing)
+
+    @classmethod
+    def from_dict(cls: Type[A],
+                  kvs: Json,
+                  *,
+                  infer_missing=False) -> A:
         return _decode_dataclass(cls, kvs, infer_missing)
+
+    def to_dict(self):
+        return _asdict(self)
 
     @classmethod
     def schema(cls: Type[A],
@@ -87,6 +98,8 @@ def dataclass_json(cls):
     # unwrap and rewrap classmethod to tag it to cls rather than the literal
     # DataClassJsonMixin ABC
     cls.from_json = classmethod(DataClassJsonMixin.from_json.__func__)
+    cls.to_dict = DataClassJsonMixin.to_dict
+    cls.from_dict = classmethod(DataClassJsonMixin.from_dict.__func__)
     cls.schema = classmethod(DataClassJsonMixin.schema.__func__)
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)

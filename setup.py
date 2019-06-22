@@ -23,7 +23,7 @@ setup(
     ],
     python_requires=">=3.6",
     extras_require={
-        "dev": ["pytest", "ipython", "mypy", "hypothesis"]
+        "dev": ["pytest", "ipython", "mypy>=0.710", "hypothesis"]
     },
     include_package_data=True
 )

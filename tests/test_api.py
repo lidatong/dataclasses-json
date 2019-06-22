@@ -45,11 +45,11 @@ class TestDictDecode:
     dc_uuid_json = {"id": uuid_s}
 
     def test_decimal_decode(self):
-        assert (DataClassWithDecimal.from_json(self.dc_decimal_json)
+        assert (DataClassWithDecimal.from_dict(self.dc_decimal_json)
                 == DataClassWithDecimal(Decimal(self.decimal_s)))
 
     def test_uuid_decode(self):
-        assert (DataClassWithUuid.from_json(self.dc_uuid_json)
+        assert (DataClassWithUuid.from_dict(self.dc_uuid_json)
                 == DataClassWithUuid(UUID(self.uuid_s)))
 
 

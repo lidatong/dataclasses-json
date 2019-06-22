@@ -2,7 +2,7 @@ import copy
 import json
 import warnings
 from collections import namedtuple
-from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass
+from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass, asdict
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
@@ -19,12 +19,12 @@ from dataclasses_json.utils import (
     _isinstance_safe,
     _issubclass_safe)
 
-JSON = Union[dict, list, str, int, float, bool, None]
+Json = Union[dict, list, str, int, float, bool, None]
 
 
 class _ExtendedEncoder(json.JSONEncoder):
-    def default(self, o) -> JSON:
-        result: JSON
+    def default(self, o) -> Json:
+        result: Json
         if _isinstance_safe(o, Collection):
             if _isinstance_safe(o, Mapping):
                 result = dict(o)

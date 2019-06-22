@@ -9,6 +9,7 @@ from io import StringIO
 from mypy.main import main as mypy_main
 from typing import List, Dict, Any, Tuple, NewType, Optional, Union
 
+
 @dataclass
 class User(DataClassJsonMixin):
     id: str
@@ -20,13 +21,15 @@ LineNumber = NewType('LineNumber', int)
 ErrorLevel = NewType('ErrorLevel', str)
 ErrorMessage = NewType('ErrorMessage', str)
 
+
 class TestAnnotations:
     u: User = User('ax9ssFxH')
     j: str = u.to_json()
     u2: User = User.from_json(j)
     u2a: User = User.from_json(j.encode())
 
-    jMany = [{"id":"115412", "name": "Peter"}, {"id": "atxXxGhg", "name": "Parker"}]
+    jMany = [{"id": "115412", "name": "Peter"},
+             {"id": "atxXxGhg", "name": "Parker"}]
     sch = User.schema()
     users1: List[User] = sch.loads(json.dumps(jMany), many=True)
     n: str = users1[1].name
@@ -38,7 +41,7 @@ class TestAnnotations:
 
     j4_dict: Dict[str, Any] = json.loads(j4)
     u4a: User = User.from_json(j4)
-    u4b: User = User.from_json(j4_dict)
+    u4b: User = User.from_dict(j4_dict)
 
     def filter_errors(self, errors: List[str]) -> List[str]:
         real_errors: List[str] = list()
@@ -61,7 +64,8 @@ class TestAnnotations:
         return real_errors
 
     def parse_trace_line(self, line: str) -> \
-            Tuple[Optional[Filename], Optional[LineNumber], Optional[ErrorLevel], ErrorMessage]:
+            Tuple[Optional[Filename], Optional[LineNumber], Optional[
+                ErrorLevel], ErrorMessage]:
         # Define variables
         file_name: Union[str, Filename, None]
         line_no: Union[str, LineNumber, None]
@@ -92,7 +96,6 @@ class TestAnnotations:
 
         msg = ErrorMessage(msg)
         return file_name, line_no, level, msg
-
 
     def test_type_hints(self):
         text_io = StringIO('')

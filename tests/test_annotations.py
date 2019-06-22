@@ -36,6 +36,10 @@ class TestAnnotations:
     j3: List[Dict[str, Any]] = sch.dump([u2, u3], many=True)
     j4: str = sch.dumps(u2)
 
+    j4_dict: Dict[str, Any] = json.loads(j4)
+    u4a: User = User.from_json(j4)
+    u4b: User = User.from_json(j4_dict)
+
     def filter_errors(self, errors: List[str]) -> List[str]:
         real_errors: List[str] = list()
         current_file = __file__
@@ -91,15 +95,11 @@ class TestAnnotations:
 
 
     def test_type_hints(self):
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
         text_io = StringIO('')
         try:
             # mypy.main uses sys.stdout for printing
             # We override it to catch error messages
-            sys.stdout = text_io
-            sys.stderr = text_io
-            mypy_main(None, [ __file__  ])
+            mypy_main(None, text_io, text_io, [__file__])
         except SystemExit:
             # mypy.main could return errors found inside other files.
             # filter_errors() will filter out all errors outside this file.
@@ -107,9 +107,6 @@ class TestAnnotations:
             errors = self.filter_errors(errors)
         else:
             errors = None
-        finally:
-            sys.stdout = old_stdout
-            sys.stderr = old_stderr
 
         # To prevent large errors raise error out of try/except
         if (errors):

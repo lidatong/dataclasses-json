@@ -2,6 +2,36 @@
 
 This library provides a simple API for encoding and decoding [dataclasses](https://docs.python.org/3/library/dataclasses.html) to and from JSON.
 
+It's very quick to get started. Here's a quick example:
+
+```python
+# after running `pip install dataclasses-json`
+
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
+
+@dataclass_json
+@dataclass
+class SimpleExample:
+    int_field: int
+
+simple_example = SimpleExample(1)
+
+# Encoding to JSON. Note the output is a string, not a dictionary.
+simple_example.to_json()  # {"int_field": 1}
+
+# Decoding from JSON. Note the input is a string, not a dictionary.
+SomeData.from_json('{"int_field": 1}')  # SimpleExample(1)
+
+# Encoding to a (JSON) dict
+my_number.to_dict()  # {'int_field': 1}
+
+# Decoding from a (JSON) dict
+MyNumber.from_dict({'int_field': 1})  # SimpleExample(1)
+```
+
+## Supported types
+
 It's recursive (see caveats below), so you can easily work with nested dataclasses.
 In addition to the supported types in the 
 [py to JSON table](https://docs.python.org/3/library/json.html#py-to-json-table), this library supports the following:
@@ -156,21 +186,21 @@ encoder/decoder methods, ie. `.load(...)`/`.dump(...)`.
 
 ```python
 person = Person('lidatong')
-Person.schema().dump(person)  # {"name": "lidatong"}
+person.to_dict()  # {'name': 'lidatong'}
 ```
 
 **Encode into a list of Python dictionaries**
 
 ```python
 people = [Person('lidatong')]
-Person.schema().dump(people, many=True)  # [{"name": "lidatong"}]
+Person.schema().dump(people, many=True)  # [{'name': 'lidatong'}]
 ```
 
 **Decode a dictionary into a single dataclass instance**
 
 ```python
-person_dict = {"name": "lidatong"}
-Person.schema().load(person_dict)  # Person(name='lidatong')
+person_dict = {'name': 'lidatong'}
+Person.from_dict(person_dict)  # Person(name='lidatong')
 ```
 
 **Decode a list of dictionaries into a list of dataclass instances**

@@ -13,7 +13,7 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     url='https://github.com/lidatong/dataclasses-json',
-    license='Unlicense',
+    license='MIT',
     keywords='dataclasses json',
     install_requires=[
         'dataclasses;python_version=="3.6"',

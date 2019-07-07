@@ -1,9 +1,10 @@
 import abc
 import json
 from typing import (Any, Callable, List, Optional, Tuple, Type, TypeVar, Union)
+from enum import Enum
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
-                                   _decode_dataclass)
+                                   _decode_dataclass, LetterCase)
 from dataclasses_json.mm import JsonData, SchemaType, build_schema
 
 A = TypeVar('A')

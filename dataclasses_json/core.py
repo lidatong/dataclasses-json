@@ -2,13 +2,15 @@ import copy
 import json
 import warnings
 from collections import namedtuple
-from dataclasses import MISSING, _is_dataclass_instance, fields, is_dataclass, asdict
+from dataclasses import (MISSING, _is_dataclass_instance, fields, is_dataclass)
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Collection, Mapping, Union, get_type_hints
-from typing_inspect import is_union_type
 from uuid import UUID
+
+from stringcase import camelcase, spinalcase, snakecase
+from typing_inspect import is_union_type
 
 from dataclasses_json.utils import (
     _get_type_cons,
@@ -20,6 +22,12 @@ from dataclasses_json.utils import (
     _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
+
+
+class LetterCase(Enum):
+    CAMEL = camelcase
+    KEBAB = spinalcase
+    SNAKE = snakecase
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -43,9 +51,9 @@ class _ExtendedEncoder(json.JSONEncoder):
         return result
 
 
-def _overrides(dc):
+def _user_overrides(dc):
     overrides = {}
-    attrs = ['encoder', 'decoder', 'mm_field']
+    attrs = ['encoder', 'decoder', 'mm_field', 'letter_case']
     FieldOverride = namedtuple('FieldOverride', attrs)
     for field in fields(dc):
         # if the field has dataclasses_json metadata, we cons a FieldOverride
@@ -57,21 +65,40 @@ def _overrides(dc):
     return overrides
 
 
-def _override(kvs, overrides, attr):
+def _encode_overrides(kvs, overrides):
     override_kvs = {}
     for k, v in kvs.items():
-        if k in overrides and getattr(overrides[k], attr) is not None:
-            override_kvs[k] = getattr(overrides[k], attr)(v)
+        if k in overrides:
+            letter_case = overrides[k].letter_case
+            encode_k = letter_case(k) if letter_case is not None else k
+
+            encoder = overrides[k].encoder
+            override_kvs[encode_k] = encoder(v) if encoder is not None else v
         else:
             override_kvs[k] = v
     return override_kvs
 
 
+def _decode_letter_case_overrides(field_names, overrides):
+    """Override letter case of field names for encode/decode"""
+    names = {}
+    for field_name in field_names:
+        field_override = overrides.get(field_name)
+        if field_override is not None:
+            letter_case = field_override.letter_case
+            if letter_case is not None:
+                names[letter_case(field_name)] = field_name
+    return names
+
+
 def _decode_dataclass(cls, kvs, infer_missing):
     if isinstance(kvs, cls):
         return kvs
-    overrides = _overrides(cls)
+    overrides = _user_overrides(cls)
     kvs = {} if kvs is None and infer_missing else kvs
+    field_names = [field.name for field in fields(cls)]
+    decode_names = _decode_letter_case_overrides(field_names, overrides)
+    kvs = {decode_names.get(k, k): v for k, v in kvs.items()}
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
     for field in missing_fields:
         if field.default is not MISSING:
@@ -112,7 +139,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
             field_type = field_type.__supertype__
 
         if (field.name in overrides
-              and overrides[field.name].decoder is not None):
+                and overrides[field.name].decoder is not None):
             # FIXME hack
             if field_type is type(field_value):
                 init_kwargs[field.name] = field_value
@@ -160,7 +187,8 @@ def _decode_dataclass(cls, kvs, infer_missing):
 def _is_supported_generic(type_):
     not_str = not _issubclass_safe(type_, str)
     is_enum = _issubclass_safe(type_, Enum)
-    return (not_str and _is_collection(type_)) or _is_optional(type_) or is_union_type(type_) or is_enum
+    return (not_str and _is_collection(type_)) or _is_optional(
+        type_) or is_union_type(type_) or is_enum
 
 
 def _decode_generic(type_, value, infer_missing):
@@ -237,10 +265,10 @@ def _asdict(obj):
     """
     if _is_dataclass_instance(obj):
         result = []
-        for f in fields(obj):
-            value = _asdict(getattr(obj, f.name))
-            result.append((f.name, value))
-        return _override(dict(result), _overrides(obj), 'encoder')
+        for field in fields(obj):
+            value = _asdict(getattr(obj, field.name))
+            result.append((field.name, value))
+        return _encode_overrides(dict(result), _user_overrides(obj))
     elif isinstance(obj, Mapping):
         return dict((_asdict(k), _asdict(v)) for k, v in obj.items())
     elif isinstance(obj, Collection) and not isinstance(obj, str):

@@ -1,2 +1,3 @@
 from dataclasses_json.api import (DataClassJsonMixin,
-                                  dataclass_json)
+                                  dataclass_json,
+                                  LetterCase)

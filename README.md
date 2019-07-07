@@ -103,6 +103,7 @@ invisible in usage.
 ## How do I...
 
 
+
 ### Use my dataclass with JSON arrays or objects?
 
 ```python
@@ -175,8 +176,6 @@ our `Person` that we want to decode (`response_dict['response']`).
 Second, we load in the dictionary using `Person.schema().load`.
 
 
-
-
 ### Encode or decode into Python lists/dictionaries rather than JSON?
 
 This can be by calling `.schema()` and then using the corresponding 
@@ -209,6 +208,33 @@ Person.from_dict(person_dict)  # Person(name='lidatong')
 people_dicts = [{"name": "lidatong"}]
 Person.schema().load(people_dicts, many=True)  # [Person(name='lidatong')]
 ```
+
+### Encode or decode from camelCase (or kebab-case)?
+
+JSON letter case by convention is camelCase, in Python members are by convention snake_case.
+
+```python
+from dataclasses import dataclass, field
+
+from dataclasses_json import LetterCase, dataclass_json
+
+
+@dataclass_json
+@dataclass
+class Person:
+    given_name: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.CAMEL
+        }}
+    )
+    
+Person('Alice').to_json()  # '{"givenName": "Alice"}'
+Person.from_json('{"givenName": "Alice"}')  # Person('Alice')
+```
+
+**This library assumes your field follows the Python convention of snake_case naming.**
+If your field is not `snake_case` to begin with and you attempt to parameterize `LetterCase`, 
+the behavior of encoding/decoding is undefined (most likely it will result in subtle bugs).
 
 ### Handle missing or optional field values when decoding?
 
@@ -368,11 +394,13 @@ Note that these hooks will be invoked regardless if you're using
 and `.from_json`/`load`/`loads`. So apply overrides / extensions judiciously, making sure to 
 carefully consider whether the interaction of the encode/decode/mm_field is consistent with what you expect!
 
+
 ## A larger example
 
 ```python
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
+
 from typing import List
 
 @dataclass_json

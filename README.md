@@ -416,6 +416,43 @@ and `.from_json`/`load`/`loads`. So apply overrides / extensions judiciously, ma
 carefully consider whether the interaction of the encode/decode/mm_field is consistent with what you expect!
 
 
+#### What if I have other dataclass field extensions that rely on `metadata`
+
+All the `dataclasses_json.config` does is return a mapping, namespaced under the key `'dataclasses_json'`.
+
+Say there's another module, `other_dataclass_package` that uses metadata. Here's how you solve your problem:
+
+```python
+metadata = {'other_dataclass_package': 'some metadata...'}  # pre-existing metadata for another dataclass package
+dataclass_json_config = config(
+            encoder=datetime.isoformat,
+            decoder=datetime.fromisoformat,
+            mm_field=fields.DateTime(format='iso')
+        )
+metadata.update(dataclass_json_config)
+
+@dataclass_json
+@dataclass
+class DataClassWithIsoDatetime:
+    created_at: datetime = field(metadata=metadata)
+```
+
+You can also manually specify the dataclass_json configuration mapping.
+
+```python
+@dataclass_json
+@dataclass
+class DataClassWithIsoDatetime:
+    created_at: date = field(
+        metadata={'dataclasses_json': {
+            'encoder': date.isoformat,
+            'decoder': date.fromisoformat,
+            'mm_field': fields.DateTime(format='iso')
+        }}
+    )
+```
+
+
 #### Doing it at the class-level / for all fields?
 
 Use the `configured_dataclass_json` decorator instead of `dataclass_json`. See [Quickstart](#Quickstart)

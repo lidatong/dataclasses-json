@@ -59,7 +59,6 @@ def _user_overrides(cls):
     for field in fields(cls):
         field_config = field.metadata.get('dataclasses_json', {})
         field_config.update(cls_config)
-        print(field_config)
         overrides[field.name] = FieldOverride(*map(field_config.get, confs))
     return overrides
 

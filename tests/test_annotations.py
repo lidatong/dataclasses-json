@@ -1,13 +1,14 @@
 import json
+import logging
 import os
-import sys
-
 # noinspection PyCompatibility
 from dataclasses import dataclass
-from dataclasses_json import DataClassJsonMixin
 from io import StringIO
+from typing import Any, Dict, List, NewType, Optional, Tuple, Union
+
 from mypy.main import main as mypy_main
-from typing import List, Dict, Any, Tuple, NewType, Optional, Union
+
+from dataclasses_json import DataClassJsonMixin
 
 
 @dataclass
@@ -113,5 +114,5 @@ class TestAnnotations:
 
         # To prevent large errors raise error out of try/except
         if (errors):
-            print('\n'.join(errors))
+            logging.error('\n'.join(errors))
             raise AssertionError("Type annotations check failed")

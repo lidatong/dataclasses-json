@@ -29,8 +29,7 @@ car_schema = Car.schema()
 string_date_schema = StringDate.schema()
 
 
-class TestMetadataField:
-
+class TestMetadata:
     def test_validation_error_raises(self):
         with pytest.raises(ValidationError) as e:
             car_schema.load({'license_number': 123})

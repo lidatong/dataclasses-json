@@ -2,11 +2,13 @@
 
 This library provides a simple API for encoding and decoding [dataclasses](https://docs.python.org/3/library/dataclasses.html) to and from JSON.
 
-It's very quick to get started. Here's a quick example:
+It's very easy to get started.
+
+## Quickstart
+
+`pip install dataclasses-json`
 
 ```python
-# after running `pip install dataclasses-json`
-
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 
@@ -28,6 +30,25 @@ my_number.to_dict()  # {'int_field': 1}
 
 # Decoding from a (JSON) dict
 MyNumber.from_dict({'int_field': 1})  # SimpleExample(1)
+```
+
+**What if you want to work with camelCase JSON?**
+
+```python
+# same imports as above
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
+
+# and then a couple of new imports
+from dataclasses_json import configured_dataclass_json, LetterCase
+
+@configured_dataclass_json(letter_case=LetterCase.CAMEL)  # now all fields are encoded/decoded from camelCase
+@dataclass
+class ConfiguredSimpleExample:
+    int_field: int
+
+ConfiguredSimpleExample(1).to_json()  # {"intField": 1}
+ConfiguredSimpleExample.from_json({"intField": 1})  # ConfiguredSimpleExample(1)
 ```
 
 ## Supported types
@@ -55,8 +76,7 @@ are encoded as `str` (JSON string).
 
 **The [latest release](https://github.com/lidatong/dataclasses-json/releases/latest) is compatible with both Python 3.7 and Python 3.6 (with the dataclasses backport).**
 
-## Quickstart
-`pip install dataclasses-json`
+## Usage
 
 #### Approach 1: Class decorator
 
@@ -347,7 +367,7 @@ rather than the default `timestamp`.
 
 ```python
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json, config
 from datetime import datetime
 from marshmallow import fields
 
@@ -355,11 +375,12 @@ from marshmallow import fields
 @dataclass
 class DataClassWithIsoDatetime:
     created_at: datetime = field(
-        metadata={'dataclasses_json': {
-            'encoder': datetime.isoformat,
-            'decoder': datetime.fromisoformat,
-            'mm_field': fields.DateTime(format='iso')
-        }})
+        metadata=config(
+            encoder=datetime.isoformat,
+            decoder=datetime.fromisoformat,
+            mm_field=fields.DateTime(format='iso')
+        )
+    )
 ```
 
 #### Extending
@@ -368,7 +389,7 @@ Similarly, you might want to extend `dataclasses_json` to encode `date` objects.
 
 ```python
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json, config
 from datetime import date
 from marshmallow import fields
 
@@ -376,11 +397,11 @@ from marshmallow import fields
 @dataclass
 class DataClassWithIsoDatetime:
     created_at: date = field(
-        metadata={'dataclasses_json': {
-            'encoder': date.isoformat,
-            'decoder': date.fromisoformat,
-            'mm_field': fields.DateTime(format='iso')
-        }})
+        metadata=config(
+            encoder= date.isoformat,
+            decoder= date.fromisoformat,
+            mm_field= fields.DateTime(format='iso')
+        ))
 ```
 
 As you can see, you can **override** or **extend** the default codecs by providing a "hook" via a 
@@ -394,6 +415,12 @@ Note that these hooks will be invoked regardless if you're using
 and `.from_json`/`load`/`loads`. So apply overrides / extensions judiciously, making sure to 
 carefully consider whether the interaction of the encode/decode/mm_field is consistent with what you expect!
 
+
+#### Doing it at the class-level / for all fields?
+
+Use the `configured_dataclass_json` decorator instead of `dataclass_json`. See [Quickstart](#Quickstart)
+
+If you're using `DataClassJsonMixin`, you'll need to manually set the attribute `MyDataClass.dataclass_json_config`.
 
 ## A larger example
 

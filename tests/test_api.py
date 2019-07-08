@@ -211,6 +211,10 @@ class TestOverride:
 
 
 class TestConfig:
-    def test_config(self):
+    def test_config_encode(self):
         dc = DataClassWithConfigDecorator('a')
         assert dc.to_json() == '{"idField": "a"}'
+
+    def test_config_decode(self):
+        dc = DataClassWithConfigDecorator('a')
+        assert DataClassWithConfigDecorator.from_json('{"idField": "a"}') == dc

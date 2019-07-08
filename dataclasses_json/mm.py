@@ -271,7 +271,8 @@ def build_schema(cls: typing.Type[A],
                  partial) -> typing.Type[SchemaType]:
     Meta = type('Meta',
                 (),
-                {'fields': tuple(field.name for field in dc_fields(cls))})
+                {'fields': tuple(field.name for field in dc_fields(cls)
+                                 if field.name != 'dataclass_json_config')})
 
     @post_load
     def make_instance(self, kvs):

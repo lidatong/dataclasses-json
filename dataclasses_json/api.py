@@ -1,10 +1,14 @@
 import abc
 import json
-from typing import (Any, Callable, List, Optional, Tuple, Type, TypeVar, Union)
 from enum import Enum
+from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
+                    Union)
+
+from marshmallow.fields import Field as MarshmallowField
+from stringcase import camelcase, snakecase, spinalcase
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
-                                   _decode_dataclass, LetterCase)
+                                   _decode_dataclass)
 from dataclasses_json.mm import JsonData, SchemaType, build_schema
 
 A = TypeVar('A')
@@ -13,12 +17,27 @@ C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
 
 
+class LetterCase(Enum):
+    CAMEL = camelcase
+    KEBAB = spinalcase
+    SNAKE = snakecase
+
+
+def config(*,
+           encoder: callable = None,
+           decoder: callable = None,
+           mm_field: MarshmallowField = None,
+           letter_case: LetterCase = None) -> Dict[str, dict]:
+    return {'dataclasses_json': locals()}
+
+
 class DataClassJsonMixin(abc.ABC):
     """
     DataClassJsonMixin is an ABC that functions as a Mixin.
 
     As with other ABCs, it should not be instantiated directly.
     """
+    dataclass_json_config = None
 
     def to_json(self,
                 *,
@@ -105,3 +124,13 @@ def dataclass_json(cls):
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)
     return cls
+
+
+def configured_dataclass_json(*, letter_case=None):
+    def dec(cls):
+        cls = dataclass_json(cls)
+        cls.dataclass_json_config = config(letter_case=letter_case)[
+            'dataclasses_json']
+        return cls
+
+    return dec

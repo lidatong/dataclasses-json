@@ -1,16 +1,16 @@
-import json
 from decimal import Decimal
 from uuid import UUID
 
 import pytest
 
-from tests.entities import (DataClassIntImmutableDefault, DataClassJsonDecorator,
-                            DataClassWithDataClass, DataClassWithList,
-                            DataClassWithOptional, DataClassWithOptionalNested,
-                            DataClassWithUuid, DataClassWithOverride,
-                            DataClassBoolImmutableDefault, DataClassWithDecimal,
+from tests.entities import (DataClassBoolImmutableDefault,
+                            DataClassIntImmutableDefault,
+                            DataClassJsonDecorator, DataClassWithConfigHelper,
+                            DataClassWithConfigManual, DataClassWithDataClass,
+                            DataClassWithDecimal, DataClassWithList,
                             DataClassWithNestedNewType, DataClassWithNewType,
-                            Id, ProductId)
+                            DataClassWithOptional, DataClassWithOptionalNested,
+                            DataClassWithUuid, Id, ProductId, DataClassWithConfigDecorator)
 
 
 class TestTypes:
@@ -201,6 +201,20 @@ class TestSchema:
 
 class TestOverride:
     def test_override(self):
-        dc = DataClassWithOverride(5.0)
+        dc = DataClassWithConfigManual(5.0)
         assert dc.to_json() == '{"id": 5.0}'
-        assert DataClassWithOverride.schema().dumps(dc) == '{"id": 5}'
+        assert DataClassWithConfigManual.schema().dumps(dc) == '{"id": 5}'
+
+    def test_override_with_config_helper(self):
+        dc = DataClassWithConfigHelper(5.0)
+        assert dc.to_json() == '{"id": "5.0"}'
+
+
+class TestConfig:
+    def test_config_encode(self):
+        dc = DataClassWithConfigDecorator('a')
+        assert dc.to_json() == '{"idField": "a"}'
+
+    def test_config_decode(self):
+        dc = DataClassWithConfigDecorator('a')
+        assert DataClassWithConfigDecorator.from_json('{"idField": "a"}') == dc

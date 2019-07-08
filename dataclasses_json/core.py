@@ -9,7 +9,6 @@ from enum import Enum
 from typing import Collection, Mapping, Union, get_type_hints
 from uuid import UUID
 
-from stringcase import camelcase, spinalcase, snakecase
 from typing_inspect import is_union_type
 
 from dataclasses_json.utils import (
@@ -22,12 +21,6 @@ from dataclasses_json.utils import (
     _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
-
-
-class LetterCase(Enum):
-    CAMEL = camelcase
-    KEBAB = spinalcase
-    SNAKE = snakecase
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -51,17 +44,23 @@ class _ExtendedEncoder(json.JSONEncoder):
         return result
 
 
-def _user_overrides(dc):
+def _user_overrides(cls):
+    confs = ['encoder', 'decoder', 'mm_field', 'letter_case']
+    FieldOverride = namedtuple('FieldOverride', confs)
+
     overrides = {}
-    attrs = ['encoder', 'decoder', 'mm_field', 'letter_case']
-    FieldOverride = namedtuple('FieldOverride', attrs)
-    for field in fields(dc):
-        # if the field has dataclasses_json metadata, we cons a FieldOverride
-        # so there's a distinction between FieldOverride with all Nones
-        # and field that just doesn't appear in overrides
-        if field.metadata is not None and 'dataclasses_json' in field.metadata:
-            metadata = field.metadata['dataclasses_json']
-            overrides[field.name] = FieldOverride(*map(metadata.get, attrs))
+    # overrides at the class-level
+    try:
+        cls_config = (cls.dataclass_json_config
+                      if cls.dataclass_json_config is not None else {})
+    except AttributeError:
+        cls_config = {}
+
+    for field in fields(cls):
+        field_config = field.metadata.get('dataclasses_json', {})
+        field_config.update(cls_config)
+        print(field_config)
+        overrides[field.name] = FieldOverride(*map(field_config.get, confs))
     return overrides
 
 

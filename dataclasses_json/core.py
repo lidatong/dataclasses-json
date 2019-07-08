@@ -9,7 +9,6 @@ from enum import Enum
 from typing import Collection, Mapping, Union, get_type_hints
 from uuid import UUID
 
-from stringcase import camelcase, spinalcase, snakecase
 from typing_inspect import is_union_type
 
 from dataclasses_json.utils import (
@@ -22,12 +21,6 @@ from dataclasses_json.utils import (
     _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
-
-
-class LetterCase(Enum):
-    CAMEL = camelcase
-    KEBAB = spinalcase
-    SNAKE = snakecase
 
 
 class _ExtendedEncoder(json.JSONEncoder):

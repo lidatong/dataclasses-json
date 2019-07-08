@@ -1,10 +1,11 @@
 import abc
 import json
-from typing import (Any, Callable, List, Optional, Tuple, Type, TypeVar, Union)
 from enum import Enum
+from typing import (Any, Callable, List, Optional, Tuple, Type, TypeVar, Union)
+from stringcase import camelcase, spinalcase, snakecase
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
-                                   _decode_dataclass, LetterCase)
+                                   _decode_dataclass)
 from dataclasses_json.mm import JsonData, SchemaType, build_schema
 
 A = TypeVar('A')
@@ -105,3 +106,9 @@ def dataclass_json(cls):
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)
     return cls
+
+
+class LetterCase(Enum):
+    CAMEL = camelcase
+    KEBAB = spinalcase
+    SNAKE = snakecase

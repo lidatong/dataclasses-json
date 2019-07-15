@@ -495,3 +495,73 @@ boss_json = """
 assert boss.to_json(indent=4) == boss_json
 assert Boss.from_json(boss_json) == boss
 ```
+
+## Union and Polymorphism
+Serializing and, deserializing in particular, are tricky because type information
+is lost if some additional metadata isn't passed along with in the serialized 
+data.  Here is a simple example to see how dataclass_json adds this type information
+in a "__type" item in the serialized data.
+
+```python
+from abc import ABC
+from dataclasses import dataclass
+from typing import Union, List
+
+from dataclasses_json import dataclass_json
+
+
+@dataclass_json
+@dataclass
+class Animal(ABC):
+    name: str
+
+
+@dataclass_json
+@dataclass
+class Bird(Animal):
+    pass
+
+
+@dataclass_json
+@dataclass
+class Deer(Animal):
+    spots: bool
+
+
+@dataclass_json
+@dataclass
+class Animals:
+    animals: List[Union[Bird, Deer]]
+
+
+bird = Bird("Malard Duck")
+deer = Deer("Mule Deer", False)
+animals = Animals([bird, deer])
+Animals.schema().dumps(animals, indent=2)
+```
+
+```text
+{
+  "animals": [
+    {
+      "name": "Malard Duck",
+      "__type": "Bird"
+    },
+    {
+      "spots": false,
+      "name": "Mule Deer",
+      "__type": "Deer"
+    }
+  ]
+}
+```
+
+```python
+obj_repr = Animals.schema().loads(str_repr)
+dict_repr = Animals.schema().dump(obj_repr)
+```
+
+```text
+{'animals': [{'name': 'Malard Duck', '__type': 'Bird'}, {'spots': False, 'name': 'Mule Deer', '__type': 'Deer'}]}
+```
+

@@ -22,14 +22,14 @@ simple_example = SimpleExample(1)
 # Encoding to JSON. Note the output is a string, not a dictionary.
 simple_example.to_json()  # {"int_field": 1}
 
-# Decoding from JSON. Note the input is a string, not a dictionary.
-SomeData.from_json('{"int_field": 1}')  # SimpleExample(1)
-
 # Encoding to a (JSON) dict
-my_number.to_dict()  # {'int_field': 1}
+simple_example.to_dict()  # {'int_field': 1}
+
+# Decoding from JSON. Note the input is a string, not a dictionary.
+SimpleExample.from_json('{"int_field": 1}')  # SimpleExample(1)
 
 # Decoding from a (JSON) dict
-MyNumber.from_dict({'int_field': 1})  # SimpleExample(1)
+SimpleExample.from_dict({'int_field': 1})  # SimpleExample(1)
 ```
 
 **What if you want to work with camelCase JSON?**

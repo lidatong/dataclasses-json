@@ -5,7 +5,6 @@ from dataclasses import MISSING, is_dataclass, fields as dc_fields
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
 from uuid import UUID
 
 from marshmallow import fields, Schema, post_load
@@ -13,6 +12,7 @@ from marshmallow_enum import EnumField
 from typing_inspect import is_union_type
 
 from dataclasses_json.core import _is_supported_generic, _decode_dataclass, _ExtendedEncoder
+from dataclasses_json.recursion import SchemaStopIterationError
 from dataclasses_json.utils import (
     _is_collection,
     _is_optional,
@@ -185,8 +185,6 @@ else:
 
 
 def build_type(type_, options, mixin, field, cls, recursion_mgr):
-    print()
-    print(type_, options, mixin, field, cls, recursion_mgr)
     def inner(type_, options):
 
         while True:
@@ -206,7 +204,7 @@ def build_type(type_, options, mixin, field, cls, recursion_mgr):
                 except SchemaStopIterationError:
                     # ToDo: See about how to break the circular import dependency for @dataclass_json
                     # ToDo: Fix what needs to get returned from here.
-                    from dataclasses_json.api import SCHEMA_RECURSION_LIMIT_SCHEMA
+                    from dataclasses_json.recursion_limit import SCHEMA_RECURSION_LIMIT_SCHEMA
 
                     nested = fields.Nested(SCHEMA_RECURSION_LIMIT_SCHEMA, **options)
                     return nested
@@ -299,31 +297,3 @@ def build_schema(cls: typing.Type[A], mixin, infer_missing, partial, recursion_m
     )
 
     return DataClassSchema
-
-
-class SchemaRecursionLimitError(Exception):
-    def __init__(self):
-        super().__init__(
-            "Schema recursion limit exceeded.  Generate the " "schema with a deeper limit or dump with a deeper limit."
-        )
-
-
-class SchemaStopIterationError(Exception):
-    """Raised when the schema has reached the recursion limit."""
-
-
-class RecursionMgr:
-    def __init__(self, recursion_limit: Optional[int] = None):
-        self._recursion_limit = recursion_limit
-        self._manage_recursion = recursion_limit is not None
-
-    def push(self):
-        if self._manage_recursion:
-            if self._recursion_limit:
-                self._recursion_limit -= 1
-            else:
-                raise SchemaStopIterationError
-
-    def pop(self):
-        if self._manage_recursion:
-            self._recursion_limit += 1

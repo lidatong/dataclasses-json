@@ -1,16 +1,14 @@
 import abc
 import json
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar, Union
 
-from marshmallow import fields
 from marshmallow.fields import Field as MarshmallowField
 from stringcase import camelcase, snakecase, spinalcase
 
-from dataclasses_json import mm
 from dataclasses_json.core import Json, _ExtendedEncoder, _asdict, _decode_dataclass
-from dataclasses_json.mm import JsonData, SchemaType, build_schema, SchemaRecursionLimitError, RecursionMgr
+from dataclasses_json.mm import JsonData, SchemaType, build_schema
+from dataclasses_json.recursion import RecursionMgr
 
 A = TypeVar("A")
 B = TypeVar("B")
@@ -143,24 +141,3 @@ def configured_dataclass_json(*, letter_case=None):
         return cls
 
     return dec
-
-
-class SchemaRecursionLimitField(fields.Field):
-    def _serialize(self, value, attr, obj, **kwargs):
-        raise SchemaRecursionLimitError()
-
-    def _deserialize(self, value, attr, data, **kwargs):
-        raise SchemaRecursionLimitError()
-
-
-@dataclass_json
-@dataclass
-class SchemaRecursionLimit:
-    dummy_field: str = field(
-        default="anything", metadata={"dataclasses_json": {"mm_field": SchemaRecursionLimitField()}}
-    )
-
-
-schema = SchemaRecursionLimit.schema()
-schema.fields["dummy_field"]._CHECK_ATTRIBUTE = False
-SCHEMA_RECURSION_LIMIT_SCHEMA = schema

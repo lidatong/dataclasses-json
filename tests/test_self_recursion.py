@@ -4,8 +4,9 @@ from typing import Any, Optional
 
 import pytest
 
-from dataclasses_json.api import SchemaRecursionLimit, dataclass_json
-from dataclasses_json.mm import SchemaRecursionLimitError, RecursionMgr
+from dataclasses_json import dataclass_json
+from dataclasses_json.recursion import RecursionMgr
+from dataclasses_json.recursion_limit import SchemaRecursionLimitError, SchemaRecursionLimit
 
 
 def test_schema_recursion_limit_error():
@@ -35,25 +36,39 @@ Node.__annotations__.update(left=Optional[Node])
 Node.__annotations__.update(right=Optional[Node])
 Node = dataclass(Node)
 
-print("Node")
-for field in dc_fields(Node):
-    print("\t", field)
+tree_obj = Node(name="root", left=Node(name="left", left=Node(name="left-left"), right=Node(name="left-right")))
 
-tree = Node(name="root", left=Node(name="left-1", left=Node(name="left-1-1")))
-
-
-def test_recursion_under_limit():
+def test_recursion_schema_under_limit():
     print()
     schema = Node.schema(recursion_mgr=RecursionMgr(3))
-    d_rep = schema.dump(tree)
-    print("\n", json.dumps(d_rep, indent=2))
-    obj = schema.load(d_rep)
-    s_rep = schema.dumps(tree, indent=2)
-    print("\n", schema.dumps(tree, indent=2))
-    obj = schema.loads(s_rep)
+    dikt = schema.dump(tree_obj)
+    obj = schema.load(dikt)
+
+    assert "left-left" == obj.left.left.name
+    assert "left-right" == obj.left.right.name
 
 
-def test_recursion_over_limit():
+def test_recursion_schema_over_limit():
     schema = Node.schema(recursion_mgr=RecursionMgr(1))
-    with pytest.raises(SchemaRecursionLimitError):
-        schema.dump(tree)
+    with pytest.raises(SchemaRecursionLimitError) as exc:
+        schema.dump(tree_obj)
+
+
+def test_recursion_dict():
+    # Make sure that recursion manager doesn't break anything.
+    # To and From dict don't use a schema for validation.
+    dikt = Node.to_dict(tree_obj)
+    obj = Node.from_dict(dikt)
+
+    assert "left-left" == obj.left.left.name
+    assert "left-right" == obj.left.right.name
+
+
+def test_recursion_json():
+    # Make sure that recursion manager doesn't break anything.
+    # To and From dict don't use a schema for validation.
+    json_str = Node.to_dict(tree_obj)
+    obj = Node.from_dict(json_str)
+
+    assert "left-left" == obj.left.left.name
+    assert "left-right" == obj.left.right.name

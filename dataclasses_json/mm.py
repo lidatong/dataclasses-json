@@ -197,7 +197,12 @@ def build_type(type_, options, mixin, field, cls, recursion_mgr):
             if _issubclass_safe(type_, mixin):
                 options["field_many"] = bool(_is_supported_generic(field.type) and _is_collection(field.type))
                 try:
+                    # Wrap the fields.Nested(...) call with the RecursionMgr to keep track of the depth.
+                    # Raise SchemaStopIterationError when the limit is reached.  Process the exception
+                    # by replacing the schema for the field with a RecursionLimitSchema that raises
+                    # an exception whenever it is serialized or deserialized.
                     recursion_mgr.push()
+                    # Keep passing the recursion_mgr along.
                     nested = fields.Nested(type_.schema(recursion_mgr=recursion_mgr), **options)
                     recursion_mgr.pop()
                     return nested
@@ -268,6 +273,7 @@ def schema(cls, mixin, infer_missing, recursion_mgr):
                     # Union[str, int, None] is optional too, but it has more than 1 typed field.
                     type_ = type_.__args__[0]
 
+            # Keep passing the recursion_mgr along.
             t = build_type(type_, options, mixin, field, cls, recursion_mgr)
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
             schema[field.name] = t
@@ -289,6 +295,7 @@ def build_schema(cls: typing.Type[A], mixin, infer_missing, partial, recursion_m
 
         return Schema.dumps(self, *args, **kwargs)
 
+    # Keep passing the recursion_mgr along.
     schema_ = schema(cls, mixin, infer_missing, recursion_mgr)
     DataClassSchema: typing.Type[SchemaType] = type(
         f"{cls.__name__.capitalize()}Schema",

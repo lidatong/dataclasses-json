@@ -107,6 +107,8 @@ class DataClassJsonMixin(abc.ABC):
         unknown=None,
         recursion_mgr: RecursionMgr = None,
     ) -> SchemaType:
+        # Pass the RecursionMgr along if it is passed to this method either from the
+        # top level call or a recursive call from a nested schema.
         recursion_mgr = recursion_mgr or RecursionMgr()
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial, recursion_mgr)
         return Schema(

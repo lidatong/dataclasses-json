@@ -63,6 +63,12 @@ def _user_overrides(cls):
     return overrides
 
 
+def _encode_json_type(value, default=_ExtendedEncoder().default):
+    if isinstance(value, Json.__args__):
+        return value
+    return default(value)
+
+
 def _encode_overrides(kvs, overrides):
     override_kvs = {}
     for k, v in kvs.items():
@@ -71,7 +77,8 @@ def _encode_overrides(kvs, overrides):
             encode_k = letter_case(k) if letter_case is not None else k
 
             encoder = overrides[k].encoder
-            override_kvs[encode_k] = encoder(v) if encoder is not None else v
+            encoder = encoder if encoder is not None else _encode_json_type
+            override_kvs[encode_k] = encoder(v)
         else:
             override_kvs[k] = v
     return override_kvs

@@ -79,7 +79,7 @@ class DataClassJsonMixin(abc.ABC):
                 default: Callable = None,
                 sort_keys: bool = False,
                 **kw) -> str:
-        return json.dumps(_asdict(self),
+        return json.dumps(self.to_dict(),
                           cls=_ExtendedEncoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,

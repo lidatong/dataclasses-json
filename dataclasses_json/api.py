@@ -1,4 +1,5 @@
 import abc
+import functools
 import json
 from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
@@ -23,12 +24,40 @@ class LetterCase(Enum):
     SNAKE = snakecase
 
 
-def config(*,
+def config(metadata: dict = None, *,
            encoder: callable = None,
            decoder: callable = None,
            mm_field: MarshmallowField = None,
-           letter_case: LetterCase = None) -> Dict[str, dict]:
-    return {'dataclasses_json': locals()}
+           letter_case: Callable[[str], str] = None,
+           field_name: str = None) -> Dict[str, dict]:
+    if metadata is None:
+        metadata = {}
+
+    data = metadata.setdefault('dataclasses_json', {})
+
+    if encoder is not None:
+        data['encoder'] = encoder
+
+    if decoder is not None:
+        data['decoder'] = decoder
+
+    if mm_field is not None:
+        data['mm_field'] = mm_field
+
+    if field_name is not None:
+        if letter_case is not None:
+            @functools.wraps(letter_case)
+            def override(_, _letter_case=letter_case, _field_name=field_name):
+                return _letter_case(_field_name)
+        else:
+            def override(_, _field_name=field_name):
+                return _field_name
+        letter_case = override
+
+    if letter_case is not None:
+        data['letter_case'] = letter_case
+
+    return metadata
 
 
 class DataClassJsonMixin(abc.ABC):

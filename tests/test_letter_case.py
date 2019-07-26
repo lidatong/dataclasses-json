@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from dataclasses_json import LetterCase, dataclass_json
+from dataclasses_json import LetterCase, dataclass_json, config
 
 
 @dataclass_json
@@ -33,6 +33,12 @@ class SnakeCasePerson:
     )
 
 
+@dataclass_json
+@dataclass
+class FieldNamePerson:
+    given_name: str = field(metadata=config(field_name='givenName'))
+
+
 class TestLetterCase:
     def test_camel_encode(self):
         assert CamelCasePerson('Alice').to_json() == '{"givenName": "Alice"}'
@@ -54,3 +60,16 @@ class TestLetterCase:
     def test_snake_decode(self):
         assert SnakeCasePerson.from_json(
             '{"given_name": "Alice"}') == SnakeCasePerson('Alice')
+
+    def test_field_name_encode(self):
+        assert FieldNamePerson('Alice').to_json() == '{"givenName": "Alice"}'
+
+    def test_field_name_decode(self):
+        assert FieldNamePerson.from_json(
+            '{"givenName": "Alice"}') == FieldNamePerson('Alice')
+
+    def test_from_dict(self):
+        assert CamelCasePerson.from_dict({'givenName': 'Alice'}) == CamelCasePerson('Alice')
+
+    def test_to_dict(self):
+        assert {'givenName': 'Alice'} == CamelCasePerson('Alice').to_dict()

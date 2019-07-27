@@ -237,9 +237,9 @@ def build_type(type_, options, mixin, field, cls):
 def schema(cls, mixin, infer_missing):
     schema = {}
     for field in dc_fields(cls):
-        if 'dataclasses_json' in (field.metadata or {}):
-            schema[field.name] = field.metadata['dataclasses_json'].get(
-                'mm_field')
+        metadata = (field.metadata or {}).get('dataclasses_json', {})
+        if 'mm_field' in metadata:
+            schema[field.name] = metadata['mm_field']
         else:
             type_ = field.type
             options = {}

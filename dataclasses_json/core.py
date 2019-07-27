@@ -63,17 +63,26 @@ def _user_overrides(cls):
     return overrides
 
 
-def _encode_overrides(kvs, overrides):
+def _encode_json_type(value, default=_ExtendedEncoder().default):
+    if isinstance(value, Json.__args__):
+        return value
+    return default(value)
+
+
+def _encode_overrides(kvs, overrides, encode_json=False):
     override_kvs = {}
     for k, v in kvs.items():
         if k in overrides:
             letter_case = overrides[k].letter_case
-            encode_k = letter_case(k) if letter_case is not None else k
+            original_key = k
+            k = letter_case(k) if letter_case is not None else k
 
-            encoder = overrides[k].encoder
-            override_kvs[encode_k] = encoder(v) if encoder is not None else v
-        else:
-            override_kvs[k] = v
+            encoder = overrides[original_key].encoder
+            v = encoder(v) if encoder is not None else v
+
+        if encode_json:
+            v = _encode_json_type(v)
+        override_kvs[k] = v
     return override_kvs
 
 
@@ -256,7 +265,7 @@ def _decode_items(type_arg, xs, infer_missing):
     return items
 
 
-def _asdict(obj):
+def _asdict(obj, encode_json=False):
     """
     A re-implementation of `asdict` (based on the original in the `dataclasses`
     source) to support arbitrary Collection and Mapping types.
@@ -264,12 +273,12 @@ def _asdict(obj):
     if _is_dataclass_instance(obj):
         result = []
         for field in fields(obj):
-            value = _asdict(getattr(obj, field.name))
+            value = _asdict(getattr(obj, field.name), encode_json=encode_json)
             result.append((field.name, value))
-        return _encode_overrides(dict(result), _user_overrides(obj))
+        return _encode_overrides(dict(result), _user_overrides(obj), encode_json=encode_json)
     elif isinstance(obj, Mapping):
-        return dict((_asdict(k), _asdict(v)) for k, v in obj.items())
+        return dict((_asdict(k, encode_json=encode_json), _asdict(v, encode_json=encode_json)) for k, v in obj.items())
     elif isinstance(obj, Collection) and not isinstance(obj, str):
-        return list(_asdict(v) for v in obj)
+        return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:
         return copy.deepcopy(obj)

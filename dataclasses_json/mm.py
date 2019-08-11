@@ -15,7 +15,7 @@ from marshmallow import fields, Schema, post_load
 from marshmallow_enum import EnumField
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
-                                   _ExtendedEncoder)
+                                   _ExtendedEncoder, _user_overrides)
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
                                     _is_new_type, _get_type_origin)
@@ -238,10 +238,12 @@ def build_type(type_, options, mixin, field, cls):
 
 def schema(cls, mixin, infer_missing):
     schema = {}
+    overrides = _user_overrides(cls)
     for field in dc_fields(cls):
         metadata = (field.metadata or {}).get('dataclasses_json', {})
-        if 'mm_field' in metadata:
-            schema[field.name] = metadata['mm_field']
+        metadata = overrides[field.name]
+        if metadata.mm_field is not None:
+            schema[field.name] = metadata.mm_field
         else:
             type_ = field.type
             options = {}
@@ -260,6 +262,9 @@ def schema(cls, mixin, infer_missing):
                 if len(type_.__args__) == 2:
                     # Union[str, int, None] is optional too, but it has more than 1 typed field.
                     type_ = type_.__args__[0]
+
+            if metadata.letter_case is not None:
+                options['data_key'] = metadata.letter_case(field.name)
 
             t = build_type(type_, options, mixin, field, cls)
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.

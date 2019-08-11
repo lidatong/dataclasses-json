@@ -125,6 +125,16 @@ def test_deserialize(expected_obj, data, data_json):
     assert s.loads(data_json) == expected_obj
 
 
+def test_deserialize_twice():
+    data = {"f1": [{"f1": 12, "__type": "Aux1"}, {"f1": "str3", "__type": "Aux2"}]}
+    expected_obj = C9([Aux1(12), Aux2("str3")])
+
+    s = C9.schema()
+    res1 = s.load(data)
+    res2 = s.load(data)
+    assert res1 == expected_obj and res2 == expected_obj
+
+
 @pytest.mark.parametrize('obj', [
     (C2(f1={"str1": "str1"})),
     (C3(f1=[0.12, 0.13, "str1"])),

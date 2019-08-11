@@ -1,6 +1,7 @@
 import typing
 import warnings
 import sys
+from copy import deepcopy
 
 from dataclasses import MISSING, is_dataclass, fields as dc_fields
 from datetime import datetime
@@ -64,22 +65,23 @@ class _UnionField(fields.Field):
         return super()._serialize(value, attr, obj, **kwargs)
 
     def _deserialize(self, value, attr, data, **kwargs):
-        if isinstance(value, dict) and '__type' in value:
-            dc_name = value['__type']
+        tmp_value = deepcopy(value)
+        if isinstance(tmp_value, dict) and '__type' in tmp_value:
+            dc_name = tmp_value['__type']
             for type_, schema_ in self.desc.items():
                 if is_dataclass(type_) and type_.__name__ == dc_name:
-                    del value['__type']
-                    return schema_._deserialize(value, attr, data, **kwargs)
+                    del tmp_value['__type']
+                    return schema_._deserialize(tmp_value, attr, data, **kwargs)
         for type_, schema_ in self.desc.items():
-            if isinstance(value, _get_type_origin(type_)):
-                return schema_._deserialize(value, attr, data, **kwargs)
+            if isinstance(tmp_value, _get_type_origin(type_)):
+                return schema_._deserialize(tmp_value, attr, data, **kwargs)
         else:
             warnings.warn(
-                f'The type "{type(value).__name__}" (value: "{value}") '
+                f'The type "{type(tmp_value).__name__}" (value: "{tmp_value}") '
                 f'is not in the list of possible types of typing.Union '
                 f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
                 f'Value cannot be deserialized properly.')
-        return super()._deserialize(value, attr, data, **kwargs)
+        return super()._deserialize(tmp_value, attr, data, **kwargs)
 
 
 TYPES = {

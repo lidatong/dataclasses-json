@@ -501,6 +501,8 @@ Dataclasses with fields that aren't serializable, like a function object, requir
 work to make sure they can be serialized and deserialized.  There are two decorators to 
 help with this for functions and bound methods.
 
+Note: This won't work with functions or bound methods that have free variables/closures.
+
 ### Functions
 ```python
 from dataclasses import dataclass, field

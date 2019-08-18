@@ -495,3 +495,55 @@ boss_json = """
 assert boss.to_json(indent=4) == boss_json
 assert Boss.from_json(boss_json) == boss
 ```
+
+## Serializing Callable Fields
+Dataclasses with fields that aren't serializable, like a function object, require some extra
+work to make sure they can be serialized and deserialized.  There are two decorators to 
+help with this for functions and bound methods.
+
+### Functions
+```python
+from dataclasses import dataclass, field
+from typing import Callable, Dict
+
+from dataclasses_json import dataclass_json
+from dataclasses_json.callable_alias import  function_alias, aliased_function_field
+
+@function_alias("hello-world-function")
+def greet(data: Dict) -> Dict:
+    print(data[FunctionNode.KEY])
+    return data
+
+
+@dataclass_json
+@dataclass
+class FunctionNode:
+    KEY = "msg"
+    name: str
+    # First argument is list of arguments.  Second argument is the return type.
+    callable: Callable[[Dict], Dict] = field(metadata=aliased_function_field)
+```
+
+### Bound Method
+```python
+from dataclasses import dataclass, field
+from typing import Callable, Dict
+
+from dataclasses_json import dataclass_json
+from dataclasses_json.callable_alias import  method_alias, aliased_method_field
+
+
+class Greeter:
+    @method_alias("hello-world-method")
+    def greet(self, data: Dict) -> Dict:
+        print(data[MethodNode.KEY])
+        return data
+
+@dataclass_json
+@dataclass
+class MethodNode:
+    KEY = "msg"
+    name: str
+    # First argument is list of arguments.  Second argument is the return type.
+    callable: Callable[[Dict], Dict] = field(metadata=aliased_method_field)
+```

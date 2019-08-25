@@ -16,7 +16,7 @@ from uuid import UUID
 from marshmallow import fields
 
 import dataclasses_json
-from dataclasses_json import (DataClassJsonMixin, dataclass_json, LetterCase, configured_dataclass_json)
+from dataclasses_json import (DataClassJsonMixin, dataclass_json, LetterCase)
 
 A = TypeVar('A')
 Id = NewType('Id', UUID)
@@ -186,7 +186,7 @@ class DataClassWithConfigHelper:
     id: float = field(metadata=dataclasses_json.config(encoder=str))
 
 
-@configured_dataclass_json(letter_case=LetterCase.CAMEL)
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class DataClassWithConfigDecorator:
     id_field: str

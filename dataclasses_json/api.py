@@ -142,7 +142,29 @@ class DataClassJsonMixin(abc.ABC):
                       unknown=unknown)
 
 
-def dataclass_json(cls):
+def dataclass_json(_cls=None, *, letter_case=None):
+    """
+    Based on the code in the `dataclasses` module to handle optional-parens
+    decorators. See example below:
+
+    @dataclass_json
+    @dataclass_json(letter_case=Lettercase.CAMEL)
+    class Example:
+        ...
+    """
+
+    def wrap(cls):
+        return _process_class(cls, letter_case)
+
+    if _cls is None:
+        return wrap
+    return wrap(_cls)
+
+
+def _process_class(cls, letter_case):
+    if letter_case is not None:
+        cls.dataclass_json_config = config(letter_case=letter_case)[
+            'dataclasses_json']
     cls.to_json = DataClassJsonMixin.to_json
     # unwrap and rewrap classmethod to tag it to cls rather than the literal
     # DataClassJsonMixin ABC
@@ -153,13 +175,3 @@ def dataclass_json(cls):
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)
     return cls
-
-
-def configured_dataclass_json(*, letter_case=None):
-    def dec(cls):
-        cls = dataclass_json(cls)
-        cls.dataclass_json_config = config(letter_case=letter_case)[
-            'dataclasses_json']
-        return cls
-
-    return dec

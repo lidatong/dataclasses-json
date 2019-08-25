@@ -275,9 +275,12 @@ def _asdict(obj, encode_json=False):
         for field in fields(obj):
             value = _asdict(getattr(obj, field.name), encode_json=encode_json)
             result.append((field.name, value))
-        return _encode_overrides(dict(result), _user_overrides(obj), encode_json=encode_json)
+        return _encode_overrides(dict(result), _user_overrides(obj),
+                                 encode_json=encode_json)
     elif isinstance(obj, Mapping):
-        return dict((_asdict(k, encode_json=encode_json), _asdict(v, encode_json=encode_json)) for k, v in obj.items())
+        return dict((_asdict(k, encode_json=encode_json),
+                     _asdict(v, encode_json=encode_json)) for k, v in
+                    obj.items())
     elif isinstance(obj, Collection) and not isinstance(obj, str):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:

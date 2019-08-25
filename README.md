@@ -495,3 +495,26 @@ boss_json = """
 assert boss.to_json(indent=4) == boss_json
 assert Boss.from_json(boss_json) == boss
 ```
+
+## Self Recursion
+Object hierarchies where fields are of the type that they are declared within require a small
+type hinting trick to declare the forward reference.
+```python
+from typing import Optional
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
+
+@dataclass_json
+@dataclass
+class Tree():
+    value: str
+    left: Optional['Tree']
+    right: Optional['Tree']
+```
+
+Avoid using
+```python
+from __future__ import annotations
+```
+as it will cause problems with the way dataclasses_json accesses the type annotations.
+

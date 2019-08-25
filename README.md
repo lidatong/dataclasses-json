@@ -35,14 +35,11 @@ SimpleExample.from_dict({'int_field': 1})  # SimpleExample(1)
 **What if you want to work with camelCase JSON?**
 
 ```python
-# same imports as above
+# same imports as above, with the additional `LetterCase` import
 from dataclasses import dataclass
-from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json, LetterCase
 
-# and then a couple of new imports
-from dataclasses_json import configured_dataclass_json, LetterCase
-
-@configured_dataclass_json(letter_case=LetterCase.CAMEL)  # now all fields are encoded/decoded from camelCase
+@dataclass_json(letter_case=LetterCase.CAMEL)  # now all fields are encoded/decoded from camelCase
 @dataclass
 class ConfiguredSimpleExample:
     int_field: int
@@ -451,13 +448,6 @@ class DataClassWithIsoDatetime:
         }}
     )
 ```
-
-
-#### Doing it at the class-level / for all fields?
-
-Use the `configured_dataclass_json` decorator instead of `dataclass_json`. See [Quickstart](#Quickstart)
-
-If you're using `DataClassJsonMixin`, you'll need to manually set the attribute `MyDataClass.dataclass_json_config`.
 
 ## A larger example
 

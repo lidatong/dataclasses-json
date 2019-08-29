@@ -6,7 +6,7 @@ from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
 from marshmallow.fields import Field as MarshmallowField
-from stringcase import camelcase, snakecase, spinalcase
+from stringcase import camelcase, snakecase, spinalcase, pascalcase
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass)
@@ -22,6 +22,7 @@ class LetterCase(Enum):
     CAMEL = camelcase
     KEBAB = spinalcase
     SNAKE = snakecase
+    PASCAL = pascalcase
 
 
 def config(metadata: dict = None, *,

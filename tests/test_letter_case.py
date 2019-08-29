@@ -35,6 +35,16 @@ class SnakeCasePerson:
 
 @dataclass_json
 @dataclass
+class PascalCasePerson:
+    given_name: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.PASCAL
+        }}
+    )
+
+
+@dataclass_json
+@dataclass
 class FieldNamePerson:
     given_name: str = field(metadata=config(field_name='givenName'))
 
@@ -60,6 +70,13 @@ class TestLetterCase:
     def test_snake_decode(self):
         assert SnakeCasePerson.from_json(
             '{"given_name": "Alice"}') == SnakeCasePerson('Alice')
+
+    def test_pascal_encode(self):
+        assert PascalCasePerson('Alice').to_json() == '{"GivenName": "Alice"}'
+
+    def test_pascal_decode(self):
+        assert PascalCasePerson.from_json(
+            '{"GivenName": "Alice"}') == PascalCasePerson('Alice')
 
     def test_field_name_encode(self):
         assert FieldNamePerson('Alice').to_json() == '{"givenName": "Alice"}'

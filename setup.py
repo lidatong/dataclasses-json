@@ -17,14 +17,20 @@ setup(
     keywords='dataclasses json',
     install_requires=[
         'dataclasses;python_version=="3.6"',
-        'marshmallow==3.0.0rc6',
-        'marshmallow-enum>=1.4.1',
+        'marshmallow>=3.0.1,<4.0.0',
+        'marshmallow-enum>=1.4.1,<2.0.0',
         'typing-inspect>=0.4.0',
-        'stringcase==1.2.0'
+        'stringcase==1.2.0,<2.0.0'
     ],
     python_requires='>=3.6',
     extras_require={
-        'dev': ['pytest', 'ipython', 'mypy>=0.710', 'hypothesis']
+        'dev': [
+            'pytest',
+            'ipython',
+            'mypy>=0.710',
+            'hypothesis',
+            'portray'
+        ]
     },
     include_package_data=True
 )

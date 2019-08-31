@@ -4,6 +4,8 @@ This library provides a simple API for encoding and decoding [dataclasses](https
 
 It's very easy to get started.
 
+[Documentation website](https://lidatong.github.io/dataclasses-json)
+
 ## Quickstart
 
 `pip install dataclasses-json`

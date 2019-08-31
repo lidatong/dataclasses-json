@@ -1,0 +1,1166 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.1">
+    
+    
+      
+        <title>dataclasses-json</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/application.30686662.css">
+      
+        <link rel="stylesheet" href="assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#4caf50">
+      
+    
+    
+      <script src="assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="green" data-md-color-accent="lightgreen">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#dataclasses-json" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="." title="dataclasses-json" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              dataclasses-json
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Home
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="." title="dataclasses-json" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    dataclasses-json
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Home
+      </label>
+    
+    <a href="." title="Home" class="md-nav__link md-nav__link--active">
+      Home
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" title="Quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-types" title="Supported types" class="md-nav__link">
+    Supported types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" title="Usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#approach-1-class-decorator" title="Approach 1: Class decorator" class="md-nav__link">
+    Approach 1: Class decorator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#approach-2-inherit-from-a-mixin" title="Approach 2: Inherit from a mixin" class="md-nav__link">
+    Approach 2: Inherit from a mixin
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i" title="How do I..." class="md-nav__link">
+    How do I...
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-my-dataclass-with-json-arrays-or-objects" title="Use my dataclass with JSON arrays or objects?" class="md-nav__link">
+    Use my dataclass with JSON arrays or objects?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode-or-decode-into-python-listsdictionaries-rather-than-json" title="Encode or decode into Python lists/dictionaries rather than JSON?" class="md-nav__link">
+    Encode or decode into Python lists/dictionaries rather than JSON?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode-or-decode-from-camelcase-or-kebab-case" title="Encode or decode from camelCase (or kebab-case)?" class="md-nav__link">
+    Encode or decode from camelCase (or kebab-case)?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handle-missing-or-optional-field-values-when-decoding" title="Handle missing or optional field values when decoding?" class="md-nav__link">
+    Handle missing or optional field values when decoding?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explanation" title="Explanation" class="md-nav__link">
+    Explanation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-the-default-encode-decode-marshmallow-field-of-a-specific-field" title="Override the default encode / decode / marshmallow field of a specific field?" class="md-nav__link">
+    Override the default encode / decode / marshmallow field of a specific field?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marshmallow-interop" title="Marshmallow interop" class="md-nav__link">
+    Marshmallow interop
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overriding-extending" title="Overriding / Extending" class="md-nav__link">
+    Overriding / Extending
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overriding" title="Overriding" class="md-nav__link">
+    Overriding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extending" title="Extending" class="md-nav__link">
+    Extending
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-if-i-have-other-dataclass-field-extensions-that-rely-on-metadata" title="What if I have other dataclass field extensions that rely on metadata" class="md-nav__link">
+    What if I have other dataclass field extensions that rely on metadata
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-larger-example" title="A larger example" class="md-nav__link">
+    A larger example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-recursion" title="Self Recursion" class="md-nav__link">
+    Self Recursion
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-1" type="checkbox" id="nav-2-1">
+    
+    <label class="md-nav__link" for="nav-2-1">
+      Dataclasses Json
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-1">
+        Dataclasses Json
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/dataclasses_json/api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/dataclasses_json/core/" title="Core" class="md-nav__link">
+      Core
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/dataclasses_json/" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/dataclasses_json/mm/" title="Mm" class="md-nav__link">
+      Mm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/dataclasses_json/utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" title="Quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-types" title="Supported types" class="md-nav__link">
+    Supported types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" title="Usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#approach-1-class-decorator" title="Approach 1: Class decorator" class="md-nav__link">
+    Approach 1: Class decorator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#approach-2-inherit-from-a-mixin" title="Approach 2: Inherit from a mixin" class="md-nav__link">
+    Approach 2: Inherit from a mixin
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i" title="How do I..." class="md-nav__link">
+    How do I...
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-my-dataclass-with-json-arrays-or-objects" title="Use my dataclass with JSON arrays or objects?" class="md-nav__link">
+    Use my dataclass with JSON arrays or objects?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode-or-decode-into-python-listsdictionaries-rather-than-json" title="Encode or decode into Python lists/dictionaries rather than JSON?" class="md-nav__link">
+    Encode or decode into Python lists/dictionaries rather than JSON?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode-or-decode-from-camelcase-or-kebab-case" title="Encode or decode from camelCase (or kebab-case)?" class="md-nav__link">
+    Encode or decode from camelCase (or kebab-case)?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handle-missing-or-optional-field-values-when-decoding" title="Handle missing or optional field values when decoding?" class="md-nav__link">
+    Handle missing or optional field values when decoding?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explanation" title="Explanation" class="md-nav__link">
+    Explanation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-the-default-encode-decode-marshmallow-field-of-a-specific-field" title="Override the default encode / decode / marshmallow field of a specific field?" class="md-nav__link">
+    Override the default encode / decode / marshmallow field of a specific field?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#marshmallow-interop" title="Marshmallow interop" class="md-nav__link">
+    Marshmallow interop
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overriding-extending" title="Overriding / Extending" class="md-nav__link">
+    Overriding / Extending
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overriding" title="Overriding" class="md-nav__link">
+    Overriding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extending" title="Extending" class="md-nav__link">
+    Extending
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-if-i-have-other-dataclass-field-extensions-that-rely-on-metadata" title="What if I have other dataclass field extensions that rely on metadata" class="md-nav__link">
+    What if I have other dataclass field extensions that rely on metadata
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-larger-example" title="A larger example" class="md-nav__link">
+    A larger example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-recursion" title="Self Recursion" class="md-nav__link">
+    Self Recursion
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="dataclasses-json">Dataclasses JSON</h1>
+<p>This library provides a simple API for encoding and decoding <a href="https://docs.python.org/3/library/dataclasses.html">dataclasses</a> to and from JSON.</p>
+<p>It's very easy to get started.</p>
+<h2 id="quickstart">Quickstart</h2>
+<p><code>pip install dataclasses-json</code></p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SimpleExample</span><span class="p">:</span>
+    <span class="n">int_field</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="n">simple_example</span> <span class="o">=</span> <span class="n">SimpleExample</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Encoding to JSON. Note the output is a string, not a dictionary.</span>
+<span class="n">simple_example</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># {&quot;int_field&quot;: 1}</span>
+
+<span class="c1"># Encoding to a (JSON) dict</span>
+<span class="n">simple_example</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>  <span class="c1"># {&#39;int_field&#39;: 1}</span>
+
+<span class="c1"># Decoding from JSON. Note the input is a string, not a dictionary.</span>
+<span class="n">SimpleExample</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;int_field&quot;: 1}&#39;</span><span class="p">)</span>  <span class="c1"># SimpleExample(1)</span>
+
+<span class="c1"># Decoding from a (JSON) dict</span>
+<span class="n">SimpleExample</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s1">&#39;int_field&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>  <span class="c1"># SimpleExample(1)</span>
+</pre></div>
+
+
+<p><strong>What if you want to work with camelCase JSON?</strong></p>
+<div class="codehilite"><pre><span></span><span class="c1"># same imports as above, with the additional `LetterCase` import</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span><span class="p">,</span> <span class="n">LetterCase</span>
+
+<span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">letter_case</span><span class="o">=</span><span class="n">LetterCase</span><span class="o">.</span><span class="n">CAMEL</span><span class="p">)</span>  <span class="c1"># now all fields are encoded/decoded from camelCase</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ConfiguredSimpleExample</span><span class="p">:</span>
+    <span class="n">int_field</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="n">ConfiguredSimpleExample</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># {&quot;intField&quot;: 1}</span>
+<span class="n">ConfiguredSimpleExample</span><span class="o">.</span><span class="n">from_json</span><span class="p">({</span><span class="s2">&quot;intField&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>  <span class="c1"># ConfiguredSimpleExample(1)</span>
+</pre></div>
+
+
+<h2 id="supported-types">Supported types</h2>
+<p>It's recursive (see caveats below), so you can easily work with nested dataclasses.
+In addition to the supported types in the 
+<a href="https://docs.python.org/3/library/json.html#py-to-json-table">py to JSON table</a>, this library supports the following:
+- any arbitrary <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection">Collection</a> type is supported.
+<a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping">Mapping</a> types are encoded as JSON objects and <code>str</code> types as JSON strings. 
+Any other Collection types are encoded into JSON arrays, but decoded into the original collection types.
+- <a href="https://docs.python.org/3/library/datetime.html#available-types">datetime</a> 
+objects. <code>datetime</code> objects are encoded to <code>float</code> (JSON number) using 
+<a href="https://docs.python.org/3/library/datetime.html#datetime.datetime.timestamp">timestamp</a>.
+As specified in the <code>datetime</code> docs, if your <code>datetime</code> object is naive, it will 
+assume your system local timezone when calling <code>.timestamp()</code>. JSON nunbers 
+corresponding to a <code>datetime</code> field in your dataclass are decoded 
+into a datetime-aware object, with <code>tzinfo</code> set to your system local timezone.
+Thus, if you encode a datetime-naive object, you will decode into a 
+datetime-aware object. This is important, because encoding and decoding won't 
+strictly be inverses. See this section if you want to override this default
+behavior (for example, if you want to use ISO).
+- <a href="https://docs.python.org/3/library/uuid.html#uuid.UUID">UUID</a> objects. They 
+are encoded as <code>str</code> (JSON string).</p>
+<p><strong>The <a href="https://github.com/lidatong/dataclasses-json/releases/latest">latest release</a> is compatible with both Python 3.7 and Python 3.6 (with the dataclasses backport).</strong></p>
+<h2 id="usage">Usage</h2>
+<h4 id="approach-1-class-decorator">Approach 1: Class decorator</h4>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="n">lidatong</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;lidatong&#39;</span><span class="p">)</span>
+
+<span class="c1"># Encoding to JSON</span>
+<span class="n">lidatong</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># &#39;{&quot;name&quot;: &quot;lidatong&quot;}&#39;</span>
+
+<span class="c1"># Decoding from JSON</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;name&quot;: &quot;lidatong&quot;}&#39;</span><span class="p">)</span>  <span class="c1"># Person(name=&#39;lidatong&#39;)</span>
+</pre></div>
+
+
+<p>Note that the <code>@dataclass_json</code> decorator must be stacked above the <code>@dataclass</code>
+decorator (order matters!)</p>
+<h4 id="approach-2-inherit-from-a-mixin">Approach 2: Inherit from a mixin</h4>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">DataClassJsonMixin</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">DataClassJsonMixin</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="n">lidatong</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;lidatong&#39;</span><span class="p">)</span>
+
+<span class="c1"># A different example from Approach 1 above, but usage is the exact same</span>
+<span class="k">assert</span> <span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">lidatong</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span> <span class="o">==</span> <span class="n">lidatong</span>
+</pre></div>
+
+
+<p>Pick whichever approach suits your taste. The differences in implementation are
+invisible in usage.</p>
+<h2 id="how-do-i">How do I...</h2>
+<h3 id="use-my-dataclass-with-json-arrays-or-objects">Use my dataclass with JSON arrays or objects?</h3>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+
+
+<p><strong>Encode into a JSON array containing instances of my Data Class</strong></p>
+<div class="codehilite"><pre><span></span><span class="n">people_json</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span><span class="p">(</span><span class="s1">&#39;lidatong&#39;</span><span class="p">)]</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">people_json</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># &#39;[{&quot;name&quot;: &quot;lidatong&quot;}]&#39;</span>
+</pre></div>
+
+
+<p><strong>Decode a JSON array containing instances of my Data Class</strong></p>
+<div class="codehilite"><pre><span></span><span class="n">people_json</span> <span class="o">=</span> <span class="s1">&#39;[{&quot;name&quot;: &quot;lidatong&quot;}]&#39;</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">people_json</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># [Person(name=&#39;lidatong&#39;)]</span>
+</pre></div>
+
+
+<p><strong>Encode as part of a larger JSON object containing my Data Class (e.g. an HTTP 
+request/response)</strong></p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">person_dict</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">Person</span><span class="p">(</span><span class="s1">&#39;lidatong&#39;</span><span class="p">))</span>
+
+<span class="n">response_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;response&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;person&#39;</span><span class="p">:</span> <span class="n">person_dict</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">response_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response_dict</span><span class="p">)</span>
+</pre></div>
+
+
+<p>In this case, we do two steps. First, we encode the dataclass into a 
+<strong>python dictionary</strong> rather than a JSON string, using <code>schema()</code> and <code>dump</code>. 
+Scroll down for a section addressing that.</p>
+<p>Second, we leverage the built-in <code>json.dumps</code> to serialize our <code>dataclass</code> into 
+a JSON string.</p>
+<p><strong>Decode as part of a larger JSON object containing my Data Class (e.g. an HTTP 
+response)</strong></p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">response_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="s1">&#39;{&quot;response&quot;: {&quot;person&quot;: {&quot;name&quot;: &quot;lidatong&quot;}}}&#39;</span><span class="p">)</span>
+
+<span class="n">person_dict</span> <span class="o">=</span> <span class="n">response_dict</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span>
+
+<span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">person_dict</span><span class="p">)</span>
+</pre></div>
+
+
+<p>In a similar vein to encoding above, we leverage the built-in <code>json</code> module.</p>
+<p>First, call <code>json.loads</code> to read the entire JSON object into a 
+dictionary. We then access the key of the value containing the encoded dict of 
+our <code>Person</code> that we want to decode (<code>response_dict['response']</code>).</p>
+<p>Second, we load in the dictionary using <code>Person.schema().load</code>.</p>
+<h3 id="encode-or-decode-into-python-listsdictionaries-rather-than-json">Encode or decode into Python lists/dictionaries rather than JSON?</h3>
+<p>This can be by calling <code>.schema()</code> and then using the corresponding 
+encoder/decoder methods, ie. <code>.load(...)</code>/<code>.dump(...)</code>.</p>
+<p><strong>Encode into a single Python dictionary</strong></p>
+<div class="codehilite"><pre><span></span><span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;lidatong&#39;</span><span class="p">)</span>
+<span class="n">person</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>  <span class="c1"># {&#39;name&#39;: &#39;lidatong&#39;}</span>
+</pre></div>
+
+
+<p><strong>Encode into a list of Python dictionaries</strong></p>
+<div class="codehilite"><pre><span></span><span class="n">people</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span><span class="p">(</span><span class="s1">&#39;lidatong&#39;</span><span class="p">)]</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># [{&#39;name&#39;: &#39;lidatong&#39;}]</span>
+</pre></div>
+
+
+<p><strong>Decode a dictionary into a single dataclass instance</strong></p>
+<div class="codehilite"><pre><span></span><span class="n">person_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;lidatong&#39;</span><span class="p">}</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">person_dict</span><span class="p">)</span>  <span class="c1"># Person(name=&#39;lidatong&#39;)</span>
+</pre></div>
+
+
+<p><strong>Decode a list of dictionaries into a list of dataclass instances</strong></p>
+<div class="codehilite"><pre><span></span><span class="n">people_dicts</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;lidatong&quot;</span><span class="p">}]</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">people_dicts</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># [Person(name=&#39;lidatong&#39;)]</span>
+</pre></div>
+
+
+<h3 id="encode-or-decode-from-camelcase-or-kebab-case">Encode or decode from camelCase (or kebab-case)?</h3>
+<p>JSON letter case by convention is camelCase, in Python members are by convention snake_case.</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">LetterCase</span><span class="p">,</span> <span class="n">dataclass_json</span>
+
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+    <span class="n">given_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dataclasses_json&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;letter_case&#39;</span><span class="p">:</span> <span class="n">LetterCase</span><span class="o">.</span><span class="n">CAMEL</span>
+        <span class="p">}}</span>
+    <span class="p">)</span>
+
+<span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># &#39;{&quot;givenName&quot;: &quot;Alice&quot;}&#39;</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;givenName&quot;: &quot;Alice&quot;}&#39;</span><span class="p">)</span>  <span class="c1"># Person(&#39;Alice&#39;)</span>
+</pre></div>
+
+
+<p><strong>This library assumes your field follows the Python convention of snake_case naming.</strong>
+If your field is not <code>snake_case</code> to begin with and you attempt to parameterize <code>LetterCase</code>, 
+the behavior of encoding/decoding is undefined (most likely it will result in subtle bugs).</p>
+<h3 id="handle-missing-or-optional-field-values-when-decoding">Handle missing or optional field values when decoding?</h3>
+<p>By default, any fields in your dataclass that use <code>default</code> or 
+<code>default_factory</code> will have the values filled with the provided default, if the
+corresponding field is missing from the JSON you're decoding.</p>
+<p><strong>Decode JSON with missing field</strong></p>
+<div class="codehilite"><pre><span></span><span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Student</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;student&#39;</span>
+
+<span class="n">Student</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;id&quot;: 1}&#39;</span><span class="p">)</span>  <span class="c1"># Student(id=1, name=&#39;student&#39;)</span>
+</pre></div>
+
+
+<p>Notice <code>from_json</code> filled the field <code>name</code> with the specified default 'student'
+when it was missing from the JSON.</p>
+<p>Sometimes you have fields that are typed as <code>Optional</code>, but you don't 
+necessarily want to assign a default. In that case, you can use the 
+<code>infer_missing</code> kwarg to make <code>from_json</code> infer the missing field value as <code>None</code>.</p>
+<p><strong>Decode optional field without default</strong></p>
+<div class="codehilite"><pre><span></span><span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Tutor</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">student</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Student</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="n">Tutor</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;id&quot;: 1}&#39;</span><span class="p">)</span>  <span class="c1"># Tutor(id=1, student=None)</span>
+</pre></div>
+
+
+<p>Personally I recommend you leverage dataclass defaults rather than using 
+<code>infer_missing</code>, but if for some reason you need to decouple the behavior of 
+JSON decoding from the field's default value, this will allow you to do so.</p>
+<h3 id="explanation">Explanation</h3>
+<p>Briefly, on what's going on under the hood in the above examples: calling 
+<code>.schema()</code> will have this library generate a
+<a href="'https://marshmallow.readthedocs.io/en/3.0/api_reference.html#schema">marshmallow schema</a>
+for you. It also fills in the corresponding object hook, so that marshmallow
+will create an instance of your Data Class on <code>load</code> (e.g.
+<code>Person.schema().load</code> returns a <code>Person</code>) rather than a <code>dict</code>, which it does
+by default in marshmallow.</p>
+<p><strong>Performance note</strong></p>
+<p><code>.schema()</code> is not cached (it generates the schema on every call), so if you
+have a nested Data Class you may want to save the result to a variable to 
+avoid re-generation of the schema on every usage.</p>
+<div class="codehilite"><pre><span></span><span class="n">person_schema</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span>
+<span class="n">person_schema</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># later in the code...</span>
+
+<span class="n">person_schema</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>
+</pre></div>
+
+
+<h3 id="override-the-default-encode-decode-marshmallow-field-of-a-specific-field">Override the default encode / decode / marshmallow field of a specific field?</h3>
+<p>See <a href="#Overriding">Overriding</a></p>
+<h2 id="marshmallow-interop">Marshmallow interop</h2>
+<p>Using the <code>dataclass_json</code> decorator or mixing in <code>DataClassJsonMixin</code> will
+provide you with an additional method <code>.schema()</code>.</p>
+<p><code>.schema()</code> generates a schema exactly equivalent to manually creating a
+marshmallow schema for your dataclass. You can reference the <a href="https://marshmallow.readthedocs.io/en/3.0/api_reference.html#schema">marshmallow API docs</a>
+to learn other ways you can use the schema returned by <code>.schema()</code>.</p>
+<p>You can pass in the exact same arguments to <code>.schema()</code> that you would when
+constructing a <code>PersonSchema</code> instance, e.g. <code>.schema(many=True)</code>, and they will
+get passed through to the marshmallow schema.</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="c1"># You don&#39;t need to do this - it&#39;s generated for you by `.schema()`!</span>
+<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span>
+
+<span class="k">class</span> <span class="nc">PersonSchema</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">()</span>
+</pre></div>
+
+
+<h2 id="overriding-extending">Overriding / Extending</h2>
+<h4 id="overriding">Overriding</h4>
+<p>For example, you might want to encode/decode <code>datetime</code> objects using ISO format
+rather than the default <code>timestamp</code>.</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span><span class="p">,</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">fields</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DataClassWithIsoDatetime</span><span class="p">:</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span>
+            <span class="n">encoder</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">isoformat</span><span class="p">,</span>
+            <span class="n">decoder</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">,</span>
+            <span class="n">mm_field</span><span class="o">=</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTime</span><span class="p">(</span><span class="n">format</span><span class="o">=</span><span class="s1">&#39;iso&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+
+
+<h4 id="extending">Extending</h4>
+<p>Similarly, you might want to extend <code>dataclasses_json</code> to encode <code>date</code> objects.</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span><span class="p">,</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">fields</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DataClassWithIsoDatetime</span><span class="p">:</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">date</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span>
+            <span class="n">encoder</span><span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">,</span>
+            <span class="n">decoder</span><span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">,</span>
+            <span class="n">mm_field</span><span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">DateTime</span><span class="p">(</span><span class="n">format</span><span class="o">=</span><span class="s1">&#39;iso&#39;</span><span class="p">)</span>
+        <span class="p">))</span>
+</pre></div>
+
+
+<p>As you can see, you can <strong>override</strong> or <strong>extend</strong> the default codecs by providing a "hook" via a 
+callable:
+- <code>encoder</code>: a callable, which will be invoked to convert the field value when encoding to JSON
+- <code>decoder</code>: a callable, which will be invoked to convert the JSON value when decoding from JSON
+- <code>mm_field</code>: a marshmallow field, which will affect the behavior of any operations involving <code>.schema()</code></p>
+<p>Note that these hooks will be invoked regardless if you're using 
+<code>.to_json</code>/<code>dump</code>/<code>dumps</code>
+and <code>.from_json</code>/<code>load</code>/<code>loads</code>. So apply overrides / extensions judiciously, making sure to 
+carefully consider whether the interaction of the encode/decode/mm_field is consistent with what you expect!</p>
+<h4 id="what-if-i-have-other-dataclass-field-extensions-that-rely-on-metadata">What if I have other dataclass field extensions that rely on <code>metadata</code></h4>
+<p>All the <code>dataclasses_json.config</code> does is return a mapping, namespaced under the key <code>'dataclasses_json'</code>.</p>
+<p>Say there's another module, <code>other_dataclass_package</code> that uses metadata. Here's how you solve your problem:</p>
+<div class="codehilite"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;other_dataclass_package&#39;</span><span class="p">:</span> <span class="s1">&#39;some metadata...&#39;</span><span class="p">}</span>  <span class="c1"># pre-existing metadata for another dataclass package</span>
+<span class="n">dataclass_json_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">(</span>
+            <span class="n">encoder</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">isoformat</span><span class="p">,</span>
+            <span class="n">decoder</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">,</span>
+            <span class="n">mm_field</span><span class="o">=</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTime</span><span class="p">(</span><span class="n">format</span><span class="o">=</span><span class="s1">&#39;iso&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+<span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dataclass_json_config</span><span class="p">)</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DataClassWithIsoDatetime</span><span class="p">:</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+</pre></div>
+
+
+<p>You can also manually specify the dataclass_json configuration mapping.</p>
+<div class="codehilite"><pre><span></span><span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DataClassWithIsoDatetime</span><span class="p">:</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">date</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dataclasses_json&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;encoder&#39;</span><span class="p">:</span> <span class="n">date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">,</span>
+            <span class="s1">&#39;decoder&#39;</span><span class="p">:</span> <span class="n">date</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">,</span>
+            <span class="s1">&#39;mm_field&#39;</span><span class="p">:</span> <span class="n">fields</span><span class="o">.</span><span class="n">DateTime</span><span class="p">(</span><span class="n">format</span><span class="o">=</span><span class="s1">&#39;iso&#39;</span><span class="p">)</span>
+        <span class="p">}}</span>
+    <span class="p">)</span>
+</pre></div>
+
+
+<h2 id="a-larger-example">A larger example</h2>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Minion</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Boss</span><span class="p">:</span>
+    <span class="n">minions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Minion</span><span class="p">]</span>
+
+<span class="n">boss</span> <span class="o">=</span> <span class="n">Boss</span><span class="p">([</span><span class="n">Minion</span><span class="p">(</span><span class="s1">&#39;evil minion&#39;</span><span class="p">),</span> <span class="n">Minion</span><span class="p">(</span><span class="s1">&#39;very evil minion&#39;</span><span class="p">)])</span>
+<span class="n">boss_json</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">{</span>
+<span class="s2">    &quot;minions&quot;: [</span>
+<span class="s2">        {</span>
+<span class="s2">            &quot;name&quot;: &quot;evil minion&quot;</span>
+<span class="s2">        },</span>
+<span class="s2">        {</span>
+<span class="s2">            &quot;name&quot;: &quot;very evil minion&quot;</span>
+<span class="s2">        }</span>
+<span class="s2">    ]</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+<span class="k">assert</span> <span class="n">boss</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="n">boss_json</span>
+<span class="k">assert</span> <span class="n">Boss</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">boss_json</span><span class="p">)</span> <span class="o">==</span> <span class="n">boss</span>
+</pre></div>
+
+
+<h2 id="self-recursion">Self Recursion</h2>
+<p>Object hierarchies where fields are of the type that they are declared within require a small
+type hinting trick to declare the forward reference.</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Tree</span><span class="p">():</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">left</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Tree&#39;</span><span class="p">]</span>
+    <span class="n">right</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Tree&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>Avoid using</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+</pre></div>
+
+
+<p>as it will cause problems with the way dataclasses_json accesses the type annotations.</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+        
+          <a href="reference/dataclasses_json/api/" title="API" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                API
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Powered by
+        <a href="http://timothycrosley.github.io/portray">portray.</a>
+        You too can
+        <a href="http://timothycrosley.github.io/portray">
+          portray</a>
+        your Python project well using automatic documentation.
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="assets/javascripts/application.c648116f.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      
+    
+  </body>
+</html>

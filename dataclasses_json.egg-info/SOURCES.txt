@@ -1,0 +1,12 @@
+README.md
+setup.py
+dataclasses_json/__init__.py
+dataclasses_json/api.py
+dataclasses_json/core.py
+dataclasses_json/mm.py
+dataclasses_json/utils.py
+dataclasses_json.egg-info/PKG-INFO
+dataclasses_json.egg-info/SOURCES.txt
+dataclasses_json.egg-info/dependency_links.txt
+dataclasses_json.egg-info/requires.txt
+dataclasses_json.egg-info/top_level.txt

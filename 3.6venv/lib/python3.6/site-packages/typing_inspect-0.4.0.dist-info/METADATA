@@ -1,0 +1,34 @@
+Metadata-Version: 2.1
+Name: typing-inspect
+Version: 0.4.0
+Summary: Runtime inspection utilities for typing module.
+Home-page: https://github.com/ilevkivskyi/typing_inspect
+Author: Ivan Levkivskyi
+Author-email: levkivskyi@gmail.com
+License: MIT
+Keywords: typing function annotations type hints hinting checking checker typehints typehinting typechecking inspect reflection introspection
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Topic :: Software Development
+Requires-Dist: mypy-extensions (>=0.3.0)
+Requires-Dist: typing (>=3.6.1) ; python_version < "3.5"
+
+Typing Inspect
+==============
+
+The "typing_inspect" module defines experimental API for runtime
+inspection of types defined in the standard "typing" module.
+
+

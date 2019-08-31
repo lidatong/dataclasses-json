@@ -1,0 +1,117 @@
+"""Find all objects reachable from a root object."""
+
+from collections.abc import Iterable
+from typing import List, Dict, Iterator, Tuple, Mapping
+import weakref
+import types
+
+MYPY = False
+if MYPY:
+    from typing_extensions import Final
+
+
+method_descriptor_type = type(object.__dir__)  # type: Final
+method_wrapper_type = type(object().__ne__)  # type: Final
+wrapper_descriptor_type = type(object.__ne__)  # type: Final
+
+FUNCTION_TYPES = (types.BuiltinFunctionType,
+                  types.FunctionType,
+                  types.MethodType,
+                  method_descriptor_type,
+                  wrapper_descriptor_type,
+                  method_wrapper_type)  # type: Final
+
+ATTR_BLACKLIST = {
+    '__doc__',
+    '__name__',
+    '__class__',
+    '__dict__',
+}  # type: Final
+
+# Instances of these types can't have references to other objects
+ATOMIC_TYPE_BLACKLIST = {
+    bool,
+    int,
+    float,
+    str,
+    type(None),
+    object,
+}  # type: Final
+
+# Don't look at most attributes of these types
+COLLECTION_TYPE_BLACKLIST = {
+    list,
+    set,
+    dict,
+    tuple,
+}  # type: Final
+
+# Don't return these objects
+TYPE_BLACKLIST = {
+    weakref.ReferenceType,
+}  # type: Final
+
+
+def isproperty(o: object, attr: str) -> bool:
+    return isinstance(getattr(type(o), attr, None), property)
+
+
+def get_edge_candidates(o: object) -> Iterator[Tuple[object, object]]:
+    if type(o) not in COLLECTION_TYPE_BLACKLIST:
+        for attr in dir(o):
+            if attr not in ATTR_BLACKLIST and hasattr(o, attr) and not isproperty(o, attr):
+                e = getattr(o, attr)
+                if not type(e) in ATOMIC_TYPE_BLACKLIST:
+                    yield attr, e
+    if isinstance(o, Mapping):
+        for k, v in o.items():
+            yield k, v
+    elif isinstance(o, Iterable) and not isinstance(o, str):
+        for i, e in enumerate(o):
+            yield i, e
+
+
+def get_edges(o: object) -> Iterator[Tuple[object, object]]:
+    for s, e in get_edge_candidates(o):
+        if (isinstance(e, FUNCTION_TYPES)):
+            # We don't want to collect methods, but do want to collect values
+            # in closures and self pointers to other objects
+
+            if hasattr(e, '__closure__'):
+                yield (s, '__closure__'), getattr(e, '__closure__')
+            if hasattr(e, '__self__'):
+                se = getattr(e, '__self__')
+                if se is not o and se is not type(o):
+                    yield (s, '__self__'), se
+        else:
+            if not type(e) in TYPE_BLACKLIST:
+                yield s, e
+
+
+def get_reachable_graph(root: object) -> Tuple[Dict[int, object],
+                                               Dict[int, Tuple[int, object]]]:
+    parents = {}
+    seen = {id(root): root}
+    worklist = [root]
+    while worklist:
+        o = worklist.pop()
+        for s, e in get_edges(o):
+            if id(e) in seen:
+                continue
+            parents[id(e)] = (id(o), s)
+            seen[id(e)] = e
+            worklist.append(e)
+
+    return seen, parents
+
+
+def get_path(o: object,
+             seen: Dict[int, object],
+             parents: Dict[int, Tuple[int, object]]) -> List[Tuple[object, object]]:
+    path = []
+    while id(o) in parents:
+        pid, attr = parents[id(o)]
+        o = seen[pid]
+        path.append((attr, o))
+    path.reverse()
+    return path

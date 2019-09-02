@@ -4,10 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+hypothesis = "*"
+mypy = "*"
+pytest = "*"
 
 [packages]
-pytest = "*"
-marshmallow = "==3.0.0rc6"
+marshmallow = "*"
 marshmallow-enum = "*"
 stringcase = "*"
 typing-inspect = "*"

@@ -282,7 +282,7 @@ def build_schema(cls: typing.Type[A],
                                  if field.name != 'dataclass_json_config')})
 
     @post_load
-    def make_instance(self, kvs):
+    def make_instance(self, kvs, **kwargs):
         return _decode_dataclass(cls, kvs, partial)
 
     def dumps(self, *args, **kwargs):

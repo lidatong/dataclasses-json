@@ -47,7 +47,7 @@ class ConfiguredSimpleExample:
     int_field: int
 
 ConfiguredSimpleExample(1).to_json()  # {"intField": 1}
-ConfiguredSimpleExample.from_json({"intField": 1})  # ConfiguredSimpleExample(1)
+ConfiguredSimpleExample.from_json('{"intField": 1}')  # ConfiguredSimpleExample(1)
 ```
 
 ## Supported types

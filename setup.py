@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf8') as f:
 
 setup(
     name='dataclasses-json',
-    version='0.3.1',
+    version='0.3.2',
     packages=find_packages(exclude=('tests*',)),
     author='lidatong',
     author_email='charles.dt.li@gmail.com',
@@ -18,7 +18,7 @@ setup(
     install_requires=[
         'dataclasses;python_version=="3.6"',
         'marshmallow>=3.0.1,<4.0.0',
-        'marshmallow-enum>=1.4.1,<2.0.0',
+        'marshmallow-enum>=1.5.1,<2.0.0',
         'typing-inspect>=0.4.0',
         'stringcase==1.2.0,<2.0.0'
     ],

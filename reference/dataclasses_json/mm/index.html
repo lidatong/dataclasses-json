@@ -791,7 +791,7 @@
                                  <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;dataclass_json_config&#39;</span><span class="p">)})</span>
 
     <span class="nd">@post_load</span>
-    <span class="k">def</span> <span class="nf">make_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kvs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">make_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kvs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_decode_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kvs</span><span class="p">,</span> <span class="n">partial</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -835,7 +835,7 @@
                                  <span class="k">if</span> <span class="nv">field</span>.<span class="nv">name</span> <span class="o">!=</span> <span class="s1">&#39;</span><span class="s">dataclass_json_config</span><span class="s1">&#39;</span><span class="ss">)</span>}<span class="ss">)</span>
 
     @<span class="nv">post_load</span>
-    <span class="nv">def</span> <span class="nv">make_instance</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">kvs</span><span class="ss">)</span>:
+    <span class="nv">def</span> <span class="nv">make_instance</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">kvs</span>, <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span>:
         <span class="k">return</span> <span class="nv">_decode_dataclass</span><span class="ss">(</span><span class="nv">cls</span>, <span class="nv">kvs</span>, <span class="nv">partial</span><span class="ss">)</span>
 
     <span class="nv">def</span> <span class="nv">dumps</span><span class="ss">(</span><span class="nv">self</span>, <span class="o">*</span><span class="nv">args</span>, <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span>:
@@ -1017,6 +1017,8 @@ This class is helper only.</p>
     <span class="nv">This</span> <span class="nv">method</span> <span class="nv">returns</span> <span class="nv">the</span> <span class="nv">serialized</span> <span class="nv">data</span> <span class="nv">rather</span> <span class="nv">than</span> <span class="nv">a</span> ``<span class="ss">(</span><span class="nv">data</span>, <span class="nv">errors</span><span class="ss">)</span>`` <span class="nv">duple</span>.
     <span class="nv">A</span> :<span class="nv">exc</span>:`<span class="nv">ValidationError</span> <span class="o">&lt;</span><span class="nv">marshmallow</span>.<span class="nv">exceptions</span>.<span class="nv">ValidationError</span><span class="o">&gt;</span>` <span class="nv">is</span> <span class="nv">raised</span>
     <span class="k">if</span> ``<span class="nv">obj</span>`` <span class="nv">is</span> <span class="nv">invalid</span>.
+.. <span class="nv">versionchanged</span>:: <span class="mi">3</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="nv">rc9</span>
+    <span class="nv">Validation</span> <span class="nv">no</span> <span class="nv">longer</span> <span class="nv">occurs</span> <span class="nv">upon</span> <span class="nv">serialization</span>.
 
 
 ??? <span class="nv">example</span> <span class="s2">&quot;</span><span class="s">View Source</span><span class="s2">&quot;</span>

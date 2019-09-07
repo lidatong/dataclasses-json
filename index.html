@@ -665,6 +665,7 @@
                 <h1 id="dataclasses-json">Dataclasses JSON</h1>
 <p>This library provides a simple API for encoding and decoding <a href="https://docs.python.org/3/library/dataclasses.html">dataclasses</a> to and from JSON.</p>
 <p>It's very easy to get started.</p>
+<p><a href="https://lidatong.github.io/dataclasses-json">Documentation website</a></p>
 <h2 id="quickstart">Quickstart</h2>
 <p><code>pip install dataclasses-json</code></p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -702,7 +703,7 @@
     <span class="n">int_field</span><span class="p">:</span> <span class="nb">int</span>
 
 <span class="n">ConfiguredSimpleExample</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># {&quot;intField&quot;: 1}</span>
-<span class="n">ConfiguredSimpleExample</span><span class="o">.</span><span class="n">from_json</span><span class="p">({</span><span class="s2">&quot;intField&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>  <span class="c1"># ConfiguredSimpleExample(1)</span>
+<span class="n">ConfiguredSimpleExample</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;intField&quot;: 1}&#39;</span><span class="p">)</span>  <span class="c1"># ConfiguredSimpleExample(1)</span>
 </pre></div>
 
 

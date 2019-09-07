@@ -8,4 +8,5 @@ else
   # git tag $1
   # python setup.py sdist bdist_wheel
   # twine upload dist/*
+  portray on_github_pages
 fi

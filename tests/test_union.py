@@ -141,7 +141,7 @@ def test_deserialize_twice():
 ])
 def test_serialize_with_error(obj):
     s = obj.schema()
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         assert s.dump(obj)
 
 

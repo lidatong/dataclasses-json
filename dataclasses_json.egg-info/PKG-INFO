@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: dataclasses-json
-Version: 0.3.1
+Version: 0.3.2
 Summary: Easily serialize dataclasses to and from JSON
 Home-page: https://github.com/lidatong/dataclasses-json
 Author: lidatong
@@ -11,6 +11,8 @@ Description: # Dataclasses JSON
         This library provides a simple API for encoding and decoding [dataclasses](https://docs.python.org/3/library/dataclasses.html) to and from JSON.
         
         It's very easy to get started.
+        
+        [Documentation website](https://lidatong.github.io/dataclasses-json)
         
         ## Quickstart
         
@@ -53,7 +55,7 @@ Description: # Dataclasses JSON
             int_field: int
         
         ConfiguredSimpleExample(1).to_json()  # {"intField": 1}
-        ConfiguredSimpleExample.from_json({"intField": 1})  # ConfiguredSimpleExample(1)
+        ConfiguredSimpleExample.from_json('{"intField": 1}')  # ConfiguredSimpleExample(1)
         ```
         
         ## Supported types

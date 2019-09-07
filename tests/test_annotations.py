@@ -75,7 +75,7 @@ class TestAnnotations:
 
         where, sep, msg = line.partition(': ')
         if (sep):
-            file_name, sep, line_no = where.partition(':')
+            file_name, sep, line_no = where.rpartition(':')
             file_name = Filename(file_name)
             if (sep):
                 line_no = LineNumber(int(line_no))

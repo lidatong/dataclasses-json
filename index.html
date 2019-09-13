@@ -275,6 +275,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#encode-or-decode-using-a-different-name" title="Encode or decode using a different name" class="md-nav__link">
+    Encode or decode using a different name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#handle-missing-or-optional-field-values-when-decoding" title="Handle missing or optional field values when decoding?" class="md-nav__link">
     Handle missing or optional field values when decoding?
   </a>
@@ -565,6 +572,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#encode-or-decode-using-a-different-name" title="Encode or decode using a different name" class="md-nav__link">
+    Encode or decode using a different name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#handle-missing-or-optional-field-values-when-decoding" title="Handle missing or optional field values when decoding?" class="md-nav__link">
     Handle missing or optional field values when decoding?
   </a>
@@ -710,11 +724,15 @@
 <h2 id="supported-types">Supported types</h2>
 <p>It's recursive (see caveats below), so you can easily work with nested dataclasses.
 In addition to the supported types in the 
-<a href="https://docs.python.org/3/library/json.html#py-to-json-table">py to JSON table</a>, this library supports the following:
-- any arbitrary <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection">Collection</a> type is supported.
+<a href="https://docs.python.org/3/library/json.html#py-to-json-table">py to JSON table</a>, this library supports the following:</p>
+<ul>
+<li>
+<p>any arbitrary <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection">Collection</a> type is supported.
 <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping">Mapping</a> types are encoded as JSON objects and <code>str</code> types as JSON strings. 
-Any other Collection types are encoded into JSON arrays, but decoded into the original collection types.
-- <a href="https://docs.python.org/3/library/datetime.html#available-types">datetime</a> 
+Any other Collection types are encoded into JSON arrays, but decoded into the original collection types.</p>
+</li>
+<li>
+<p><a href="https://docs.python.org/3/library/datetime.html#available-types">datetime</a> 
 objects. <code>datetime</code> objects are encoded to <code>float</code> (JSON number) using 
 <a href="https://docs.python.org/3/library/datetime.html#datetime.datetime.timestamp">timestamp</a>.
 As specified in the <code>datetime</code> docs, if your <code>datetime</code> object is naive, it will 
@@ -723,10 +741,14 @@ corresponding to a <code>datetime</code> field in your dataclass are decoded
 into a datetime-aware object, with <code>tzinfo</code> set to your system local timezone.
 Thus, if you encode a datetime-naive object, you will decode into a 
 datetime-aware object. This is important, because encoding and decoding won't 
-strictly be inverses. See this section if you want to override this default
-behavior (for example, if you want to use ISO).
-- <a href="https://docs.python.org/3/library/uuid.html#uuid.UUID">UUID</a> objects. They 
+strictly be inverses. See <a href="#Overriding">this section</a> if you want to override this default
+behavior (for example, if you want to use ISO).</p>
+</li>
+<li>
+<p><a href="https://docs.python.org/3/library/uuid.html#uuid.UUID">UUID</a> objects. They 
 are encoded as <code>str</code> (JSON string).</p>
+</li>
+</ul>
 <p><strong>The <a href="https://github.com/lidatong/dataclasses-json/releases/latest">latest release</a> is compatible with both Python 3.7 and Python 3.6 (with the dataclasses backport).</strong></p>
 <h2 id="usage">Usage</h2>
 <h4 id="approach-1-class-decorator">Approach 1: Class decorator</h4>
@@ -795,11 +817,9 @@ invisible in usage.</p>
 request/response)</strong></p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">person_dict</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">Person</span><span class="p">(</span><span class="s1">&#39;lidatong&#39;</span><span class="p">))</span>
-
 <span class="n">response_dict</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;response&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s1">&#39;person&#39;</span><span class="p">:</span> <span class="n">person_dict</span>
+        <span class="s1">&#39;person&#39;</span><span class="p">:</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;lidatong&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
     <span class="p">}</span>
 <span class="p">}</span>
 
@@ -808,8 +828,7 @@ request/response)</strong></p>
 
 
 <p>In this case, we do two steps. First, we encode the dataclass into a 
-<strong>python dictionary</strong> rather than a JSON string, using <code>schema()</code> and <code>dump</code>. 
-Scroll down for a section addressing that.</p>
+<strong>python dictionary</strong> rather than a JSON string, using <code>.to_dict</code>. </p>
 <p>Second, we leverage the built-in <code>json.dumps</code> to serialize our <code>dataclass</code> into 
 a JSON string.</p>
 <p><strong>Decode as part of a larger JSON object containing my Data Class (e.g. an HTTP 
@@ -820,7 +839,7 @@ response)</strong></p>
 
 <span class="n">person_dict</span> <span class="o">=</span> <span class="n">response_dict</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span>
 
-<span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">person_dict</span><span class="p">)</span>
+<span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">person_dict</span><span class="p">)</span>
 </pre></div>
 
 
@@ -828,7 +847,7 @@ response)</strong></p>
 <p>First, call <code>json.loads</code> to read the entire JSON object into a 
 dictionary. We then access the key of the value containing the encoded dict of 
 our <code>Person</code> that we want to decode (<code>response_dict['response']</code>).</p>
-<p>Second, we load in the dictionary using <code>Person.schema().load</code>.</p>
+<p>Second, we load in the dictionary using <code>Person.from_dict</code>.</p>
 <h3 id="encode-or-decode-into-python-listsdictionaries-rather-than-json">Encode or decode into Python lists/dictionaries rather than JSON?</h3>
 <p>This can be by calling <code>.schema()</code> and then using the corresponding 
 encoder/decoder methods, ie. <code>.load(...)</code>/<code>.dump(...)</code>.</p>
@@ -858,28 +877,54 @@ encoder/decoder methods, ie. <code>.load(...)</code>/<code>.dump(...)</code>.</p
 
 <h3 id="encode-or-decode-from-camelcase-or-kebab-case">Encode or decode from camelCase (or kebab-case)?</h3>
 <p>JSON letter case by convention is camelCase, in Python members are by convention snake_case.</p>
+<p>You can configure it to encode/decode from other casing schemes at both the class level and the field level.</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">LetterCase</span><span class="p">,</span> <span class="n">dataclass_json</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">LetterCase</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">dataclass_json</span>
 
 
+<span class="c1"># changing casing at the class level</span>
+<span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">letter_case</span><span class="o">=</span><span class="n">LetterCase</span><span class="o">.</span><span class="n">CAMEL</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+    <span class="n">given_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">family_name</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Liddell&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># &#39;{&quot;givenName&quot;: &quot;Alice&quot;}&#39;</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;givenName&quot;: &quot;Alice&quot;, &quot;familyName&quot;: &quot;Liddell&quot;}&#39;</span><span class="p">)</span>  <span class="c1"># Person(&#39;Alice&#39;, &#39;Liddell&#39;)</span>
+
+<span class="c1"># at the field level</span>
 <span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
-    <span class="n">given_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dataclasses_json&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;letter_case&#39;</span><span class="p">:</span> <span class="n">LetterCase</span><span class="o">.</span><span class="n">CAMEL</span>
-        <span class="p">}}</span>
-    <span class="p">)</span>
+    <span class="n">given_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">letter_case</span><span class="o">=</span><span class="n">LetterCase</span><span class="o">.</span><span class="n">CAMEL</span><span class="p">))</span>
+    <span class="n">family_name</span><span class="p">:</span> <span class="nb">str</span>
 
-<span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># &#39;{&quot;givenName&quot;: &quot;Alice&quot;}&#39;</span>
-<span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;givenName&quot;: &quot;Alice&quot;}&#39;</span><span class="p">)</span>  <span class="c1"># Person(&#39;Alice&#39;)</span>
+<span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Liddell&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># &#39;{&quot;givenName&quot;: &quot;Alice&quot;}&#39;</span>
+<span class="c1"># notice how the `family_name` field is still snake_case, because it wasn&#39;t configured above</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;givenName&quot;: &quot;Alice&quot;, &quot;family_name&quot;: &quot;Liddell&quot;}&#39;</span><span class="p">)</span>  <span class="c1"># Person(&#39;Alice&#39;, &#39;Liddell&#39;)</span>
 </pre></div>
 
 
 <p><strong>This library assumes your field follows the Python convention of snake_case naming.</strong>
 If your field is not <code>snake_case</code> to begin with and you attempt to parameterize <code>LetterCase</code>, 
 the behavior of encoding/decoding is undefined (most likely it will result in subtle bugs).</p>
+<h3 id="encode-or-decode-using-a-different-name">Encode or decode using a different name</h3>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">dataclass_json</span>
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+    <span class="n">given_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;overriddenGivenName&quot;</span><span class="p">))</span>
+
+<span class="n">Person</span><span class="p">(</span><span class="n">given_name</span><span class="o">=</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="n">family_name</span><span class="o">=</span><span class="s1">&#39;Liddell&#39;</span><span class="p">)</span>  <span class="c1"># Person(&#39;Alice&#39;)</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;overriddenGivenName&quot;: &quot;Alice&quot;}&#39;</span><span class="p">)</span>  <span class="c1"># Person(&#39;Alice&#39;)</span>
+<span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Liddell&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># {&quot;overriddenGivenName&quot;: &quot;Alice&quot;}</span>
+</pre></div>
+
+
 <h3 id="handle-missing-or-optional-field-values-when-decoding">Handle missing or optional field values when decoding?</h3>
 <p>By default, any fields in your dataclass that use <code>default</code> or 
 <code>default_factory</code> will have the values filled with the provided default, if the

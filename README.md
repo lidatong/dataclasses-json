@@ -255,6 +255,23 @@ Person.from_json('{"givenName": "Alice"}')  # Person('Alice')
 If your field is not `snake_case` to begin with and you attempt to parameterize `LetterCase`, 
 the behavior of encoding/decoding is undefined (most likely it will result in subtle bugs).
 
+### Encode or Decode using a different name
+
+```python
+from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json, config
+
+@dataclass_json
+@dataclass
+class Person:
+    given_name: str = field(
+        metadata=config(field_name="given_nameWrong"))
+
+Person(given_name="Alice")  # Person(given_name='Alice')
+Person.from_json('{"given_nameWrong": "Alice"}')  # Person(given_name='Alice')
+Person("Alice").to_json()  # {"given_nameWrong": "Alice"}
+```
+
 ### Handle missing or optional field values when decoding?
 
 By default, any fields in your dataclass that use `default` or 

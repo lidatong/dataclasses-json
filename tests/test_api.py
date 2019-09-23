@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import UUID
 
@@ -5,12 +6,18 @@ import pytest
 
 from tests.entities import (DataClassBoolImmutableDefault,
                             DataClassIntImmutableDefault,
-                            DataClassJsonDecorator, DataClassWithConfigHelper,
+                            DataClassJsonDecorator,
+                            DataClassWithConfigDecorator,
+                            DataClassWithConfigHelper,
                             DataClassWithConfigManual, DataClassWithDataClass,
                             DataClassWithDecimal, DataClassWithList,
                             DataClassWithNestedNewType, DataClassWithNewType,
-                            DataClassWithOptional, DataClassWithOptionalNested,
-                            DataClassWithUuid, Id, ProductId, DataClassWithConfigDecorator)
+                            DataClassWithOptional,
+                            DataClassWithOptionalDatetime,
+                            DataClassWithOptionalDecimal,
+                            DataClassWithOptionalNested,
+                            DataClassWithOptionalUuid, DataClassWithUuid, Id,
+                            ProductId)
 
 
 class TestTypes:
@@ -28,13 +35,24 @@ class TestTypes:
         assert (DataClassWithDecimal.from_json(self.dc_decimal_json)
                 == DataClassWithDecimal(Decimal(self.decimal_s)))
 
-    def test_uuid_encode(self):
-        assert (DataClassWithUuid(UUID(self.uuid_s)).to_json()
-                == self.dc_uuid_json)
 
-    def test_uuid_decode(self):
-        assert (DataClassWithUuid.from_json(self.dc_uuid_json)
-                == DataClassWithUuid(UUID(self.uuid_s)))
+class TestGenericExtendedTypes:
+    def test_optional_datetime(self):
+        dt = datetime(2018, 11, 17, 16, 55, 28, 456753, tzinfo=timezone.utc)
+        dc = DataClassWithOptionalDatetime(dt)
+        assert (DataClassWithOptionalDatetime.from_json(dc.to_json())
+                == dc)
+
+    def test_optional_decimal(self):
+        dc = DataClassWithOptionalDecimal(Decimal("12345.12345"))
+        assert (DataClassWithOptionalDecimal.from_json(dc.to_json())
+                == dc)
+
+    def test_optional_uuid(self):
+        dc = DataClassWithOptionalUuid(
+            UUID('d1d61dd7-c036-47d3-a6ed-91cc2e885fc8'))
+        assert (DataClassWithOptionalUuid.from_json(dc.to_json())
+                == dc)
 
 
 class TestDictDecode:
@@ -66,12 +84,14 @@ class TestNewType:
                 == DataClassWithNewType(Id(UUID(self.new_type_s))))
 
     def test_nested_new_type_encode(self):
-        assert (DataClassWithNestedNewType(ProductId(Id(UUID(self.new_type_s)))).to_json()
+        assert (DataClassWithNestedNewType(
+            ProductId(Id(UUID(self.new_type_s)))).to_json()
                 == self.dc_new_type_json)
 
     def test_nested_new_type_decode(self):
         assert (DataClassWithNestedNewType.from_json(self.dc_new_type_json)
-                == DataClassWithNestedNewType(ProductId(Id(UUID(self.new_type_s)))))
+                == DataClassWithNestedNewType(
+                    ProductId(Id(UUID(self.new_type_s)))))
 
 
 class TestInferMissing:
@@ -161,15 +181,18 @@ class TestSchema:
         assert DataClassIntImmutableDefault.schema().dumps(d_int) == '{"x": 0}'
         d_bool = DataClassBoolImmutableDefault()
         assert d_bool.x is False
-        assert DataClassBoolImmutableDefault.schema().dumps(d_bool) == '{"x": false}'
+        assert DataClassBoolImmutableDefault.schema().dumps(
+            d_bool) == '{"x": false}'
 
     def test_dumps_default_many(self):
         d_int = DataClassIntImmutableDefault()
         assert d_int.x == 0
-        assert DataClassIntImmutableDefault.schema().dumps([d_int], many=True) == '[{"x": 0}]'
+        assert DataClassIntImmutableDefault.schema().dumps([d_int],
+                                                           many=True) == '[{"x": 0}]'
         d_bool = DataClassBoolImmutableDefault()
         assert d_bool.x is False
-        assert DataClassBoolImmutableDefault.schema().dumps([d_bool], many=True) == '[{"x": false}]'
+        assert DataClassBoolImmutableDefault.schema().dumps([d_bool],
+                                                            many=True) == '[{"x": false}]'
 
     def test_dumps_new_type(self):
         raw_value = 'd1d61dd7-c036-47d3-a6ed-91cc2e885fc8'
@@ -177,7 +200,8 @@ class TestSchema:
 
         d_new_type = DataClassWithNewType(id_value)
 
-        assert DataClassWithNewType.schema().dumps(d_new_type) == f'{{"id": "{raw_value}"}}'
+        assert DataClassWithNewType.schema().dumps(
+            d_new_type) == f'{{"id": "{raw_value}"}}'
 
     def test_dumps_nested_new_type(self):
         raw_value = 'd1d61dd7-c036-47d3-a6ed-91cc2e885fc8'
@@ -185,7 +209,8 @@ class TestSchema:
 
         d_new_type = DataClassWithNestedNewType(id_value)
 
-        assert DataClassWithNestedNewType.schema().dumps(d_new_type) == f'{{"id": "{raw_value}"}}'
+        assert DataClassWithNestedNewType.schema().dumps(
+            d_new_type) == f'{{"id": "{raw_value}"}}'
 
     def test_loads_infer_missing(self):
         assert (DataClassWithOptional

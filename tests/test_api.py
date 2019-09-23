@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import UUID
 
@@ -5,15 +6,18 @@ import pytest
 
 from tests.entities import (DataClassBoolImmutableDefault,
                             DataClassIntImmutableDefault,
-                            DataClassJsonDecorator, DataClassWithConfigHelper,
+                            DataClassJsonDecorator,
+                            DataClassWithConfigDecorator,
+                            DataClassWithConfigHelper,
                             DataClassWithConfigManual, DataClassWithDataClass,
                             DataClassWithDecimal, DataClassWithList,
                             DataClassWithNestedNewType, DataClassWithNewType,
-                            DataClassWithOptional, DataClassWithOptionalNested,
-                            DataClassWithUuid, Id, ProductId,
-                            DataClassWithConfigDecorator,
+                            DataClassWithOptional,
+                            DataClassWithOptionalDatetime,
                             DataClassWithOptionalDecimal,
-                            DataClassWithOptionalUuid)
+                            DataClassWithOptionalNested,
+                            DataClassWithOptionalUuid, DataClassWithUuid, Id,
+                            ProductId)
 
 
 class TestTypes:
@@ -33,16 +37,22 @@ class TestTypes:
 
 
 class TestGenericExtendedTypes:
+    def test_optional_datetime(self):
+        dt = datetime(2018, 11, 17, 16, 55, 28, 456753, tzinfo=timezone.utc)
+        dc = DataClassWithOptionalDatetime(dt)
+        assert (DataClassWithOptionalDatetime.from_json(dc.to_json())
+                == dc)
+
     def test_optional_decimal(self):
         dc = DataClassWithOptionalDecimal(Decimal("12345.12345"))
         assert (DataClassWithOptionalDecimal.from_json(dc.to_json())
                 == dc)
 
-    # def test_optional_uuid(self):
-    #     dc = DataClassWithOptionalUuid(
-    #         UUID('d1d61dd7-c036-47d3-a6ed-91cc2e885fc8'))
-    #     assert (DataClassWithOptionalUuid.from_json(dc.to_json())
-    #             == dc)
+    def test_optional_uuid(self):
+        dc = DataClassWithOptionalUuid(
+            UUID('d1d61dd7-c036-47d3-a6ed-91cc2e885fc8'))
+        assert (DataClassWithOptionalUuid.from_json(dc.to_json())
+                == dc)
 
 
 class TestDictDecode:

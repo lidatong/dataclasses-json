@@ -16,6 +16,7 @@ from uuid import UUID
 from marshmallow import fields
 
 import dataclasses_json
+from datetime import datetime
 from dataclasses_json import (DataClassJsonMixin, LetterCase, dataclass_json)
 
 A = TypeVar('A')
@@ -227,6 +228,12 @@ class DataClassList:
 class DataClassOptional:
     a: int
     b: Optional[int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithOptionalDatetime:
+    a: Optional[datetime]
 
 
 @dataclass_json

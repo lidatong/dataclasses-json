@@ -16,7 +16,7 @@ from uuid import UUID
 from marshmallow import fields
 
 import dataclasses_json
-from dataclasses_json import (DataClassJsonMixin, dataclass_json, LetterCase)
+from dataclasses_json import (DataClassJsonMixin, LetterCase, dataclass_json)
 
 A = TypeVar('A')
 Id = NewType('Id', UUID)
@@ -227,3 +227,15 @@ class DataClassList:
 class DataClassOptional:
     a: int
     b: Optional[int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithOptionalDecimal:
+    a: Optional[Decimal]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithOptionalUuid:
+    a: Optional[UUID]

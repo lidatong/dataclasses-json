@@ -5,8 +5,9 @@ then
   echo 'must supply tag'
   exit 1
 else
-  # git tag $1
-  # python setup.py sdist bdist_wheel
-  # twine upload dist/*
+  . venv/bin/activate
+  git tag $1
   portray on_github_pages
+  python setup.py sdist bdist_wheel
+  twine upload dist/*
 fi

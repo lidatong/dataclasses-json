@@ -288,7 +288,7 @@ def _asdict(obj, encode_json=False):
         return dict((_asdict(k, encode_json=encode_json),
                      _asdict(v, encode_json=encode_json)) for k, v in
                     obj.items())
-    elif isinstance(obj, Collection) and not isinstance(obj, str):
+    elif isinstance(obj, Collection) and not isinstance(obj, str) and not isinstance(obj, bytes):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:
         return copy.deepcopy(obj)

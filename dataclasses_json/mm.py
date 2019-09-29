@@ -25,7 +25,7 @@ from dataclasses_json.utils import (_is_collection, _is_optional,
 class _TimestampField(fields.Field):
     def _serialize(self, value, attr, obj, **kwargs):
         if value is not None:
-            return value.timesimportamp()
+            return value.timestamp()
         else:
             if not self.required:
                 return None

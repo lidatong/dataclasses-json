@@ -44,10 +44,22 @@ class _TimestampField(fields.Field):
 
 class _IsoField(fields.Field):
     def _serialize(self, value, attr, obj, **kwargs):
-        return value.isoformat()
+        if value is not None:
+            return value.isoformat()
+        else:
+            if not self.required:
+                return None
+            else:
+                raise ValidationError(self.default_error_messages["required"])
 
     def _deserialize(self, value, attr, data, **kwargs):
-        return datetime.fromisoformat(value)
+        if value is not None:
+            return datetime.fromisoformat(value)
+        else:
+            if not self.required:
+                return None
+            else:
+                raise ValidationError(self.default_error_messages["required"])
 
 
 class _UnionField(fields.Field):

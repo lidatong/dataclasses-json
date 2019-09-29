@@ -13,6 +13,7 @@ from typing_inspect import is_union_type
 
 from marshmallow import fields, Schema, post_load
 from marshmallow_enum import EnumField
+from marshmallow.exceptions import ValidationError
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
                                    _ExtendedEncoder, _user_overrides)
@@ -23,10 +24,22 @@ from dataclasses_json.utils import (_is_collection, _is_optional,
 
 class _TimestampField(fields.Field):
     def _serialize(self, value, attr, obj, **kwargs):
-        return value.timestamp()
+        if value is not None:
+            return value.timesimportamp()
+        else:
+            if not self.required:
+                return None
+            else:
+                raise ValidationError(self.default_error_messages["required"])
 
     def _deserialize(self, value, attr, data, **kwargs):
-        return _timestamp_to_dt_aware(value)
+        if value is not None:
+            return _timestamp_to_dt_aware(value)
+        else:
+            if not self.required:
+                return None
+            else:
+                raise ValidationError(self.default_error_messages["required"])
 
 
 class _IsoField(fields.Field):

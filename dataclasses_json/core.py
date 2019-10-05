@@ -45,6 +45,7 @@ class _ExtendedEncoder(json.JSONEncoder):
         return result
 
 
+@lru_cache(maxsize=128)
 def _user_overrides(cls):
     confs = ['encoder', 'decoder', 'mm_field', 'letter_case']
     FieldOverride = namedtuple('FieldOverride', confs)

@@ -6,6 +6,7 @@ from dataclasses import (MISSING, _is_dataclass_instance, fields, is_dataclass)
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
+from functools import lru_cache
 from typing import Collection, Mapping, Union, get_type_hints
 from uuid import UUID
 
@@ -98,6 +99,11 @@ def _decode_letter_case_overrides(field_names, overrides):
     return names
 
 
+@lru_cache(maxsize=128)
+def _get_type_hints_cached(cls):
+    return get_type_hints(cls)
+
+
 def _decode_dataclass(cls, kvs, infer_missing):
     if isinstance(kvs, cls):
         return kvs
@@ -116,7 +122,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
             kvs[field.name] = None
 
     init_kwargs = {}
-    types = get_type_hints(cls)
+    types = _get_type_hints_cached(cls)
     for field in fields(cls):
         # The field should be skipped from being added
         # to init_kwargs as it's not intended as a constructor argument.
@@ -196,7 +202,7 @@ def _support_extended_types(field_type, field_value):
         res = field_value
     return res
 
-
+@lru_cache(maxsize=128)
 def _is_supported_generic(type_):
     not_str = not _issubclass_safe(type_, str)
     is_enum = _issubclass_safe(type_, Enum)

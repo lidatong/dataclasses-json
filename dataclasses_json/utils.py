@@ -1,6 +1,7 @@
 import inspect
 import sys
 from datetime import datetime, timezone
+from functools import lru_cache
 from typing import Collection, Mapping, Optional
 
 
@@ -62,6 +63,7 @@ def _isinstance_safe(o, t):
         return result
 
 
+@lru_cache(maxsize=128)
 def _issubclass_safe(cls, classinfo):
     try:
         return issubclass(cls, classinfo)

@@ -7,6 +7,7 @@ setup(
     name='dataclasses-json',
     version='0.3.4',
     packages=find_packages(exclude=('tests*',)),
+    package_data={"dataclasses_json": ["py.typed"]},
     author='lidatong',
     author_email='charles.dt.li@gmail.com',
     description='Easily serialize dataclasses to and from JSON',

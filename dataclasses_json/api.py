@@ -26,8 +26,8 @@ class LetterCase(Enum):
 
 
 def config(metadata: dict = None, *,
-           encoder: callable = None,
-           decoder: callable = None,
+           encoder: Callable = None,
+           decoder: Callable = None,
            mm_field: MarshmallowField = None,
            letter_case: Callable[[str], str] = None,
            field_name: str = None) -> Dict[str, dict]:

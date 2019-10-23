@@ -117,7 +117,7 @@ class DataClassJsonMixin(abc.ABC):
                   infer_missing=False) -> A:
         return _decode_dataclass(cls, kvs, infer_missing)
 
-    def to_dict(self, encode_json=False):
+    def to_dict(self, encode_json=False) -> Dict[str, Json]:
         return _asdict(self, encode_json=encode_json)
 
     @classmethod

@@ -37,5 +37,3 @@ setup(
     scripts=['publish.py']
 )
 
-
-

@@ -1,4 +1,5 @@
 README.md
+publish.py
 setup.py
 dataclasses_json/__init__.py
 dataclasses_json/api.py

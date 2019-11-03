@@ -581,8 +581,8 @@
     <span class="n">PASCAL</span> <span class="o">=</span> <span class="n">pascalcase</span>
 
 <span class="k">def</span> <span class="nf">config</span><span class="p">(</span><span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-           <span class="n">encoder</span><span class="p">:</span> <span class="nb">callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
-           <span class="n">decoder</span><span class="p">:</span> <span class="nb">callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+           <span class="n">encoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+           <span class="n">decoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
            <span class="n">mm_field</span><span class="p">:</span> <span class="n">MarshmallowField</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
            <span class="n">letter_case</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
            <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
@@ -671,7 +671,7 @@
                   <span class="n">infer_missing</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_decode_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kvs</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Json</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">_asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -737,8 +737,8 @@
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="err">(</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">encoder</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">built</span><span class="o">-</span><span class="ow">in</span> <span class="n">function</span> <span class="n">callable</span><span class="o">&gt;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">decoder</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">built</span><span class="o">-</span><span class="ow">in</span> <span class="n">function</span> <span class="n">callable</span><span class="o">&gt;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">encoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">decoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">mm_field</span><span class="p">:</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Field</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">letter_case</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
@@ -747,8 +747,8 @@
 
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="nv">def</span> <span class="nv">config</span><span class="ss">(</span><span class="nv">metadata</span>: <span class="nv">dict</span> <span class="o">=</span> <span class="nv">None</span>, <span class="o">*</span>,
-           <span class="nv">encoder</span>: <span class="nv">callable</span> <span class="o">=</span> <span class="nv">None</span>,
-           <span class="nv">decoder</span>: <span class="nv">callable</span> <span class="o">=</span> <span class="nv">None</span>,
+           <span class="nv">encoder</span>: <span class="nv">Callable</span> <span class="o">=</span> <span class="nv">None</span>,
+           <span class="nv">decoder</span>: <span class="nv">Callable</span> <span class="o">=</span> <span class="nv">None</span>,
            <span class="nv">mm_field</span>: <span class="nv">MarshmallowField</span> <span class="o">=</span> <span class="nv">None</span>,
            <span class="nv">letter_case</span>: <span class="nv">Callable</span>[[<span class="nv">str</span>], <span class="nv">str</span>] <span class="o">=</span> <span class="nv">None</span>,
            <span class="nv">field_name</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">Dict</span>[<span class="nv">str</span>, <span class="nv">dict</span>]:
@@ -950,13 +950,13 @@ class Example:
 <span class="nv">def</span> <span class="ss">(</span>
     <span class="nv">self</span>,
     <span class="nv">encode_json</span><span class="o">=</span><span class="nv">False</span>
-<span class="ss">)</span>
+<span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">Dict</span>[<span class="nv">str</span>, <span class="nv">Union</span>[<span class="nv">dict</span>, <span class="nv">list</span>, <span class="nv">str</span>, <span class="nv">int</span>, <span class="nv">float</span>, <span class="nv">bool</span>, <span class="nv">NoneType</span>]]
 ```
 
 
 
 ??? <span class="nv">example</span> <span class="s2">&quot;</span><span class="s">View Source</span><span class="s2">&quot;</span>
-        <span class="nv">def</span> <span class="nv">to_dict</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">encode_json</span><span class="o">=</span><span class="nv">False</span><span class="ss">)</span>:
+        <span class="nv">def</span> <span class="nv">to_dict</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">encode_json</span><span class="o">=</span><span class="nv">False</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">Dict</span>[<span class="nv">str</span>, <span class="nv">Json</span>]:
             <span class="k">return</span> <span class="nv">_asdict</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">encode_json</span><span class="o">=</span><span class="nv">encode_json</span><span class="ss">)</span>
 
 ##### <span class="nv">to_json</span>
@@ -1061,7 +1061,7 @@ class Example:
                   <span class="nv">infer_missing</span><span class="o">=</span><span class="nv">False</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">A</span>:
         <span class="k">return</span> <span class="nv">_decode_dataclass</span><span class="ss">(</span><span class="nv">cls</span>, <span class="nv">kvs</span>, <span class="nv">infer_missing</span><span class="ss">)</span>
 
-    <span class="nv">def</span> <span class="nv">to_dict</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">encode_json</span><span class="o">=</span><span class="nv">False</span><span class="ss">)</span>:
+    <span class="nv">def</span> <span class="nv">to_dict</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">encode_json</span><span class="o">=</span><span class="nv">False</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">Dict</span>[<span class="nv">str</span>, <span class="nv">Json</span>]:
         <span class="k">return</span> <span class="nv">_asdict</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">encode_json</span><span class="o">=</span><span class="nv">encode_json</span><span class="ss">)</span>
 
     @<span class="nv">classmethod</span>

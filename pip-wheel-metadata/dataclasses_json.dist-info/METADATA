@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: dataclasses-json
-Version: 0.3.2
+Version: 0.3.5
 Summary: Easily serialize dataclasses to and from JSON
 Home-page: https://github.com/lidatong/dataclasses-json
 Author: lidatong
@@ -79,9 +79,11 @@ ConfiguredSimpleExample.from_json('{"intField": 1}')  # ConfiguredSimpleExample(
 It's recursive (see caveats below), so you can easily work with nested dataclasses.
 In addition to the supported types in the 
 [py to JSON table](https://docs.python.org/3/library/json.html#py-to-json-table), this library supports the following:
+
 - any arbitrary [Collection](https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection) type is supported.
 [Mapping](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) types are encoded as JSON objects and `str` types as JSON strings. 
 Any other Collection types are encoded into JSON arrays, but decoded into the original collection types.
+
 - [datetime](https://docs.python.org/3/library/datetime.html#available-types) 
 objects. `datetime` objects are encoded to `float` (JSON number) using 
 [timestamp](https://docs.python.org/3/library/datetime.html#datetime.datetime.timestamp).
@@ -91,11 +93,14 @@ corresponding to a `datetime` field in your dataclass are decoded
 into a datetime-aware object, with `tzinfo` set to your system local timezone.
 Thus, if you encode a datetime-naive object, you will decode into a 
 datetime-aware object. This is important, because encoding and decoding won't 
-strictly be inverses. See this section if you want to override this default
+strictly be inverses. See [this section](#Overriding) if you want to override this default
 behavior (for example, if you want to use ISO).
+
 - [UUID](https://docs.python.org/3/library/uuid.html#uuid.UUID) objects. They 
 are encoded as `str` (JSON string).
 
+- [Decimal](https://docs.python.org/3/library/decimal.html) objects. They are
+also encoded as `str`.
 
 **The [latest release](https://github.com/lidatong/dataclasses-json/releases/latest) is compatible with both Python 3.7 and Python 3.6 (with the dataclasses backport).**
 
@@ -179,11 +184,9 @@ request/response)**
 ```python
 import json
 
-person_dict = Person.schema().dump(Person('lidatong'))
-
 response_dict = {
     'response': {
-        'person': person_dict
+        'person': Person('lidatong').to_dict()
     }
 }
 
@@ -191,8 +194,7 @@ response_json = json.dumps(response_dict)
 ```
 
 In this case, we do two steps. First, we encode the dataclass into a 
-**python dictionary** rather than a JSON string, using `schema()` and `dump`. 
-Scroll down for a section addressing that.
+**python dictionary** rather than a JSON string, using `.to_dict`. 
 
 Second, we leverage the built-in `json.dumps` to serialize our `dataclass` into 
 a JSON string.
@@ -207,7 +209,7 @@ response_dict = json.loads('{"response": {"person": {"name": "lidatong"}}}')
 
 person_dict = response_dict['response']
 
-person = Person.schema().load(person_dict)
+person = Person.from_dict(person_dict)
 ```
 
 In a similar vein to encoding above, we leverage the built-in `json` module.
@@ -216,7 +218,7 @@ First, call `json.loads` to read the entire JSON object into a
 dictionary. We then access the key of the value containing the encoded dict of 
 our `Person` that we want to decode (`response_dict['response']`).
 
-Second, we load in the dictionary using `Person.schema().load`.
+Second, we load in the dictionary using `Person.from_dict`.
 
 
 ### Encode or decode into Python lists/dictionaries rather than JSON?
@@ -256,28 +258,56 @@ Person.schema().load(people_dicts, many=True)  # [Person(name='lidatong')]
 
 JSON letter case by convention is camelCase, in Python members are by convention snake_case.
 
+You can configure it to encode/decode from other casing schemes at both the class level and the field level.
+
 ```python
 from dataclasses import dataclass, field
 
-from dataclasses_json import LetterCase, dataclass_json
+from dataclasses_json import LetterCase, config, dataclass_json
 
 
+# changing casing at the class level
+@dataclass_json(letter_case=LetterCase.CAMEL)
+@dataclass
+class Person:
+    given_name: str
+    family_name: str
+
+Person('Alice', 'Liddell').to_json()  # '{"givenName": "Alice"}'
+Person.from_json('{"givenName": "Alice", "familyName": "Liddell"}')  # Person('Alice', 'Liddell')
+
+# at the field level
 @dataclass_json
 @dataclass
 class Person:
-    given_name: str = field(
-        metadata={'dataclasses_json': {
-            'letter_case': LetterCase.CAMEL
-        }}
-    )
+    given_name: str = field(metadata=config(letter_case=LetterCase.CAMEL))
+    family_name: str
 
-Person('Alice').to_json()  # '{"givenName": "Alice"}'
-Person.from_json('{"givenName": "Alice"}')  # Person('Alice')
+Person('Alice', 'Liddell').to_json()  # '{"givenName": "Alice"}'
+# notice how the `family_name` field is still snake_case, because it wasn't configured above
+Person.from_json('{"givenName": "Alice", "family_name": "Liddell"}')  # Person('Alice', 'Liddell')
 ```
 
 **This library assumes your field follows the Python convention of snake_case naming.**
 If your field is not `snake_case` to begin with and you attempt to parameterize `LetterCase`, 
 the behavior of encoding/decoding is undefined (most likely it will result in subtle bugs).
+
+### Encode or decode using a different name
+
+```python
+from dataclasses import dataclass, field
+
+from dataclasses_json import config, dataclass_json
+
+@dataclass_json
+@dataclass
+class Person:
+    given_name: str = field(metadata=config(field_name="overriddenGivenName"))
+
+Person(given_name="Alice", family_name='Liddell')  # Person('Alice')
+Person.from_json('{"overriddenGivenName": "Alice"}')  # Person('Alice')
+Person('Alice', 'Liddell').to_json()  # {"overriddenGivenName": "Alice"}
+```
 
 ### Handle missing or optional field values when decoding?
 

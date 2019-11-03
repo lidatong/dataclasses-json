@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: dataclasses-json
-Version: 0.3.4
+Version: 0.3.5
 Summary: Easily serialize dataclasses to and from JSON
 Home-page: https://github.com/lidatong/dataclasses-json
 Author: lidatong

@@ -33,5 +33,6 @@ setup(
             'portray'
         ]
     },
-    include_package_data=True
+    include_package_data=True,
+    scripts=['publish.py']
 )

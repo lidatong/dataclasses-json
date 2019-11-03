@@ -9,5 +9,4 @@ venv
 *.pyc
 .mypy_cache
 .hypothesis
-publish.sh
 pip-wheel-metadata

@@ -26,8 +26,8 @@ class LetterCase(Enum):
 
 
 def config(metadata: dict = None, *,
-           encoder: callable = None,
-           decoder: callable = None,
+           encoder: Callable = None,
+           decoder: Callable = None,
            mm_field: MarshmallowField = None,
            letter_case: Callable[[str], str] = None,
            field_name: str = None) -> Dict[str, dict]:
@@ -117,7 +117,7 @@ class DataClassJsonMixin(abc.ABC):
                   infer_missing=False) -> A:
         return _decode_dataclass(cls, kvs, infer_missing)
 
-    def to_dict(self, encode_json=False):
+    def to_dict(self, encode_json=False) -> Dict[str, Json]:
         return _asdict(self, encode_json=encode_json)
 
     @classmethod

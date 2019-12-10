@@ -9,6 +9,7 @@ from enum import Enum
 from typing import Collection, Mapping, Union, get_type_hints
 from uuid import UUID
 
+import marshmallow
 from typing_inspect import is_union_type
 
 from dataclasses_json.utils import (
@@ -98,6 +99,35 @@ def _decode_letter_case_overrides(field_names, overrides):
     return names
 
 
+class CatchAll:
+    pass
+
+
+def _handle_undefined_parameters(cls, kvs, types):
+    try:
+        undefined_parameter_action = cls.dataclass_json_config['undefined_parameters']
+    except AttributeError:
+        return kvs
+
+    catch_all_field = None
+    class_fields = fields(cls)
+    for field in class_fields:
+        if types[field.name] == CatchAll:
+            catch_all_field = field
+
+    unknown_given_parameters = {}
+    if undefined_parameter_action is not None:
+        unknown_given_parameters = {k: v for k, v in kvs.items() if k not in [field.name for field in class_fields]}
+        unknown_given_parameters = undefined_parameter_action(unknown_given_parameters)
+
+    if undefined_parameter_action == UndefinedParameters.CATCH_ALL:
+        if catch_all_field is None:
+            raise UndefinedParameterError("No field of type dataclasses_json.CatchAll defined")
+        kvs[catch_all_field.name] = unknown_given_parameters
+    kvs = {k: v for k, v in kvs.items() if k not in unknown_given_parameters}
+    return kvs
+
+
 def _decode_dataclass(cls, kvs, infer_missing):
     if isinstance(kvs, cls):
         return kvs
@@ -107,6 +137,9 @@ def _decode_dataclass(cls, kvs, infer_missing):
     decode_names = _decode_letter_case_overrides(field_names, overrides)
     kvs = {decode_names.get(k, k): v for k, v in kvs.items()}
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
+
+    init_kwargs = {}
+    types = get_type_hints(cls)
     for field in missing_fields:
         if field.default is not MISSING:
             kvs[field.name] = field.default
@@ -115,8 +148,8 @@ def _decode_dataclass(cls, kvs, infer_missing):
         elif infer_missing:
             kvs[field.name] = None
 
-    init_kwargs = {}
-    types = get_type_hints(cls)
+    kvs = _handle_undefined_parameters(cls, kvs, types)
+
     for field in fields(cls):
         # The field should be skipped from being added
         # to init_kwargs as it's not intended as a constructor argument.
@@ -171,6 +204,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
         else:
             init_kwargs[field.name] = _support_extended_types(field_type,
                                                               field_value)
+
     return cls(**init_kwargs)
 
 
@@ -292,3 +326,27 @@ def _asdict(obj, encode_json=False):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:
         return copy.deepcopy(obj)
+
+
+class UndefinedParameterError(marshmallow.exceptions.ValidationError):
+    pass
+
+
+def _ignore(undefined_parameters):
+    return {}
+
+
+def _raise(undefined_parameters):
+    if len(undefined_parameters) > 0:
+        raise UndefinedParameterError(f"Received undefined initialization arguments {undefined_parameters}")
+    return _ignore(undefined_parameters)
+
+
+def _catch_all(undefined_parameters):
+    return undefined_parameters
+
+
+class UndefinedParameters(Enum):
+    IGNORE = _ignore
+    RAISE = _raise
+    CATCH_ALL = _catch_all

@@ -30,6 +30,7 @@ def config(metadata: dict = None, *,
            decoder: Callable = None,
            mm_field: MarshmallowField = None,
            letter_case: Callable[[str], str] = None,
+           undefined_parameters: Callable[[Dict], Optional[Dict]] = None,
            field_name: str = None) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}
@@ -57,6 +58,9 @@ def config(metadata: dict = None, *,
 
     if letter_case is not None:
         data['letter_case'] = letter_case
+
+    if undefined_parameters is not None:
+        data['undefined_parameters'] = undefined_parameters
 
     return metadata
 
@@ -143,7 +147,10 @@ class DataClassJsonMixin(abc.ABC):
                       unknown=unknown)
 
 
-def dataclass_json(_cls=None, *, letter_case=None):
+
+
+
+def dataclass_json(_cls=None, *, letter_case=None, undefined_parameters=None):
     """
     Based on the code in the `dataclasses` module to handle optional-parens
     decorators. See example below:
@@ -155,17 +162,18 @@ def dataclass_json(_cls=None, *, letter_case=None):
     """
 
     def wrap(cls):
-        return _process_class(cls, letter_case)
+        return _process_class(cls, letter_case, undefined_parameters)
 
     if _cls is None:
         return wrap
     return wrap(_cls)
 
 
-def _process_class(cls, letter_case):
-    if letter_case is not None:
-        cls.dataclass_json_config = config(letter_case=letter_case)[
-            'dataclasses_json']
+def _process_class(cls, letter_case, undefined_parameters):
+    if letter_case is not None or undefined_parameters is not None:
+        cls.dataclass_json_config = config(letter_case=letter_case,
+                                           undefined_parameters=undefined_parameters)['dataclasses_json']
+
     cls.to_json = DataClassJsonMixin.to_json
     # unwrap and rewrap classmethod to tag it to cls rather than the literal
     # DataClassJsonMixin ABC

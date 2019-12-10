@@ -16,7 +16,7 @@ from marshmallow_enum import EnumField
 from marshmallow.exceptions import ValidationError
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
-                                   _ExtendedEncoder, _user_overrides)
+                                   _ExtendedEncoder, _user_overrides, CatchAll)
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
                                     _is_new_type, _get_type_origin)
@@ -124,7 +124,8 @@ TYPES = {
     bool: fields.Bool,
     datetime: _TimestampField,
     UUID: fields.UUID,
-    Decimal: fields.Decimal
+    Decimal: fields.Decimal,
+    CatchAll: fields.Dict,
 }
 
 A = typing.TypeVar('A')
@@ -264,6 +265,8 @@ def build_type(type_, options, mixin, field, cls):
 def schema(cls, mixin, infer_missing):
     schema = {}
     overrides = _user_overrides(cls)
+    # TODO check the undefined parameters and add the proper schema action
+    #  https://marshmallow.readthedocs.io/en/stable/quickstart.html
     for field in dc_fields(cls):
         metadata = (field.metadata or {}).get('dataclasses_json', {})
         metadata = overrides[field.name]

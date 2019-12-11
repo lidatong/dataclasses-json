@@ -29,6 +29,11 @@ class LetterCase(Enum):
 
 class IgnoreUndefinedParameters(UndefinedParameterAction):
 
+    """
+    This action does nothing when it encounters undefined parameters.
+    The undefined parameters can not be retrieved after the class has been created.
+    """
+
     @staticmethod
     def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
         known_given_parameters, _ = UndefinedParameterAction._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
@@ -36,6 +41,10 @@ class IgnoreUndefinedParameters(UndefinedParameterAction):
 
 
 class RaiseUndefinedParameters(UndefinedParameterAction):
+
+    """
+    This action raises UndefinedParameterError if it encounters an undefined parameter during initialization.
+    """
 
     @staticmethod
     def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
@@ -46,6 +55,13 @@ class RaiseUndefinedParameters(UndefinedParameterAction):
 
 
 class CatchAllUndefinedParameters(UndefinedParameterAction):
+
+    """
+    This class allows to add a field of type utils.CatchAll which acts as a dictionary into which all
+    undefined parameters will be written.
+    These parameters are not affected by LetterCase.
+    If no undefined parameters are given, this dictionary will be empty.
+    """
 
     @staticmethod
     def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
@@ -85,9 +101,13 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
 
 
 class UndefinedParameters(Enum):
+    """
+    Choose the behavior what happens when an undefined parameter is encountered during class initialization.
+    """
     INCLUDE = CatchAllUndefinedParameters
     RAISE = RaiseUndefinedParameters
     EXCLUDE = IgnoreUndefinedParameters
+    DEFAULT = None  # Same as not specifying a parameter
 
 
 def config(metadata: dict = None, *,

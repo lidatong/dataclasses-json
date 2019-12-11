@@ -19,8 +19,8 @@ from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
                                    _ExtendedEncoder, _user_overrides)
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
-                                    _is_new_type, _get_type_origin, _undefined_parameter_action,
-                                    _handle_undefined_parameters, CatchAll)
+                                    _is_new_type, _get_type_origin,
+                                    _handle_undefined_parameters_save, CatchAll)
 
 
 class _TimestampField(fields.Field):
@@ -326,11 +326,14 @@ def build_schema(cls: typing.Type[A],
         dumped = Schema.dump(self, obj, many=many)
         # TODO This is hacky, but the other option I can think of is to generate a different schema
         #  depending on dump and load, which is even more hacky
+
+        # The only problem is the catch all field, we can't statically create a schema for it
+        # so we just update the dumped dict
         if many:
             for i, _obj in enumerate(obj):
-                dumped[i].update(_handle_undefined_parameters(cls=_obj, kvs=None, usage="dump"))
+                dumped[i].update(_handle_undefined_parameters_save(cls=_obj, kvs=None, usage="dump"))
         else:
-            dumped.update(_handle_undefined_parameters(cls=obj, kvs=None, usage="dump"))
+            dumped.update(_handle_undefined_parameters_save(cls=obj, kvs=None, usage="dump"))
         return dumped
 
     schema_ = schema(cls, mixin, infer_missing)
@@ -347,4 +350,7 @@ def build_schema(cls: typing.Type[A],
 
 
 class UndefinedParameterError(ValidationError):
+    """
+    Raised when something has gone wrong handling undefined parameters.
+    """
     pass

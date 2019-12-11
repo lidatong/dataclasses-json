@@ -119,7 +119,10 @@ def _undefined_parameter_action(cls):
         return
 
 
-def _handle_undefined_parameters(cls, kvs, usage: str):
+def _handle_undefined_parameters_save(cls, kvs, usage: str):
+    """
+    Checks if an undefined parameters action is defined and performs the according action.
+    """
     undefined_parameter_action = _undefined_parameter_action(cls)
     if undefined_parameter_action is None:
         return kvs
@@ -134,4 +137,7 @@ def _handle_undefined_parameters(cls, kvs, usage: str):
 
 
 class CatchAll:
+    """
+    Dummy type to indicate the catch all field.
+    """
     pass

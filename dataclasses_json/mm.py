@@ -298,7 +298,6 @@ def schema(cls, mixin, infer_missing):
             t = build_type(type_, options, mixin, field, cls)
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
             if field.type != CatchAll:
-                # TODO what to do with it?
                 schema[field.name] = t
 
     return schema

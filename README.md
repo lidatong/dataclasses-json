@@ -326,6 +326,79 @@ Personally I recommend you leverage dataclass defaults rather than using
 `infer_missing`, but if for some reason you need to decouple the behavior of 
 JSON decoding from the field's default value, this will allow you to do so.
 
+
+### Handle unknown input data?
+
+By default, it is up to implementation what happens when a `json_dataclass` receives input parameters that are not defined.
+(the `from_dict` method ignores them, when loading using `schema()` a ValidationError is raised.)
+There are three ways to customize this behavior.
+
+Assume you want to instantiate a dataclass with for the following dictionary:
+```python
+dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "undefined_field_name": [1, 2, 3]}
+```
+
+1. You can enforce to always raise an error by setting the undefined_parameters keyword to `UndefinedParameters.RAISE`
+ (`'RAISE'` as a case-insensitive string works as well). Of course it works normally if you don't pass any undefined parameters.
+
+```python
+from dataclasses_json import UndefinedParameters
+
+@dataclass_json(undefined_parameters=UndefinedParameters.RAISE)
+@dataclass()
+class ExactAPIDump:
+    endpoint: str
+    data: Dict[str, Any]
+
+dump = ExactAPIDump.from_dict(dump_dict)  # raises UndefinedParameterError
+```
+
+
+2. You can simply ignore any undefined parameters by setting the undefined_parameters keyword to `UndefinedParameters.EXCLUDE`
+ (`'EXCLUDE'` as a case-insensitive string works as well). Note that you will not be able to retrieve them using `to_dict`:
+
+```python
+from dataclasses_json import UndefinedParameters
+
+@dataclass_json(undefined_parameters=UndefinedParameters.EXCLUDE)
+@dataclass()
+class DontCareAPIDump:
+    endpoint: str
+    data: Dict[str, Any]
+
+dump = DontCareAPIDump.from_dict(dump_dict)  # DontCareAPIDump(endpoint='some_api_endpoint', data={'foo': 1, 'bar': '2'})
+dump.to_dict()  # {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}}
+```
+
+3. You can save them in a catch-all field and do whatever needs to be done later. Simply set the undefined_parameters
+keyword to `UndefinedParameters.INCLUDE` (`'INCLUDE'` as a case-insensitive string works as well) and define a field
+of type `CatchAll` where all unknown values will end up.
+ This simply represents a dictionary that can hold anything. 
+ If there are no undefined parameters, this will be an empty dictionary.
+
+```python
+from dataclasses_json import UndefinedParameters, CatchAll
+
+@dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+@dataclass()
+class UnknownAPIDump:
+    endpoint: str
+    data: Dict[str, Any]
+    unknown_things: CatchAll
+
+dump = UnknownAPIDump.from_dict(dump_dict)  # UnknownAPIDump(endpoint='some_api_endpoint', data={'foo': 1, 'bar': '2'}, unknown_things={'undefined_field_name': [1, 2, 3]})
+dump.to_dict()  # {'endpoint': 'some_api_endpoint', 'data': {'foo': 1, 'bar': '2'}, 'undefined_field_name': [1, 2, 3]}
+```
+
+When using `UndefinedParameters.INCLUDE`, an `UndefinedParameterError` will be raised if you don't specify
+exactly one field of type `CatchAll`.
+Note that `LetterCase` does not affect values written into the `CatchAll` field, they will be as they are given.
+
+
+4. All 3 options work as well using `schema().loads` and `schema().dumps`, as long as you don't overwrite it by specifying `schema(unknown=<a marshmallow value>)`.
+marshmallow uses the same 3 keywords ['include', 'exclude', 'raise'](https://marshmallow.readthedocs.io/en/stable/quickstart.html#handling-unknown-fields).
+
+
 ### Explanation
 
 Briefly, on what's going on under the hood in the above examples: calling 

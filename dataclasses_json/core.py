@@ -1,3 +1,4 @@
+import abc
 import copy
 import json
 import warnings
@@ -6,10 +7,9 @@ from dataclasses import (MISSING, _is_dataclass_instance, fields, is_dataclass)
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Collection, Mapping, Union, get_type_hints
+from typing import Collection, Mapping, Union, get_type_hints, Dict, Any, Tuple
 from uuid import UUID
 
-import marshmallow
 from typing_inspect import is_union_type
 
 from dataclasses_json.utils import (
@@ -19,7 +19,7 @@ from dataclasses_json.utils import (
     _is_new_type,
     _is_optional,
     _isinstance_safe,
-    _issubclass_safe)
+    _issubclass_safe, _handle_undefined_parameters)
 
 Json = Union[dict, list, str, int, float, bool, None]
 
@@ -99,45 +99,6 @@ def _decode_letter_case_overrides(field_names, overrides):
     return names
 
 
-class CatchAll:
-    pass
-
-
-def _handle_undefined_parameters(cls, kvs, types):
-    try:
-        if cls.dataclass_json_config is None:
-            return kvs
-        undefined_parameter_action = cls.dataclass_json_config['undefined_parameters']
-    except AttributeError:
-        return kvs
-
-    catch_all_field = None
-    class_fields = fields(cls)
-    for field in class_fields:
-        if types[field.name] == CatchAll:
-            if catch_all_field is not None:
-                raise UndefinedParameterError(f"Multiply catch-all fields supplied.")
-            catch_all_field = field
-
-    unknown_given_parameters = {}
-    if undefined_parameter_action is not None:
-        unknown_given_parameters = {k: v for k, v in kvs.items() if k not in [field.name for field in class_fields]}
-        unknown_given_parameters = undefined_parameter_action(unknown_given_parameters)
-        # TODO not sure if we want to apply the letter case to the parameters inside catch all,
-        #  if yes here would be the place to do it
-
-    if catch_all_field is not None and catch_all_field.name in kvs:
-        raise UndefinedParameterError(f"Received input parameter with same name as catch-all field: "
-                                      f"'{catch_all_field.name}'")
-
-    if undefined_parameter_action == UndefinedParameters.CATCH_ALL:
-        if catch_all_field is None:
-            raise UndefinedParameterError("No field of type dataclasses_json.CatchAll defined")
-        kvs[catch_all_field.name] = unknown_given_parameters
-    kvs = {k: v for k, v in kvs.items() if k not in unknown_given_parameters}
-    return kvs
-
-
 def _decode_dataclass(cls, kvs, infer_missing):
     if isinstance(kvs, cls):
         return kvs
@@ -148,8 +109,6 @@ def _decode_dataclass(cls, kvs, infer_missing):
     kvs = {decode_names.get(k, k): v for k, v in kvs.items()}
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
 
-    init_kwargs = {}
-    types = get_type_hints(cls)
     for field in missing_fields:
         if field.default is not MISSING:
             kvs[field.name] = field.default
@@ -158,8 +117,10 @@ def _decode_dataclass(cls, kvs, infer_missing):
         elif infer_missing:
             kvs[field.name] = None
 
-    kvs = _handle_undefined_parameters(cls, kvs, types)
+    kvs = _handle_undefined_parameters(cls, kvs, usage="from")
 
+    init_kwargs = {}
+    types = get_type_hints(cls)
     for field in fields(cls):
         # The field should be skipped from being added
         # to init_kwargs as it's not intended as a constructor argument.
@@ -324,13 +285,10 @@ def _asdict(obj, encode_json=False):
     if _is_dataclass_instance(obj):
         result = []
         for field in fields(obj):
-            if field.type == CatchAll:
-                # Lift the keys back up to top level and remove the catch all field
-                undefined_content = _asdict(getattr(obj, field.name), encode_json=encode_json)
-                result.extend((k, v) for k, v in undefined_content.items())
-            else:
-                value = _asdict(getattr(obj, field.name), encode_json=encode_json)
-                result.append((field.name, value))
+            value = _asdict(getattr(obj, field.name), encode_json=encode_json)
+            result.append((field.name, value))
+
+        result = _handle_undefined_parameters(cls=obj, kvs=dict(result), usage="to")
         return _encode_overrides(dict(result), _user_overrides(obj),
                                  encode_json=encode_json)
     elif isinstance(obj, Mapping):
@@ -343,25 +301,25 @@ def _asdict(obj, encode_json=False):
         return copy.deepcopy(obj)
 
 
-class UndefinedParameterError(marshmallow.exceptions.ValidationError):
-    pass
+class UndefinedParameterAction(abc.ABC):
 
+    @staticmethod
+    @abc.abstractmethod
+    def handle_from_dict(cls, kvs: Dict[Any, Any]) -> Dict[str, Any]:
+        pass
 
-def _ignore(undefined_parameters):
-    return {}
+    @staticmethod
+    def handle_to_dict(obj, kvs: Dict[Any, Any]) -> Dict[Any, Any]:
+        return kvs
 
+    @staticmethod
+    def handle_dump(obj) -> Dict[Any, Any]:
+        return {}
 
-def _raise(undefined_parameters):
-    if len(undefined_parameters) > 0:
-        raise UndefinedParameterError(f"Received undefined initialization arguments {undefined_parameters}")
-    return _ignore(undefined_parameters)
-
-
-def _catch_all(undefined_parameters):
-    return undefined_parameters
-
-
-class UndefinedParameters(Enum):
-    IGNORE = _ignore
-    RAISE = _raise
-    CATCH_ALL = _catch_all
+    @staticmethod
+    def _separate_defined_undefined_kvs(cls, kvs: Dict) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        class_fields = fields(cls)
+        field_names = [field.name for field in class_fields]
+        unknown_given_parameters = {k: v for k, v in kvs.items() if k not in field_names}
+        known_given_parameters = {k: v for k, v in kvs.items() if k in field_names}
+        return known_given_parameters, unknown_given_parameters

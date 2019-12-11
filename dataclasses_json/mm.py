@@ -16,10 +16,11 @@ from marshmallow_enum import EnumField
 from marshmallow.exceptions import ValidationError
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
-                                   _ExtendedEncoder, _user_overrides, CatchAll)
+                                   _ExtendedEncoder, _user_overrides)
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
-                                    _is_new_type, _get_type_origin)
+                                    _is_new_type, _get_type_origin, _undefined_parameter_action,
+                                    _handle_undefined_parameters, CatchAll)
 
 
 class _TimestampField(fields.Field):
@@ -296,7 +297,10 @@ def schema(cls, mixin, infer_missing):
 
             t = build_type(type_, options, mixin, field, cls)
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
-            schema[field.name] = t
+            if field.type != CatchAll:
+                # TODO what to do with it?
+                schema[field.name] = t
+
     return schema
 
 
@@ -307,7 +311,7 @@ def build_schema(cls: typing.Type[A],
     Meta = type('Meta',
                 (),
                 {'fields': tuple(field.name for field in dc_fields(cls)
-                                 if field.name != 'dataclass_json_config')})
+                                 if field.name != 'dataclass_json_config' and field.type != CatchAll)})
 
     @post_load
     def make_instance(self, kvs, **kwargs):
@@ -319,6 +323,17 @@ def build_schema(cls: typing.Type[A],
 
         return Schema.dumps(self, *args, **kwargs)
 
+    def dump(self, obj, *, many=None):
+        dumped = Schema.dump(self, obj, many=many)
+        # TODO This is hacky, but the other option I can think of is to generate a different schema
+        #  depending on dump and load, which is even more hacky
+        if many:
+            for i, _obj in enumerate(obj):
+                dumped[i].update(_handle_undefined_parameters(cls=_obj, kvs=None, usage="dump"))
+        else:
+            dumped.update(_handle_undefined_parameters(cls=obj, kvs=None, usage="dump"))
+        return dumped
+
     schema_ = schema(cls, mixin, infer_missing)
     DataClassSchema: typing.Type[SchemaType] = type(
         f'{cls.__name__.capitalize()}Schema',
@@ -326,6 +341,11 @@ def build_schema(cls: typing.Type[A],
         {'Meta': Meta,
          f'make_{cls.__name__.lower()}': make_instance,
          'dumps': dumps,
+         'dump': dump,
          **schema_})
 
     return DataClassSchema
+
+
+class UndefinedParameterError(ValidationError):
+    pass

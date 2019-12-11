@@ -1,6 +1,7 @@
 import abc
 import functools
 import json
+from dataclasses import fields, Field
 from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
@@ -9,8 +10,9 @@ from marshmallow.fields import Field as MarshmallowField
 from stringcase import camelcase, snakecase, spinalcase, pascalcase
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
-                                   _decode_dataclass)
-from dataclasses_json.mm import JsonData, SchemaType, build_schema
+                                   _decode_dataclass, UndefinedParameterAction)
+from dataclasses_json.mm import JsonData, SchemaType, build_schema, UndefinedParameterError
+from dataclasses_json.utils import _undefined_parameter_action, CatchAll
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -25,12 +27,75 @@ class LetterCase(Enum):
     PASCAL = pascalcase
 
 
+class IgnoreUndefinedParameters(UndefinedParameterAction):
+
+    @staticmethod
+    def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
+        known_given_parameters, _ = UndefinedParameterAction._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
+        return known_given_parameters
+
+
+class RaiseUndefinedParameters(UndefinedParameterAction):
+
+    @staticmethod
+    def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
+        known, unknown = UndefinedParameterAction._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
+        if len(unknown) > 0:
+            raise UndefinedParameterError(f"Received undefined initialization arguments {unknown}")
+        return known
+
+
+class CatchAllUndefinedParameters(UndefinedParameterAction):
+
+    @staticmethod
+    def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
+        known, unknown = UndefinedParameterAction._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
+        catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(cls=cls)
+        if catch_all_field.name in known:
+            raise UndefinedParameterError(f"Received input parameter with same name as catch-all field: "
+                                          f"'{catch_all_field.name}'")
+        known[catch_all_field.name] = unknown
+        known = {k: v for k, v in known.items() if k not in unknown}
+        return known
+
+    @staticmethod
+    def handle_to_dict(obj, kvs: Dict[Any, Any]) -> Dict[Any, Any]:
+        catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(obj)
+        undefined_parameters = kvs.pop(catch_all_field.name)
+        kvs.update(undefined_parameters)
+        return kvs
+
+    @staticmethod
+    def handle_dump(obj) -> Dict[Any, Any]:
+        catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(cls=obj)
+        return getattr(obj, catch_all_field.name)
+
+    @staticmethod
+    def _get_catch_all_field(cls) -> Field:
+        catch_all_field = None
+        for field in fields(cls):
+            if field.type == CatchAll:
+                if catch_all_field is not None:
+                    raise UndefinedParameterError(
+                        f"Multiple catch-all fields supplied: {catch_all_field.name, field.name}.")
+                catch_all_field = field
+        if catch_all_field is None:
+            raise UndefinedParameterError("No field of type dataclasses_json.CatchAll defined")
+        return catch_all_field
+
+
+class UndefinedParameters(Enum):
+    INCLUDE = CatchAllUndefinedParameters
+    RAISE = RaiseUndefinedParameters
+    EXCLUDE = IgnoreUndefinedParameters
+
+
 def config(metadata: dict = None, *,
            encoder: Callable = None,
            decoder: Callable = None,
            mm_field: MarshmallowField = None,
            letter_case: Callable[[str], str] = None,
-           undefined_parameters: Callable[[Dict], Optional[Dict]] = None,
+           undefined_parameters: Optional[Union[str, UndefinedParameters]] = None,
            field_name: str = None) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}
@@ -60,6 +125,13 @@ def config(metadata: dict = None, *,
         data['letter_case'] = letter_case
 
     if undefined_parameters is not None:
+        if type(undefined_parameters) == str:
+            try:
+                undefined_parameters = UndefinedParameters[undefined_parameters.upper()]
+            except KeyError as ke:
+                valid_actions = list(action.name for action in UndefinedParameters)
+                raise UndefinedParameterError(f"Invalid undefined parameter action, "
+                                              f"must be one of {valid_actions}") from ke
         data['undefined_parameters'] = undefined_parameters
 
     return metadata
@@ -137,6 +209,12 @@ class DataClassJsonMixin(abc.ABC):
                partial: bool = False,
                unknown=None) -> SchemaType:
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
+
+        if unknown is None:
+            undefined_parameter_action = _undefined_parameter_action(cls)
+            if undefined_parameter_action is not None:
+                unknown = undefined_parameter_action.name.lower()
+
         return Schema(only=only,
                       exclude=exclude,
                       many=many,
@@ -145,9 +223,6 @@ class DataClassJsonMixin(abc.ABC):
                       dump_only=dump_only,
                       partial=partial,
                       unknown=unknown)
-
-
-
 
 
 def dataclass_json(_cls=None, *, letter_case=None, undefined_parameters=None):
@@ -184,3 +259,4 @@ def _process_class(cls, letter_case, undefined_parameters):
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)
     return cls
+

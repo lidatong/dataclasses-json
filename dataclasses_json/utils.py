@@ -108,3 +108,30 @@ def _timestamp_to_dt_aware(timestamp: float):
     tz = datetime.now(timezone.utc).astimezone().tzinfo
     dt = datetime.fromtimestamp(timestamp, tz=tz)
     return dt
+
+
+def _undefined_parameter_action(cls):
+    try:
+        if cls.dataclass_json_config is None:
+            return
+        return cls.dataclass_json_config['undefined_parameters']
+    except AttributeError:
+        return
+
+
+def _handle_undefined_parameters(cls, kvs, usage: str):
+    undefined_parameter_action = _undefined_parameter_action(cls)
+    if undefined_parameter_action is None:
+        return kvs
+    if usage.lower() == "from":
+        return undefined_parameter_action.value.handle_from_dict(cls=cls, kvs=kvs)
+    elif usage.lower() == "to":
+        return undefined_parameter_action.value.handle_to_dict(obj=cls, kvs=kvs)
+    elif usage.lower() == "dump":
+        return undefined_parameter_action.value.handle_dump(obj=cls)
+    else:
+        raise ValueError(f"to_or_from must be one of ['to', 'from', 'dump'] (case-insensitive), but is '{usage}'")
+
+
+class CatchAll:
+    pass

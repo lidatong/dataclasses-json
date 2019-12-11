@@ -271,3 +271,14 @@ def test_string_only_accepts_valid_actions():
         @dataclass()
         class WontWork:
             endpoint: str
+
+
+def test_undefined_parameters_default_doesnt_do_anything(valid_response):
+    @dataclass_json(undefined_parameters=UndefinedParameters.DEFAULT)
+    @dataclass()
+    class DefaultAPIDump:
+        endpoint: str
+        data: Dict[str, Any]
+
+    dump = DefaultAPIDump.from_dict(valid_response)
+    assert valid_response == dump.to_dict()

@@ -124,7 +124,7 @@ def _handle_undefined_parameters_save(cls, kvs, usage: str):
     Checks if an undefined parameters action is defined and performs the according action.
     """
     undefined_parameter_action = _undefined_parameter_action(cls)
-    if undefined_parameter_action is None:
+    if undefined_parameter_action is None or undefined_parameter_action.value is None:
         return kvs
     if usage.lower() == "from":
         return undefined_parameter_action.value.handle_from_dict(cls=cls, kvs=kvs)

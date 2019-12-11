@@ -145,6 +145,7 @@ def config(metadata: dict = None, *,
         data['letter_case'] = letter_case
 
     if undefined_parameters is not None:
+        # Get the corresponding action for undefined parameters
         if type(undefined_parameters) == str:
             try:
                 undefined_parameters = UndefinedParameters[undefined_parameters.upper()]
@@ -233,6 +234,7 @@ class DataClassJsonMixin(abc.ABC):
         if unknown is None:
             undefined_parameter_action = _undefined_parameter_action(cls)
             if undefined_parameter_action is not None:
+                # We can just make use of the same-named mm keywords
                 unknown = undefined_parameter_action.name.lower()
 
         return Schema(only=only,

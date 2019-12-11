@@ -105,6 +105,8 @@ class CatchAll:
 
 def _handle_undefined_parameters(cls, kvs, types):
     try:
+        if cls.dataclass_json_config is None:
+            return kvs
         undefined_parameter_action = cls.dataclass_json_config['undefined_parameters']
     except AttributeError:
         return kvs
@@ -113,12 +115,20 @@ def _handle_undefined_parameters(cls, kvs, types):
     class_fields = fields(cls)
     for field in class_fields:
         if types[field.name] == CatchAll:
+            if catch_all_field is not None:
+                raise UndefinedParameterError(f"Multiply catch-all fields supplied.")
             catch_all_field = field
 
     unknown_given_parameters = {}
     if undefined_parameter_action is not None:
         unknown_given_parameters = {k: v for k, v in kvs.items() if k not in [field.name for field in class_fields]}
         unknown_given_parameters = undefined_parameter_action(unknown_given_parameters)
+        # TODO not sure if we want to apply the letter case to the parameters inside catch all,
+        #  if yes here would be the place to do it
+
+    if catch_all_field is not None and catch_all_field.name in kvs:
+        raise UndefinedParameterError(f"Received input parameter with same name as catch-all field: "
+                                      f"'{catch_all_field.name}'")
 
     if undefined_parameter_action == UndefinedParameters.CATCH_ALL:
         if catch_all_field is None:
@@ -314,8 +324,13 @@ def _asdict(obj, encode_json=False):
     if _is_dataclass_instance(obj):
         result = []
         for field in fields(obj):
-            value = _asdict(getattr(obj, field.name), encode_json=encode_json)
-            result.append((field.name, value))
+            if field.type == CatchAll:
+                # Lift the keys back up to top level and remove the catch all field
+                undefined_content = _asdict(getattr(obj, field.name), encode_json=encode_json)
+                result.extend((k, v) for k, v in undefined_content.items())
+            else:
+                value = _asdict(getattr(obj, field.name), encode_json=encode_json)
+                result.append((field.name, value))
         return _encode_overrides(dict(result), _user_overrides(obj),
                                  encode_json=encode_json)
     elif isinstance(obj, Mapping):

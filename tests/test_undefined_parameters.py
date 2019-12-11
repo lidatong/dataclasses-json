@@ -6,7 +6,7 @@ import marshmallow
 
 from dataclasses_json.core import Json, UndefinedParameterError, UndefinedParameters
 from dataclasses_json.mm import CatchAll
-from dataclasses_json.api import dataclass_json
+from dataclasses_json.api import dataclass_json, LetterCase
 
 
 @dataclass_json(undefined_parameters=UndefinedParameters.CATCH_ALL)
@@ -49,9 +49,16 @@ def invalid_response(valid_response):
     return valid_response
 
 
-def test_undefined_parameters_catch_all_invalid(invalid_response):
+@pytest.fixture()
+def invalid_response_camel_case(valid_response):
+    valid_response["undefinedFieldName"] = [1, 2, 3]
+    return valid_response
+
+
+def test_undefined_parameters_catch_all_invalid_back(invalid_response):
     dump = UnknownAPIDump.from_dict(invalid_response)
-    assert dump.catch_all == {"undefined_field_name": invalid_response["undefined_field_name"]}
+    inverse_dict = dump.to_dict()
+    assert invalid_response == inverse_dict
 
 
 def test_undefined_parameters_catch_all_valid(valid_response):
@@ -62,6 +69,38 @@ def test_undefined_parameters_catch_all_valid(valid_response):
 def test_undefined_parameters_catch_all_no_field(invalid_response):
     with pytest.raises(UndefinedParameterError):
         UnknownAPIDumpNoCatchAllField.from_dict(invalid_response)
+
+
+def test_undefined_parameters_catch_all_multiple_fields(invalid_response):
+    @dataclass_json(undefined_parameters=UndefinedParameters.CATCH_ALL)
+    @dataclass()
+    class UnknownAPIDumpMultipleCatchAll:
+        endpoint: str
+        data: Dict[str, Any]
+        catch_all: CatchAll
+        catch_all2: CatchAll
+
+    with pytest.raises(UndefinedParameterError):
+        UnknownAPIDumpMultipleCatchAll.from_dict(invalid_response)
+
+
+def test_undefined_parameters_catch_all_works_with_letter_case(invalid_response_camel_case):
+    @dataclass_json(undefined_parameters=UndefinedParameters.CATCH_ALL, letter_case=LetterCase.CAMEL)
+    @dataclass()
+    class UnknownAPIDumpCamelCase:
+        endpoint: str
+        data: Dict[str, Any]
+        catch_all: CatchAll
+
+    dump = UnknownAPIDumpCamelCase.from_dict(invalid_response_camel_case)
+    assert {"undefinedFieldName": [1, 2, 3]} == dump.catch_all
+    assert invalid_response_camel_case == dump.to_dict()
+
+
+def test_undefined_parameters_catch_all_raises_if_initialized_with_catch_all_field_name(valid_response):
+    valid_response["catch_all"] = "some-value"
+    with pytest.raises(UndefinedParameterError):
+        UnknownAPIDump.from_dict(valid_response)
 
 
 def test_undefined_parameters_raise_invalid(invalid_response):

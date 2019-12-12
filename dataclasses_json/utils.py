@@ -115,7 +115,7 @@ def _undefined_parameter_action(cls):
         if cls.dataclass_json_config is None:
             return
         return cls.dataclass_json_config['undefined_parameters']
-    except AttributeError:
+    except (AttributeError, KeyError):
         return
 
 

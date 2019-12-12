@@ -331,9 +331,9 @@ def build_schema(cls: typing.Type[A],
         # so we just update the dumped dict
         if many:
             for i, _obj in enumerate(obj):
-                dumped[i].update(_handle_undefined_parameters_save(cls=_obj, kvs=None, usage="dump"))
+                dumped[i].update(_handle_undefined_parameters_save(cls=_obj, kvs={}, usage="dump"))
         else:
-            dumped.update(_handle_undefined_parameters_save(cls=obj, kvs=None, usage="dump"))
+            dumped.update(_handle_undefined_parameters_save(cls=obj, kvs={}, usage="dump"))
         return dumped
 
     schema_ = schema(cls, mixin, infer_missing)

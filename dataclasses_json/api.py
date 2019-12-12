@@ -146,7 +146,7 @@ def config(metadata: dict = None, *,
 
     if undefined_parameters is not None:
         # Get the corresponding action for undefined parameters
-        if type(undefined_parameters) == str:
+        if isinstance(undefined_parameters, str):
             try:
                 undefined_parameters = UndefinedParameters[undefined_parameters.upper()]
             except KeyError as ke:

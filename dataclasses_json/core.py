@@ -65,7 +65,7 @@ def _user_overrides(cls):
 
 
 def _encode_json_type(value, default=_ExtendedEncoder().default):
-    if isinstance(value, Json.__args__):
+    if isinstance(value, Json.__args__):  # type: ignore
         return value
     return default(value)
 

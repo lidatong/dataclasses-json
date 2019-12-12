@@ -11,7 +11,7 @@ from enum import Enum
 
 from typing_inspect import is_union_type  # type: ignore
 
-from marshmallow import fields, Schema, post_load
+from marshmallow import fields, Schema, post_load, types
 from marshmallow_enum import EnumField  # type: ignore
 from marshmallow.exceptions import ValidationError
 
@@ -173,39 +173,42 @@ if sys.version_info >= (3, 7):
                   **kwargs) -> str:
             pass
 
-        @typing.overload
+        @typing.overload # type: ignore
         def load(self, data: typing.List[TEncoded],
                  many: bool = True, partial: bool = None,
-                 unknown: bool = None) -> \
+                 unknown: str = None) -> \
                 typing.List[A]:
+            # ignore the mypy error of the decorator because mm does not define lists as an allowed input type
             pass
 
         @typing.overload
         def load(self, data: TEncoded,
                  many: None = None, partial: bool = None,
-                 unknown: bool = None) -> A:
+                 unknown: str = None) -> A:
             pass
 
         def load(self, data: TOneOrMultiEncoded,
                  many: bool = None, partial: bool = None,
-                 unknown: bool = None) -> TOneOrMulti:
+                 unknown: str = None) -> TOneOrMulti:
             pass
 
-        @typing.overload
+        @typing.overload  # type: ignore
         def loads(self, json_data: JsonData,  # type: ignore
-                  many: bool = True, partial: bool = None, unknown: bool = None,
+                  many: bool = True, partial: bool = None, unknown: str = None,
                   **kwargs) -> typing.List[A]:
+            # ignore the mypy error of the decorator because mm does not define bytes as correct input data
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
+            # for the return type overlap
             pass
 
         @typing.overload
         def loads(self, json_data: JsonData,
-                  many: None = None, partial: bool = None, unknown: bool = None,
+                  many: None = None, partial: bool = None, unknown: str = None,
                   **kwargs) -> A:
             pass
 
         def loads(self, json_data: JsonData,
-                  many: bool = None, partial: bool = None, unknown: bool = None,
+                  many: bool = None, partial: bool = None, unknown: str = None,
                   **kwargs) -> TOneOrMulti:
             pass
 

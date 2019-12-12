@@ -88,9 +88,10 @@ class TestAnnotations:
             else:
                 msg = level
                 level = None
-
         else:
-            file_name = None
+            # Otherwise we get 'Found 1 error in 1 file (checked 1 source file)' as an error
+            # due to a mypy error in a different file
+            file_name = Filename("") if line.startswith("Found") else None
             line_no = None
             level = None
             msg = line

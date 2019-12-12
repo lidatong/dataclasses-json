@@ -5,13 +5,6 @@ from dataclasses import fields, Field
 from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
-try:
-    # python >= 3.8
-    from typing import Protocol
-except ImportError:
-    # python <= 3.7
-    from typing_extensions import Protocol  # type: ignore
-
 
 from marshmallow.fields import Field as MarshmallowField
 from stringcase import camelcase, snakecase, spinalcase, pascalcase  # type: ignore
@@ -22,13 +15,7 @@ from dataclasses_json.mm import JsonData, SchemaType, build_schema, UndefinedPar
 from dataclasses_json.utils import _undefined_parameter_action, CatchAll
 
 
-class _ConvertibleFromDictType(Protocol):
-
-    @classmethod
-    def from_dict(cls, kvs, infer_missing=None) -> "A": ...
-
-
-A = TypeVar('A', bound=_ConvertibleFromDictType)
+A = TypeVar('A')
 B = TypeVar('B')
 C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
@@ -42,7 +29,6 @@ class LetterCase(Enum):
 
 
 class IgnoreUndefinedParameters(UndefinedParameterAction):
-
     """
     This action does nothing when it encounters undefined parameters.
     The undefined parameters can not be retrieved after the class has been created.
@@ -55,7 +41,6 @@ class IgnoreUndefinedParameters(UndefinedParameterAction):
 
 
 class RaiseUndefinedParameters(UndefinedParameterAction):
-
     """
     This action raises UndefinedParameterError if it encounters an undefined parameter during initialization.
     """
@@ -69,7 +54,6 @@ class RaiseUndefinedParameters(UndefinedParameterAction):
 
 
 class CatchAllUndefinedParameters(UndefinedParameterAction):
-
     """
     This class allows to add a field of type utils.CatchAll which acts as a dictionary into which all
     undefined parameters will be written.
@@ -295,4 +279,3 @@ def _process_class(cls, letter_case, undefined_parameters):
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)
     return cls
-

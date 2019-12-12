@@ -5,6 +5,13 @@ from dataclasses import fields, Field
 from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
+try:
+    # python >= 3.8
+    from typing import Protocol
+except ImportError:
+    # python <= 3.7
+    from typing_extensions import Protocol  # type: ignore
+
 
 from marshmallow.fields import Field as MarshmallowField
 from stringcase import camelcase, snakecase, spinalcase, pascalcase  # type: ignore
@@ -14,7 +21,14 @@ from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
 from dataclasses_json.mm import JsonData, SchemaType, build_schema, UndefinedParameterError
 from dataclasses_json.utils import _undefined_parameter_action, CatchAll
 
-A = TypeVar('A')
+
+class _ConvertibleFromDictType(Protocol):
+
+    @classmethod
+    def from_dict(cls, kvs, infer_missing=None) -> "A": ...
+
+
+A = TypeVar('A', bound=_ConvertibleFromDictType)
 B = TypeVar('B')
 C = TypeVar('C')
 Fields = List[Tuple[str, Any]]

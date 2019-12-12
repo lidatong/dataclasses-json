@@ -3,14 +3,16 @@ import copy
 import json
 import warnings
 from collections import namedtuple
-from dataclasses import (MISSING, _is_dataclass_instance, fields, is_dataclass)
+from dataclasses import (MISSING, fields, is_dataclass)
+# noinspection PyProtectedMember
+from dataclasses import _is_dataclass_instance  # type: ignore
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Collection, Mapping, Union, get_type_hints, Dict, Any, Tuple
 from uuid import UUID
 
-from typing_inspect import is_union_type
+from typing_inspect import is_union_type  # type: ignore
 
 from dataclasses_json.utils import (
     _get_type_cons,

@@ -9,10 +9,10 @@ from decimal import Decimal
 from uuid import UUID
 from enum import Enum
 
-from typing_inspect import is_union_type
+from typing_inspect import is_union_type  # type: ignore
 
 from marshmallow import fields, Schema, post_load
-from marshmallow_enum import EnumField
+from marshmallow_enum import EnumField  # type: ignore
 from marshmallow.exceptions import ValidationError
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,

@@ -7,7 +7,7 @@ from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
 from marshmallow.fields import Field as MarshmallowField
-from stringcase import camelcase, snakecase, spinalcase, pascalcase
+from stringcase import camelcase, snakecase, spinalcase, pascalcase  # type: ignore
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass, UndefinedParameterAction)

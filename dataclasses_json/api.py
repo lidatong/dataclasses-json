@@ -269,6 +269,7 @@ def _process_class(cls, letter_case, undefined_parameters):
         cls.dataclass_json_config = config(letter_case=letter_case,
                                            undefined_parameters=undefined_parameters)['dataclasses_json']
 
+    # TODO what to do with __init__?
     cls.to_json = DataClassJsonMixin.to_json
     # unwrap and rewrap classmethod to tag it to cls rather than the literal
     # DataClassJsonMixin ABC

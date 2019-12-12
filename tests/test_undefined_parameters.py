@@ -282,3 +282,15 @@ def test_undefined_parameters_default_doesnt_do_anything(valid_response):
 
     dump = DefaultAPIDump.from_dict(valid_response)
     assert valid_response == dump.to_dict()
+
+
+def test_it_works_with_default_argument(invalid_response):
+    @dataclass_json(undefined_parameters="include")
+    @dataclass()
+    class UnknownAPIDumpDefault:
+        endpoint: str
+        data: Dict[str, Any]
+        catch_all: CatchAll = None
+
+    dump = UnknownAPIDumpDefault(**invalid_response)
+    assert {"undefined_field_name": [1, 2, 3]} == dump.catch_all

@@ -149,9 +149,8 @@ if sys.version_info >= (3, 7):
             raise NotImplementedError()
 
         @typing.overload
-        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[
-            TEncoded]:
-            pass
+        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[TEncoded]:  # type: ignore
+            pass  # mm has the wrong return type annotation (dict) so we can ignore the mypy error
 
         @typing.overload
         def dump(self, obj: A, many: bool = None) -> TEncoded:
@@ -193,9 +192,10 @@ if sys.version_info >= (3, 7):
             pass
 
         @typing.overload
-        def loads(self, json_data: JsonData,
+        def loads(self, json_data: JsonData,  # type: ignore
                   many: bool = True, partial: bool = None, unknown: bool = None,
                   **kwargs) -> typing.List[A]:
+            # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             pass
 
         @typing.overload

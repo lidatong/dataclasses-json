@@ -328,3 +328,8 @@ def test_undefined_parameters_doesnt_raise_with_default_factory(valid_response, 
 def test_undefined_parameters_catch_all_init_valid(valid_response):
     dump = UnknownAPIDump(**valid_response)
     assert dump.catch_all == {}
+
+
+def test_undefined_parameters_catch_all_init_invalid(invalid_response):
+    dump = UnknownAPIDump(**invalid_response)
+    assert {"undefined_field_name": [1, 2, 3]} == dump.catch_all

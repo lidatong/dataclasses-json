@@ -108,17 +108,18 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
 
     @staticmethod
     def create_init(obj) -> Callable:
-
+        original_init = obj.__init__
 
         @functools.wraps(obj.__init__)
-        def _catch_all_init(_, *args, **kwargs):
-            original_init = obj.__init__
+        def _catch_all_init(self, *args, **kwargs):
             init_signature = inspect.signature(original_init)
-
-            bound_parameters = init_signature.bind_partial(obj, args, kwargs)
+            known_kwargs, unknown_kwargs = CatchAllUndefinedParameters._separate_defined_undefined_kvs(obj, kwargs)
+            bound_parameters = init_signature.bind_partial(*args, **known_kwargs)
             bound_parameters.apply_defaults()
-            final_parameters = CatchAllUndefinedParameters.handle_from_dict(obj, bound_parameters.kwargs)
-            original_init(**final_parameters)
+            arguments = bound_parameters.arguments
+            arguments.update(unknown_kwargs)
+            final_parameters = CatchAllUndefinedParameters.handle_from_dict(obj, arguments)
+            original_init(self, **final_parameters)
 
         return _catch_all_init
 

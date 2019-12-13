@@ -333,3 +333,9 @@ def test_undefined_parameters_catch_all_init_valid(valid_response):
 def test_undefined_parameters_catch_all_init_invalid(invalid_response):
     dump = UnknownAPIDump(**invalid_response)
     assert {"undefined_field_name": [1, 2, 3]} == dump.catch_all
+
+
+def test_undefined_parameters_ignore_init_invalid(invalid_response, valid_response):
+    dump_invalid = DontCareAPIDump(**invalid_response)
+    dump_valid = DontCareAPIDump(**valid_response)
+    assert dump_valid == dump_invalid

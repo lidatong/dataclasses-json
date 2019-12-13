@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 import pytest
@@ -284,7 +284,7 @@ def test_undefined_parameters_default_doesnt_do_anything(valid_response):
     assert valid_response == dump.to_dict()
 
 
-def test_it_works_with_default_argument(invalid_response):
+def test_undefined_parameters_raises_with_default_argument_and_supplied_catch_all_name(invalid_response):
     @dataclass_json(undefined_parameters="include")
     @dataclass()
     class UnknownAPIDumpDefault:
@@ -292,5 +292,39 @@ def test_it_works_with_default_argument(invalid_response):
         data: Dict[str, Any]
         catch_all: CatchAll = None
 
-    dump = UnknownAPIDumpDefault(**invalid_response)
-    assert {"undefined_field_name": [1, 2, 3]} == dump.catch_all
+    invalid_response["catch_all"] = "this should not happen"
+    with pytest.raises(UndefinedParameterError):
+        UnknownAPIDumpDefault.from_dict(invalid_response)
+
+
+def test_undefined_parameters_doesnt_raise_with_default(valid_response, invalid_response):
+    @dataclass_json(undefined_parameters="include")
+    @dataclass()
+    class UnknownAPIDumpDefault:
+        endpoint: str
+        data: Dict[str, Any]
+        catch_all: CatchAll = None
+
+    from_valid = UnknownAPIDumpDefault.from_dict(valid_response)
+    from_invalid = UnknownAPIDumpDefault.from_dict(invalid_response)
+    assert from_valid.catch_all is None
+    assert {"undefined_field_name": [1, 2, 3]} == from_invalid.catch_all
+
+
+def test_undefined_parameters_doesnt_raise_with_default_factory(valid_response, invalid_response):
+    @dataclass_json(undefined_parameters="include")
+    @dataclass()
+    class UnknownAPIDumpDefault:
+        endpoint: str
+        data: Dict[str, Any]
+        catch_all: CatchAll = field(default_factory=list)
+
+    from_valid = UnknownAPIDumpDefault.from_dict(valid_response)
+    from_invalid = UnknownAPIDumpDefault.from_dict(invalid_response)
+    assert from_valid.catch_all == []
+    assert {"undefined_field_name": [1, 2, 3]} == from_invalid.catch_all
+
+
+def test_undefined_parameters_catch_all_init_valid(valid_response):
+    dump = UnknownAPIDump(**valid_response)
+    assert dump.catch_all == {}

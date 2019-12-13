@@ -9,7 +9,7 @@ from dataclasses import _is_dataclass_instance  # type: ignore
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Collection, Mapping, Union, get_type_hints, Dict, Any, Tuple
+from typing import Collection, Mapping, Union, get_type_hints, Dict, Any, Tuple, Callable
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -327,6 +327,10 @@ class UndefinedParameterAction(abc.ABC):
         Return the parameters that will be added to the schema dump.
         """
         return {}
+
+    @staticmethod
+    def create_init(obj) -> Callable:
+        return obj.__init__
 
     @staticmethod
     def _separate_defined_undefined_kvs(cls, kvs: Dict) -> Tuple[Dict[str, Any], Dict[str, Any]]:

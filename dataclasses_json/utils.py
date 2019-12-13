@@ -110,30 +110,39 @@ def _timestamp_to_dt_aware(timestamp: float):
     return dt
 
 
-def _undefined_parameter_action(cls):
+def _undefined_parameter_action_save(cls):
     try:
         if cls.dataclass_json_config is None:
             return
-        return cls.dataclass_json_config['undefined_parameters']
+        action_enum = cls.dataclass_json_config['undefined_parameters']
     except (AttributeError, KeyError):
         return
+
+    if action_enum is None or action_enum.value is None:
+        return
+
+    return action_enum.value
 
 
 def _handle_undefined_parameters_save(cls, kvs, usage: str):
     """
     Checks if an undefined parameters action is defined and performs the according action.
     """
-    undefined_parameter_action = _undefined_parameter_action(cls)
-    if undefined_parameter_action is None or undefined_parameter_action.value is None:
-        return kvs
-    if usage.lower() == "from":
-        return undefined_parameter_action.value.handle_from_dict(cls=cls, kvs=kvs)
-    elif usage.lower() == "to":
-        return undefined_parameter_action.value.handle_to_dict(obj=cls, kvs=kvs)
-    elif usage.lower() == "dump":
-        return undefined_parameter_action.value.handle_dump(obj=cls)
+    undefined_parameter_action = _undefined_parameter_action_save(cls)
+    usage = usage.lower()
+    if undefined_parameter_action is None:
+        return kvs if usage != "init" else cls.__init__
+    if usage == "from":
+        return undefined_parameter_action.handle_from_dict(cls=cls, kvs=kvs)
+    elif usage == "to":
+        return undefined_parameter_action.handle_to_dict(obj=cls, kvs=kvs)
+    elif usage == "dump":
+        return undefined_parameter_action.handle_dump(obj=cls)
+    elif usage == "init":
+        return undefined_parameter_action.create_init(obj=cls)
     else:
-        raise ValueError(f"to_or_from must be one of ['to', 'from', 'dump'] (case-insensitive), but is '{usage}'")
+        raise ValueError(f"to_or_from must be one of ['to', 'from', 'dump', 'init'](case-insensitive),"
+                         f" but is '{usage}'")
 
 
 class CatchAll:

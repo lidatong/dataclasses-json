@@ -1,6 +1,8 @@
 import abc
+import dataclasses
 import functools
 import json
+import inspect
 from dataclasses import fields, Field
 from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
@@ -12,8 +14,7 @@ from stringcase import camelcase, snakecase, spinalcase, pascalcase  # type: ign
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass, UndefinedParameterAction)
 from dataclasses_json.mm import JsonData, SchemaType, build_schema, UndefinedParameterError
-from dataclasses_json.utils import _undefined_parameter_action, CatchAll
-
+from dataclasses_json.utils import _undefined_parameter_action_save, CatchAll, _handle_undefined_parameters_save
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -65,10 +66,31 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
     def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
         known, unknown = UndefinedParameterAction._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
         catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(cls=cls)
+
         if catch_all_field.name in known:
-            raise UndefinedParameterError(f"Received input parameter with same name as catch-all field: "
-                                          f"'{catch_all_field.name}'")
-        known[catch_all_field.name] = unknown
+            # noinspection PyProtectedMember
+            has_default = not isinstance(catch_all_field.default, dataclasses._MISSING_TYPE)
+            # noinspection PyProtectedMember
+            has_default_factory = not isinstance(catch_all_field.default_factory, dataclasses._MISSING_TYPE)
+
+            error_message = f"Received input parameter with same name as catch-all field: " \
+                            f"'{catch_all_field.name}': '{known[catch_all_field.name]}'"
+            if has_default:
+                expected_value = catch_all_field.default
+            elif has_default_factory:
+                expected_value = catch_all_field.default_factory()
+            elif len(unknown) == 0:
+                expected_value = {}
+            else:
+                raise UndefinedParameterError(error_message)
+
+            received_default = expected_value == known[catch_all_field.name]
+            if not received_default:
+                raise UndefinedParameterError(error_message)
+        else:
+            expected_value = {}
+
+        known[catch_all_field.name] = unknown if len(unknown) > 0 else expected_value
         known = {k: v for k, v in known.items() if k not in unknown}
         return known
 
@@ -83,6 +105,22 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
     def handle_dump(obj) -> Dict[Any, Any]:
         catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(cls=obj)
         return getattr(obj, catch_all_field.name)
+
+    @staticmethod
+    def create_init(obj) -> Callable:
+
+
+        @functools.wraps(obj.__init__)
+        def _catch_all_init(_, *args, **kwargs):
+            original_init = obj.__init__
+            init_signature = inspect.signature(original_init)
+
+            bound_parameters = init_signature.bind_partial(obj, args, kwargs)
+            bound_parameters.apply_defaults()
+            final_parameters = CatchAllUndefinedParameters.handle_from_dict(obj, bound_parameters.kwargs)
+            original_init(**final_parameters)
+
+        return _catch_all_init
 
     @staticmethod
     def _get_catch_all_field(cls) -> Field:
@@ -230,7 +268,7 @@ class DataClassJsonMixin(abc.ABC):
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
 
         if unknown is None:
-            undefined_parameter_action = _undefined_parameter_action(cls)
+            undefined_parameter_action = _undefined_parameter_action_save(cls)
             if undefined_parameter_action is not None:
                 # We can just make use of the same-named mm keywords
                 unknown = undefined_parameter_action.name.lower()
@@ -277,6 +315,8 @@ def _process_class(cls, letter_case, undefined_parameters):
     cls.to_dict = DataClassJsonMixin.to_dict
     cls.from_dict = classmethod(DataClassJsonMixin.from_dict.__func__)
     cls.schema = classmethod(DataClassJsonMixin.schema.__func__)
+
+    cls.__init__ = _handle_undefined_parameters_save(cls, kvs=(), usage="init")
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)
     return cls

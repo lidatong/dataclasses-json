@@ -121,7 +121,7 @@ def _undefined_parameter_action_save(cls):
     if action_enum is None or action_enum.value is None:
         return
 
-    return action_enum.value
+    return action_enum
 
 
 def _handle_undefined_parameters_save(cls, kvs, usage: str):
@@ -133,13 +133,13 @@ def _handle_undefined_parameters_save(cls, kvs, usage: str):
     if undefined_parameter_action is None:
         return kvs if usage != "init" else cls.__init__
     if usage == "from":
-        return undefined_parameter_action.handle_from_dict(cls=cls, kvs=kvs)
+        return undefined_parameter_action.value.handle_from_dict(cls=cls, kvs=kvs)
     elif usage == "to":
-        return undefined_parameter_action.handle_to_dict(obj=cls, kvs=kvs)
+        return undefined_parameter_action.value.handle_to_dict(obj=cls, kvs=kvs)
     elif usage == "dump":
-        return undefined_parameter_action.handle_dump(obj=cls)
+        return undefined_parameter_action.value.handle_dump(obj=cls)
     elif usage == "init":
-        return undefined_parameter_action.create_init(obj=cls)
+        return undefined_parameter_action.value.create_init(obj=cls)
     else:
         raise ValueError(f"to_or_from must be one of ['to', 'from', 'dump', 'init'](case-insensitive),"
                          f" but is '{usage}'")

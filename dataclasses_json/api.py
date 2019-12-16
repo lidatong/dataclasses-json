@@ -12,7 +12,8 @@ from marshmallow.fields import Field as MarshmallowField
 from stringcase import camelcase, snakecase, spinalcase, pascalcase  # type: ignore
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
-                                   _decode_dataclass, UndefinedParameterAction)
+                                   _decode_dataclass, UndefinedParameterAction, _user_overrides,
+                                   _decode_letter_case_overrides)
 from dataclasses_json.mm import JsonData, SchemaType, build_schema, UndefinedParameterError
 from dataclasses_json.utils import _undefined_parameter_action_save, CatchAll, _handle_undefined_parameters_save
 
@@ -39,6 +40,22 @@ class IgnoreUndefinedParameters(UndefinedParameterAction):
     def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
         known_given_parameters, _ = UndefinedParameterAction._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
         return known_given_parameters
+
+    @staticmethod
+    def create_init(obj) -> Callable:
+        original_init = obj.__init__
+        init_signature = inspect.signature(original_init)
+
+        @functools.wraps(obj.__init__)
+        def _ignore_init(self, *args, **kwargs):
+            known_kwargs, _ = IgnoreUndefinedParameters._separate_defined_undefined_kvs(obj, kwargs)
+            bound_parameters = init_signature.bind_partial(*args, **known_kwargs)
+            bound_parameters.apply_defaults()
+            arguments = bound_parameters.arguments
+            final_parameters = IgnoreUndefinedParameters.handle_from_dict(obj, arguments)
+            original_init(self, **final_parameters)
+
+        return _ignore_init
 
 
 class RaiseUndefinedParameters(UndefinedParameterAction):
@@ -68,37 +85,52 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
         catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(cls=cls)
 
         if catch_all_field.name in known:
+            # access to the default factory currently causes a false-positive mypy error (16. Dec 2019):
+            # https://github.com/python/mypy/issues/6910
+
             # noinspection PyProtectedMember
             has_default = not isinstance(catch_all_field.default, dataclasses._MISSING_TYPE)
             # noinspection PyProtectedMember
-            has_default_factory = not isinstance(catch_all_field.default_factory, dataclasses._MISSING_TYPE)
+            has_default_factory = not isinstance(catch_all_field.default_factory,  # type: ignore
+                                                 dataclasses._MISSING_TYPE)
+            already_parsed = isinstance(known[catch_all_field.name], dict)
 
             error_message = f"Received input parameter with same name as catch-all field: " \
                             f"'{catch_all_field.name}': '{known[catch_all_field.name]}'"
+
+            default_value = ...
             if has_default:
-                expected_value = catch_all_field.default
+                default_value = catch_all_field.default
             elif has_default_factory:
-                expected_value = catch_all_field.default_factory()
-            elif len(unknown) == 0:
-                expected_value = {}
-            else:
-                raise UndefinedParameterError(error_message)
+                # This might be unwanted if the default factory constructs something expensive,
+                # because we have to construct it again just for this test
+                default_value = catch_all_field.default_factory()  # type: ignore
 
-            received_default = expected_value == known[catch_all_field.name]
-            if not received_default:
-                raise UndefinedParameterError(error_message)
+            received_default = default_value == known[catch_all_field.name]
+
+            expected_value: Any
+            if received_default and len(unknown) == 0:
+                expected_value = default_value
+            elif received_default and len(unknown) > 0:
+                expected_value = unknown
+            else:  # Did not received default
+                if already_parsed:
+                    expected_value = known[catch_all_field.name]
+                    if len(unknown) > 0:
+                        expected_value.update(unknown)
+                else:
+                    raise UndefinedParameterError(error_message)
         else:
-            expected_value = {}
+            expected_value = unknown
 
-        known[catch_all_field.name] = unknown if len(unknown) > 0 else expected_value
-        known = {k: v for k, v in known.items() if k not in unknown}
+        known[catch_all_field.name] = expected_value
         return known
 
     @staticmethod
     def handle_to_dict(obj, kvs: Dict[Any, Any]) -> Dict[Any, Any]:
         catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(obj)
         undefined_parameters = kvs.pop(catch_all_field.name)
-        kvs.update(undefined_parameters)
+        kvs.update(undefined_parameters)  # If desired handle letter case here
         return kvs
 
     @staticmethod
@@ -109,10 +141,10 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
     @staticmethod
     def create_init(obj) -> Callable:
         original_init = obj.__init__
+        init_signature = inspect.signature(original_init)
 
         @functools.wraps(obj.__init__)
         def _catch_all_init(self, *args, **kwargs):
-            init_signature = inspect.signature(original_init)
             known_kwargs, unknown_kwargs = CatchAllUndefinedParameters._separate_defined_undefined_kvs(obj, kwargs)
             bound_parameters = init_signature.bind_partial(*args, **known_kwargs)
             bound_parameters.apply_defaults()

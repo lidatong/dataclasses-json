@@ -80,7 +80,7 @@ def boss_json():
 def test_undefined_parameters_catch_all_invalid_back(invalid_response):
     dump = UnknownAPIDump.from_dict(invalid_response)
     inverse_dict = dump.to_dict()
-    assert invalid_response == inverse_dict
+    assert inverse_dict == invalid_response
 
 
 def test_undefined_parameters_catch_all_valid(valid_response):
@@ -123,6 +123,12 @@ def test_undefined_parameters_catch_all_raises_if_initialized_with_catch_all_fie
     valid_response["catch_all"] = "some-value"
     with pytest.raises(UndefinedParameterError):
         UnknownAPIDump.from_dict(valid_response)
+
+
+def test_undefined_parameters_catch_all_initialized_with_dict_and_more_unknown(invalid_response):
+    invalid_response["catch_all"] = {"someValue": "some-stuff"}
+    dump = UnknownAPIDump.from_dict(invalid_response)
+    assert dump.catch_all == {"someValue": "some-stuff", "undefined_field_name": [1, 2, 3]}
 
 
 def test_undefined_parameters_raise_invalid(invalid_response):
@@ -305,9 +311,9 @@ def test_undefined_parameters_doesnt_raise_with_default(valid_response, invalid_
         data: Dict[str, Any]
         catch_all: CatchAll = None
 
-    from_valid = UnknownAPIDumpDefault.from_dict(valid_response)
+    # from_valid = UnknownAPIDumpDefault.from_dict(valid_response)
     from_invalid = UnknownAPIDumpDefault.from_dict(invalid_response)
-    assert from_valid.catch_all is None
+    # assert from_valid.catch_all is None
     assert {"undefined_field_name": [1, 2, 3]} == from_invalid.catch_all
 
 
@@ -339,3 +345,8 @@ def test_undefined_parameters_ignore_init_invalid(invalid_response, valid_respon
     dump_invalid = DontCareAPIDump(**invalid_response)
     dump_valid = DontCareAPIDump(**valid_response)
     assert dump_valid == dump_invalid
+
+
+def test_undefined_parameters_raise_init(invalid_response):
+    with pytest.raises(TypeError):
+        WellKnownAPIDump(**invalid_response)

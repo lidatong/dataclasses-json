@@ -371,3 +371,15 @@ def test_undefined_parameters_ignore_init_invalid(invalid_response, valid_respon
 def test_undefined_parameters_raise_init(invalid_response):
     with pytest.raises(TypeError):
         WellKnownAPIDump(**invalid_response)
+
+
+def test_undefined_parameters_catch_all_default_no_undefined(valid_response):
+    @dataclass_json(undefined_parameters="include")
+    @dataclass()
+    class UnknownAPIDumpDefault:
+        endpoint: str
+        data: Dict[str, Any]
+        catch_all: CatchAll = None
+
+    dump = UnknownAPIDumpDefault.from_dict(valid_response)
+    assert dump.to_dict() == valid_response

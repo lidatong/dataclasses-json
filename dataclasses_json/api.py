@@ -136,7 +136,8 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
     def handle_to_dict(obj, kvs: Dict[Any, Any]) -> Dict[Any, Any]:
         catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(obj)
         undefined_parameters = kvs.pop(catch_all_field.name)
-        kvs.update(undefined_parameters)  # If desired handle letter case here
+        if isinstance(undefined_parameters, dict):
+            kvs.update(undefined_parameters)  # If desired handle letter case here
         return kvs
 
     @staticmethod

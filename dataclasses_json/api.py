@@ -48,10 +48,16 @@ class IgnoreUndefinedParameters(UndefinedParameterAction):
 
         @functools.wraps(obj.__init__)
         def _ignore_init(self, *args, **kwargs):
-            known_kwargs, _ = IgnoreUndefinedParameters._separate_defined_undefined_kvs(obj, kwargs)
-            bound_parameters = init_signature.bind_partial(*args, **known_kwargs)
+            known_kwargs, _ = CatchAllUndefinedParameters._separate_defined_undefined_kvs(obj, kwargs)
+            num_params_takeable = len(init_signature.parameters) - 1  # don't count self
+            num_args_takeable = num_params_takeable - len(known_kwargs)
+
+            args = args[:num_args_takeable]
+            bound_parameters = init_signature.bind_partial(self, *args, **known_kwargs)
             bound_parameters.apply_defaults()
+
             arguments = bound_parameters.arguments
+            arguments.pop("self", None)
             final_parameters = IgnoreUndefinedParameters.handle_from_dict(obj, arguments)
             original_init(self, **final_parameters)
 
@@ -146,10 +152,20 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
         @functools.wraps(obj.__init__)
         def _catch_all_init(self, *args, **kwargs):
             known_kwargs, unknown_kwargs = CatchAllUndefinedParameters._separate_defined_undefined_kvs(obj, kwargs)
-            bound_parameters = init_signature.bind_partial(*args, **known_kwargs)
+            num_params_takeable = len(init_signature.parameters) - 1  # don't count self
+            if CatchAllUndefinedParameters._get_catch_all_field(obj).name not in known_kwargs:
+                num_params_takeable -= 1
+            num_args_takeable = num_params_takeable - len(known_kwargs)
+
+            args, unknown_args = args[:num_args_takeable], args[num_args_takeable:]
+            bound_parameters = init_signature.bind_partial(self, *args, **known_kwargs)
             bound_parameters.apply_defaults()
+
+            unknown_args = {f"_UNKNOWN{i}": v for i, v in enumerate(unknown_args)}
             arguments = bound_parameters.arguments
+            arguments.update(unknown_args)
             arguments.update(unknown_kwargs)
+            arguments.pop("self", None)
             final_parameters = CatchAllUndefinedParameters.handle_from_dict(obj, arguments)
             original_init(self, **final_parameters)
 

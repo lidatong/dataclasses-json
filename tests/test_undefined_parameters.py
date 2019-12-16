@@ -311,9 +311,9 @@ def test_undefined_parameters_doesnt_raise_with_default(valid_response, invalid_
         data: Dict[str, Any]
         catch_all: CatchAll = None
 
-    # from_valid = UnknownAPIDumpDefault.from_dict(valid_response)
+    from_valid = UnknownAPIDumpDefault.from_dict(valid_response)
     from_invalid = UnknownAPIDumpDefault.from_dict(invalid_response)
-    # assert from_valid.catch_all is None
+    assert from_valid.catch_all is None
     assert {"undefined_field_name": [1, 2, 3]} == from_invalid.catch_all
 
 
@@ -339,6 +339,27 @@ def test_undefined_parameters_catch_all_init_valid(valid_response):
 def test_undefined_parameters_catch_all_init_invalid(invalid_response):
     dump = UnknownAPIDump(**invalid_response)
     assert {"undefined_field_name": [1, 2, 3]} == dump.catch_all
+
+
+def test_undefined_parameters_catch_all_init_args():
+    dump = UnknownAPIDump("some-endpoint", {"some-data": "foo"}, "unknown1", "unknown2", undefined="123")
+    assert dump.endpoint == "some-endpoint"
+    assert dump.data == {"some-data": "foo"}
+    assert dump.catch_all == {'_UNKNOWN0': 'unknown1', '_UNKNOWN1': 'unknown2', "undefined": "123"}
+
+
+def test_undefined_parameters_catch_all_init_args_kwargs_mixed():
+    dump = UnknownAPIDump("some-endpoint", {"some-data": "foo"}, "unknown1", "unknown2", catch_all={"bar": "example"},
+                          undefined="123")
+    assert dump.endpoint == "some-endpoint"
+    assert dump.data == {"some-data": "foo"}
+    assert dump.catch_all == {'_UNKNOWN0': 'unknown1', '_UNKNOWN1': 'unknown2', "bar": "example", "undefined": "123"}
+
+
+def test_undefined_parameters_ignore_init_args():
+    dump = DontCareAPIDump("some-endpoint", {"some-data": "foo"}, "unknown1", "unknown2", undefined="123")
+    assert dump.endpoint == "some-endpoint"
+    assert dump.data == {"some-data": "foo"}
 
 
 def test_undefined_parameters_ignore_init_invalid(invalid_response, valid_response):

@@ -162,8 +162,6 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
 
             args, unknown_args = args[:num_args_takeable], args[num_args_takeable:]
             bound_parameters = init_signature.bind_partial(self, *args, **known_kwargs)
-            bound_parameters.apply_defaults()
-
             unknown_args = {f"_UNKNOWN{i}": v for i, v in enumerate(unknown_args)}
             arguments = bound_parameters.arguments
             arguments.update(unknown_args)

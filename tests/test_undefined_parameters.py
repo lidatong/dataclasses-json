@@ -5,7 +5,7 @@ import pytest
 import marshmallow
 
 from dataclasses_json.core import Json
-from dataclasses_json.api import dataclass_json, LetterCase, UndefinedParameters
+from dataclasses_json.api import dataclass_json, LetterCase, UndefinedParameters, DataClassJsonMixin
 from dataclasses_json import CatchAll
 from dataclasses_json.mm import UndefinedParameterError
 
@@ -320,14 +320,14 @@ def test_undefined_parameters_doesnt_raise_with_default(valid_response, invalid_
 def test_undefined_parameters_doesnt_raise_with_default_factory(valid_response, invalid_response):
     @dataclass_json(undefined_parameters="include")
     @dataclass()
-    class UnknownAPIDumpDefault:
+    class UnknownAPIDumpDefault(DataClassJsonMixin):
         endpoint: str
         data: Dict[str, Any]
-        catch_all: CatchAll = field(default_factory=list)
+        catch_all: CatchAll = field(default_factory=dict)
 
     from_valid = UnknownAPIDumpDefault.from_dict(valid_response)
     from_invalid = UnknownAPIDumpDefault.from_dict(invalid_response)
-    assert from_valid.catch_all == []
+    assert from_valid.catch_all == {}
     assert {"undefined_field_name": [1, 2, 3]} == from_invalid.catch_all
 
 
@@ -383,3 +383,15 @@ def test_undefined_parameters_catch_all_default_no_undefined(valid_response):
 
     dump = UnknownAPIDumpDefault.from_dict(valid_response)
     assert dump.to_dict() == valid_response
+
+
+def test_undefined_parameters_catch_all_default_factory_init_converts_factory(valid_response):
+    @dataclass_json(undefined_parameters="include")
+    @dataclass()
+    class UnknownAPIDumpDefault:
+        endpoint: str
+        data: Dict[str, Any]
+        catch_all: CatchAll = field(default_factory=dict)
+
+    dump = UnknownAPIDumpDefault(**valid_response)
+    assert dump.catch_all == {}

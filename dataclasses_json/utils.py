@@ -1,7 +1,7 @@
 import inspect
 import sys
 from datetime import datetime, timezone
-from typing import Collection, Mapping, Optional
+from typing import Collection, Mapping, Optional, Any, TypeVar, Type
 
 
 def _get_type_cons(type_):
@@ -145,8 +145,6 @@ def _handle_undefined_parameters_save(cls, kvs, usage: str):
                          f" but is '{usage}'")
 
 
-class CatchAll:
-    """
-    Dummy type to indicate the catch all field.
-    """
-    pass
+# Define a type for the CatchAll field
+# https://stackoverflow.com/questions/59360567/define-a-custom-type-that-behaves-like-typing-any
+CatchAllVar = TypeVar("CatchAllVar")

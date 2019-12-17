@@ -8,13 +8,14 @@ from typing import Any, Dict, List, NewType, Optional, Tuple, Union
 
 from mypy.main import main as mypy_main
 
-from dataclasses_json import DataClassJsonMixin
+from dataclasses_json import DataClassJsonMixin, CatchAll
 
 
 @dataclass
 class User(DataClassJsonMixin):
     id: str
     name: str = "John"
+    ca: CatchAll = None
 
 
 Filename = NewType('Filename', str)

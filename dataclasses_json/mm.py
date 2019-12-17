@@ -20,7 +20,7 @@ from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
                                     _is_new_type, _get_type_origin,
-                                    _handle_undefined_parameters_save, CatchAll)
+                                    _handle_undefined_parameters_save, CatchAllVar)
 
 
 class _TimestampField(fields.Field):
@@ -126,7 +126,7 @@ TYPES = {
     datetime: _TimestampField,
     UUID: fields.UUID,
     Decimal: fields.Decimal,
-    CatchAll: fields.Dict,
+    CatchAllVar: fields.Dict,
 }
 
 A = typing.TypeVar('A')
@@ -300,7 +300,7 @@ def schema(cls, mixin, infer_missing):
 
             t = build_type(type_, options, mixin, field, cls)
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
-            if field.type != CatchAll:
+            if field.type != typing.Optional[CatchAllVar]:
                 schema[field.name] = t
 
     return schema
@@ -313,7 +313,7 @@ def build_schema(cls: typing.Type[A],
     Meta = type('Meta',
                 (),
                 {'fields': tuple(field.name for field in dc_fields(cls)
-                                 if field.name != 'dataclass_json_config' and field.type != CatchAll)})
+                                 if field.name != 'dataclass_json_config' and field.type != typing.Optional[CatchAllVar])})
 
     @post_load
     def make_instance(self, kvs, **kwargs):

@@ -12,10 +12,9 @@ from marshmallow.fields import Field as MarshmallowField
 from stringcase import camelcase, snakecase, spinalcase, pascalcase  # type: ignore
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
-                                   _decode_dataclass, UndefinedParameterAction, _user_overrides,
-                                   _decode_letter_case_overrides)
+                                   _decode_dataclass, UndefinedParameterAction)
 from dataclasses_json.mm import JsonData, SchemaType, build_schema, UndefinedParameterError
-from dataclasses_json.utils import _undefined_parameter_action_save, CatchAll, _handle_undefined_parameters_save
+from dataclasses_json.utils import _undefined_parameter_action_save, CatchAllVar, _handle_undefined_parameters_save
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -75,6 +74,9 @@ class RaiseUndefinedParameters(UndefinedParameterAction):
         if len(unknown) > 0:
             raise UndefinedParameterError(f"Received undefined initialization arguments {unknown}")
         return known
+
+
+CatchAll = Optional[CatchAllVar]
 
 
 class CatchAllUndefinedParameters(UndefinedParameterAction):
@@ -176,7 +178,7 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
     def _get_catch_all_field(cls) -> Field:
         catch_all_field = None
         for field in fields(cls):
-            if field.type == CatchAll:
+            if field.type == Optional[CatchAllVar]:
                 if catch_all_field is not None:
                     raise UndefinedParameterError(
                         f"Multiple catch-all fields supplied: {catch_all_field.name, field.name}.")

@@ -193,14 +193,13 @@ class CatchAllUndefinedParameters(UndefinedParameterAction):
             return catch_all_fields[0]
 
 
-class UndefinedParameters(Enum):
+class Undefined(Enum):
     """
     Choose the behavior what happens when an undefined parameter is encountered during class initialization.
     """
     INCLUDE = CatchAllUndefinedParameters
     RAISE = RaiseUndefinedParameters
     EXCLUDE = IgnoreUndefinedParameters
-    DEFAULT = None  # Same as not specifying a parameter
 
 
 def config(metadata: dict = None, *,
@@ -208,7 +207,7 @@ def config(metadata: dict = None, *,
            decoder: Callable = None,
            mm_field: MarshmallowField = None,
            letter_case: Callable[[str], str] = None,
-           undefined_parameters: Optional[Union[str, UndefinedParameters]] = None,
+           undefined: Optional[Union[str, Undefined]] = None,
            field_name: str = None) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}
@@ -237,16 +236,16 @@ def config(metadata: dict = None, *,
     if letter_case is not None:
         data['letter_case'] = letter_case
 
-    if undefined_parameters is not None:
+    if undefined is not None:
         # Get the corresponding action for undefined parameters
-        if isinstance(undefined_parameters, str):
-            if not hasattr(UndefinedParameters, undefined_parameters.upper()):
-                valid_actions = list(action.name for action in UndefinedParameters)
+        if isinstance(undefined, str):
+            if not hasattr(Undefined, undefined.upper()):
+                valid_actions = list(action.name for action in Undefined)
                 raise UndefinedParameterError(f"Invalid undefined parameter action, "
                                               f"must be one of {valid_actions}")
-            undefined_parameters = UndefinedParameters[undefined_parameters.upper()]
+            undefined = Undefined[undefined.upper()]
 
-        data['undefined_parameters'] = undefined_parameters
+        data['undefined'] = undefined
 
     return metadata
 
@@ -283,7 +282,7 @@ class DataClassJsonMixin(abc.ABC):
                           **kw)
 
     @classmethod
-    def from_json(cls: Type[A],
+    def from_json(cls: Type["DataClassJsonMixin"],
                   s: JsonData,
                   *,
                   encoding=None,
@@ -301,7 +300,7 @@ class DataClassJsonMixin(abc.ABC):
         return cls.from_dict(kvs, infer_missing=infer_missing)
 
     @classmethod
-    def from_dict(cls: Type[A],
+    def from_dict(cls: Type["DataClassJsonMixin"],
                   kvs: Json,
                   *,
                   infer_missing=False) -> A:
@@ -340,7 +339,7 @@ class DataClassJsonMixin(abc.ABC):
                       unknown=unknown)
 
 
-def dataclass_json(_cls=None, *, letter_case=None, undefined_parameters=None):
+def dataclass_json(_cls=None, *, letter_case=None, undefined: Optional[Union[str, Undefined]] = None):
     """
     Based on the code in the `dataclasses` module to handle optional-parens
     decorators. See example below:
@@ -352,17 +351,17 @@ def dataclass_json(_cls=None, *, letter_case=None, undefined_parameters=None):
     """
 
     def wrap(cls):
-        return _process_class(cls, letter_case, undefined_parameters)
+        return _process_class(cls, letter_case, undefined)
 
     if _cls is None:
         return wrap
     return wrap(_cls)
 
 
-def _process_class(cls, letter_case, undefined_parameters):
-    if letter_case is not None or undefined_parameters is not None:
+def _process_class(cls, letter_case, undefined):
+    if letter_case is not None or undefined is not None:
         cls.dataclass_json_config = config(letter_case=letter_case,
-                                           undefined_parameters=undefined_parameters)['dataclasses_json']
+                                           undefined=undefined)['dataclasses_json']
 
     cls.to_json = DataClassJsonMixin.to_json
     # unwrap and rewrap classmethod to tag it to cls rather than the literal

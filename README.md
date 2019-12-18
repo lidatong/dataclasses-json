@@ -342,9 +342,9 @@ dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "u
  (`'RAISE'` as a case-insensitive string works as well). Of course it works normally if you don't pass any undefined parameters.
     
     ```python
-    from dataclasses_json import UndefinedParameters
+    from dataclasses_json import Undefined
     
-    @dataclass_json(undefined_parameters=UndefinedParameters.RAISE)
+    @dataclass_json(undefined=Undefined.RAISE)
     @dataclass()
     class ExactAPIDump:
         endpoint: str
@@ -357,9 +357,9 @@ dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "u
  (`'EXCLUDE'` as a case-insensitive string works as well). Note that you will not be able to retrieve them using `to_dict`:
     
     ```python
-    from dataclasses_json import UndefinedParameters
+    from dataclasses_json import Undefined
     
-    @dataclass_json(undefined_parameters=UndefinedParameters.EXCLUDE)
+    @dataclass_json(undefined=Undefined.EXCLUDE)
     @dataclass()
     class DontCareAPIDump:
         endpoint: str
@@ -376,9 +376,9 @@ of type `CatchAll` where all unknown values will end up.
  If there are no undefined parameters, this will be an empty dictionary.
     
     ```python
-    from dataclasses_json import UndefinedParameters, CatchAll
+    from dataclasses_json import Undefined, CatchAll
     
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+    @dataclass_json(undefined=Undefined.INCLUDE)
     @dataclass()
     class UnknownAPIDump:
         endpoint: str

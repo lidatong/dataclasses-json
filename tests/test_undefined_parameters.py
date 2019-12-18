@@ -5,12 +5,12 @@ import pytest
 import marshmallow
 
 from dataclasses_json.core import Json
-from dataclasses_json.api import dataclass_json, LetterCase, UndefinedParameters, DataClassJsonMixin
+from dataclasses_json.api import dataclass_json, LetterCase, Undefined, DataClassJsonMixin
 from dataclasses_json import CatchAll
 from dataclasses_json.mm import UndefinedParameterError
 
 
-@dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+@dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass()
 class UnknownAPIDump:
     endpoint: str
@@ -18,21 +18,21 @@ class UnknownAPIDump:
     catch_all: CatchAll
 
 
-@dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+@dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass()
 class UnknownAPIDumpNoCatchAllField:
     endpoint: str
     data: Dict[str, Any]
 
 
-@dataclass_json(undefined_parameters=UndefinedParameters.RAISE)
+@dataclass_json(undefined=Undefined.RAISE)
 @dataclass()
 class WellKnownAPIDump:
     endpoint: str
     data: Dict[str, Any]
 
 
-@dataclass_json(undefined_parameters=UndefinedParameters.EXCLUDE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DontCareAPIDump:
     endpoint: str
@@ -94,7 +94,7 @@ def test_undefined_parameters_catch_all_no_field(invalid_response):
 
 
 def test_undefined_parameters_catch_all_multiple_fields(invalid_response):
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+    @dataclass_json(undefined=Undefined.INCLUDE)
     @dataclass()
     class UnknownAPIDumpMultipleCatchAll:
         endpoint: str
@@ -107,7 +107,7 @@ def test_undefined_parameters_catch_all_multiple_fields(invalid_response):
 
 
 def test_undefined_parameters_catch_all_works_with_letter_case(invalid_response_camel_case):
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE, letter_case=LetterCase.CAMEL)
+    @dataclass_json(undefined=Undefined.INCLUDE, letter_case=LetterCase.CAMEL)
     @dataclass()
     class UnknownAPIDumpCamelCase:
         endpoint: str
@@ -153,12 +153,12 @@ def test_undefined_parameters_ignore_to_dict(invalid_response, valid_response):
 
 
 def test_undefined_parameters_ignore_nested_schema(boss_json):
-    @dataclass_json(undefined_parameters=UndefinedParameters.EXCLUDE)
+    @dataclass_json(undefined=Undefined.EXCLUDE)
     @dataclass(frozen=True)
     class Minion:
         name: str
 
-    @dataclass_json(undefined_parameters=UndefinedParameters.EXCLUDE)
+    @dataclass_json(undefined=Undefined.EXCLUDE)
     @dataclass(frozen=True)
     class Boss:
         minions: List[Minion]
@@ -169,12 +169,12 @@ def test_undefined_parameters_ignore_nested_schema(boss_json):
 
 
 def test_undefined_parameters_raise_nested_schema(boss_json):
-    @dataclass_json(undefined_parameters=UndefinedParameters.RAISE)
+    @dataclass_json(undefined=Undefined.RAISE)
     @dataclass(frozen=True)
     class Minion:
         name: str
 
-    @dataclass_json(undefined_parameters=UndefinedParameters.EXCLUDE)
+    @dataclass_json(undefined=Undefined.EXCLUDE)
     @dataclass(frozen=True)
     class Boss:
         minions: List[Minion]
@@ -184,13 +184,13 @@ def test_undefined_parameters_raise_nested_schema(boss_json):
 
 
 def test_undefined_parameters_catch_all_nested_schema(boss_json):
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+    @dataclass_json(undefined=Undefined.INCLUDE)
     @dataclass(frozen=True)
     class Minion:
         name: str
         catch_all: CatchAll
 
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+    @dataclass_json(undefined=Undefined.INCLUDE)
     @dataclass(frozen=True)
     class Boss:
         minions: List[Minion]
@@ -205,13 +205,13 @@ def test_undefined_parameters_catch_all_nested_schema(boss_json):
 def test_undefined_parameters_catch_all_schema_dump(boss_json):
     import json
 
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+    @dataclass_json(undefined=Undefined.INCLUDE)
     @dataclass(frozen=True)
     class Minion:
         name: str
         catch_all: CatchAll
 
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+    @dataclass_json(undefined=Undefined.INCLUDE)
     @dataclass(frozen=True)
     class Boss:
         minions: List[Minion]
@@ -223,13 +223,13 @@ def test_undefined_parameters_catch_all_schema_dump(boss_json):
 
 
 def test_undefined_parameters_catch_all_schema_roundtrip(boss_json):
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+    @dataclass_json(undefined=Undefined.INCLUDE)
     @dataclass(frozen=True)
     class Minion:
         name: str
         catch_all: CatchAll
 
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+    @dataclass_json(undefined=Undefined.INCLUDE)
     @dataclass(frozen=True)
     class Boss:
         minions: List[Minion]
@@ -242,12 +242,12 @@ def test_undefined_parameters_catch_all_schema_roundtrip(boss_json):
 
 
 def test_undefined_parameters_catch_all_ignore_mix_nested_schema(boss_json):
-    @dataclass_json(undefined_parameters=UndefinedParameters.EXCLUDE)
+    @dataclass_json(undefined=Undefined.EXCLUDE)
     @dataclass(frozen=True)
     class Minion:
         name: str
 
-    @dataclass_json(undefined_parameters=UndefinedParameters.INCLUDE)
+    @dataclass_json(undefined=Undefined.INCLUDE)
     @dataclass(frozen=True)
     class Boss:
         minions: List[Minion]
@@ -260,7 +260,7 @@ def test_undefined_parameters_catch_all_ignore_mix_nested_schema(boss_json):
 
 
 def test_it_works_from_string(invalid_response):
-    @dataclass_json(undefined_parameters="include")
+    @dataclass_json(undefined="include")
     @dataclass()
     class UnknownAPIDumpFromString:
         endpoint: str
@@ -273,25 +273,14 @@ def test_it_works_from_string(invalid_response):
 
 def test_string_only_accepts_valid_actions():
     with pytest.raises(UndefinedParameterError):
-        @dataclass_json(undefined_parameters="not sure what this is supposed to do")
+        @dataclass_json(undefined="not sure what this is supposed to do")
         @dataclass()
         class WontWork:
             endpoint: str
 
 
-def test_undefined_parameters_default_doesnt_do_anything(valid_response):
-    @dataclass_json(undefined_parameters=UndefinedParameters.DEFAULT)
-    @dataclass()
-    class DefaultAPIDump:
-        endpoint: str
-        data: Dict[str, Any]
-
-    dump = DefaultAPIDump.from_dict(valid_response)
-    assert valid_response == dump.to_dict()
-
-
 def test_undefined_parameters_raises_with_default_argument_and_supplied_catch_all_name(invalid_response):
-    @dataclass_json(undefined_parameters="include")
+    @dataclass_json(undefined="include")
     @dataclass()
     class UnknownAPIDumpDefault:
         endpoint: str
@@ -304,7 +293,7 @@ def test_undefined_parameters_raises_with_default_argument_and_supplied_catch_al
 
 
 def test_undefined_parameters_doesnt_raise_with_default(valid_response, invalid_response):
-    @dataclass_json(undefined_parameters="include")
+    @dataclass_json(undefined="include")
     @dataclass()
     class UnknownAPIDumpDefault:
         endpoint: str
@@ -318,7 +307,7 @@ def test_undefined_parameters_doesnt_raise_with_default(valid_response, invalid_
 
 
 def test_undefined_parameters_doesnt_raise_with_default_factory(valid_response, invalid_response):
-    @dataclass_json(undefined_parameters="include")
+    @dataclass_json(undefined="include")
     @dataclass()
     class UnknownAPIDumpDefault(DataClassJsonMixin):
         endpoint: str
@@ -374,7 +363,7 @@ def test_undefined_parameters_raise_init(invalid_response):
 
 
 def test_undefined_parameters_catch_all_default_no_undefined(valid_response):
-    @dataclass_json(undefined_parameters="include")
+    @dataclass_json(undefined="include")
     @dataclass()
     class UnknownAPIDumpDefault:
         endpoint: str
@@ -386,7 +375,7 @@ def test_undefined_parameters_catch_all_default_no_undefined(valid_response):
 
 
 def test_undefined_parameters_catch_all_default_factory_init_converts_factory(valid_response):
-    @dataclass_json(undefined_parameters="include")
+    @dataclass_json(undefined="include")
     @dataclass()
     class UnknownAPIDumpDefault:
         endpoint: str

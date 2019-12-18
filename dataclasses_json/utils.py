@@ -114,7 +114,7 @@ def _undefined_parameter_action_safe(cls):
     try:
         if cls.dataclass_json_config is None:
             return
-        action_enum = cls.dataclass_json_config['undefined_parameters']
+        action_enum = cls.dataclass_json_config['undefined']
     except (AttributeError, KeyError):
         return
 

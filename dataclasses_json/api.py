@@ -16,7 +16,7 @@ from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
 from dataclasses_json.mm import JsonData, SchemaType, build_schema, UndefinedParameterError
 from dataclasses_json.utils import _undefined_parameter_action_safe, CatchAllVar, _handle_undefined_parameters_safe
 
-A = TypeVar('A')
+A = TypeVar('A', bound="DataClassJsonMixin")
 B = TypeVar('B')
 C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
@@ -282,7 +282,7 @@ class DataClassJsonMixin(abc.ABC):
                           **kw)
 
     @classmethod
-    def from_json(cls: Type["DataClassJsonMixin"],
+    def from_json(cls: Type[A],
                   s: JsonData,
                   *,
                   encoding=None,
@@ -300,7 +300,7 @@ class DataClassJsonMixin(abc.ABC):
         return cls.from_dict(kvs, infer_missing=infer_missing)
 
     @classmethod
-    def from_dict(cls: Type["DataClassJsonMixin"],
+    def from_dict(cls: Type[A],
                   kvs: Json,
                   *,
                   infer_missing=False) -> A:

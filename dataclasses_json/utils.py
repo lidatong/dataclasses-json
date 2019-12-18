@@ -110,7 +110,7 @@ def _timestamp_to_dt_aware(timestamp: float):
     return dt
 
 
-def _undefined_parameter_action_save(cls):
+def _undefined_parameter_action_safe(cls):
     try:
         if cls.dataclass_json_config is None:
             return
@@ -124,11 +124,11 @@ def _undefined_parameter_action_save(cls):
     return action_enum
 
 
-def _handle_undefined_parameters_save(cls, kvs, usage: str):
+def _handle_undefined_parameters_safe(cls, kvs, usage: str):
     """
     Checks if an undefined parameters action is defined and performs the according action.
     """
-    undefined_parameter_action = _undefined_parameter_action_save(cls)
+    undefined_parameter_action = _undefined_parameter_action_safe(cls)
     usage = usage.lower()
     if undefined_parameter_action is None:
         return kvs if usage != "init" else cls.__init__
@@ -141,10 +141,10 @@ def _handle_undefined_parameters_save(cls, kvs, usage: str):
     elif usage == "init":
         return undefined_parameter_action.value.create_init(obj=cls)
     else:
-        raise ValueError(f"to_or_from must be one of ['to', 'from', 'dump', 'init'](case-insensitive),"
+        raise ValueError(f"usage must be one of ['to', 'from', 'dump', 'init'](case-insensitive),"
                          f" but is '{usage}'")
 
 
 # Define a type for the CatchAll field
 # https://stackoverflow.com/questions/59360567/define-a-custom-type-that-behaves-like-typing-any
-CatchAllVar = TypeVar("CatchAllVar")
+CatchAllVar = TypeVar("CatchAllVar", bound=Mapping)

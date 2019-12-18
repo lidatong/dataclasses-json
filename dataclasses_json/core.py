@@ -21,7 +21,7 @@ from dataclasses_json.utils import (
     _is_new_type,
     _is_optional,
     _isinstance_safe,
-    _issubclass_safe, _handle_undefined_parameters_save)
+    _issubclass_safe, _handle_undefined_parameters_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
 
@@ -120,7 +120,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
             kvs[field.name] = None
 
     # Perform undefined parameter action
-    kvs = _handle_undefined_parameters_save(cls, kvs, usage="from")
+    kvs = _handle_undefined_parameters_safe(cls, kvs, usage="from")
 
     init_kwargs = {}
     types = get_type_hints(cls)
@@ -291,7 +291,7 @@ def _asdict(obj, encode_json=False):
             value = _asdict(getattr(obj, field.name), encode_json=encode_json)
             result.append((field.name, value))
 
-        result = _handle_undefined_parameters_save(cls=obj, kvs=dict(result), usage="to")
+        result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result), usage="to")
         return _encode_overrides(dict(result), _user_overrides(obj),
                                  encode_json=encode_json)
     elif isinstance(obj, Mapping):
@@ -302,6 +302,10 @@ def _asdict(obj, encode_json=False):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:
         return copy.deepcopy(obj)
+
+
+KnownParameters = Dict[str, Any]
+UnknownParameters = Dict[str, Any]
 
 
 class UndefinedParameterAction(abc.ABC):
@@ -333,7 +337,7 @@ class UndefinedParameterAction(abc.ABC):
         return obj.__init__
 
     @staticmethod
-    def _separate_defined_undefined_kvs(cls, kvs: Dict) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def _separate_defined_undefined_kvs(cls, kvs: Dict) -> Tuple[KnownParameters, UnknownParameters]:
         """
         Returns a 2 dictionaries: defined and undefined parameters
         """

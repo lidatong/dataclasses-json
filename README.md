@@ -329,11 +329,11 @@ JSON decoding from the field's default value, this will allow you to do so.
 
 ### Handle unknown input data?
 
-By default, it is up to implementation what happens when a `json_dataclass` receives input parameters that are not defined.
+By default, it is up to the implementation what happens when a `json_dataclass` receives input parameters that are not defined.
 (the `from_dict` method ignores them, when loading using `schema()` a ValidationError is raised.)
 There are three ways to customize this behavior.
 
-Assume you want to instantiate a dataclass with for the following dictionary:
+Assume you want to instantiate a dataclass with the following dictionary:
 ```python
 dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "undefined_field_name": [1, 2, 3]}
 ```

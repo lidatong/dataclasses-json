@@ -20,7 +20,7 @@ from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
                                     _is_new_type, _get_type_origin,
-                                    _handle_undefined_parameters_save, CatchAllVar)
+                                    _handle_undefined_parameters_safe, CatchAllVar)
 
 
 class _TimestampField(fields.Field):
@@ -334,9 +334,9 @@ def build_schema(cls: typing.Type[A],
         # so we just update the dumped dict
         if many:
             for i, _obj in enumerate(obj):
-                dumped[i].update(_handle_undefined_parameters_save(cls=_obj, kvs={}, usage="dump"))
+                dumped[i].update(_handle_undefined_parameters_safe(cls=_obj, kvs={}, usage="dump"))
         else:
-            dumped.update(_handle_undefined_parameters_save(cls=obj, kvs={}, usage="dump"))
+            dumped.update(_handle_undefined_parameters_safe(cls=obj, kvs={}, usage="dump"))
         return dumped
 
     schema_ = schema(cls, mixin, infer_missing)

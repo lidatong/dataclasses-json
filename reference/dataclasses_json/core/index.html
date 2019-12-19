@@ -289,6 +289,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../undefined/" title="Undefined" class="md-nav__link">
+      Undefined
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../utils/" title="Utils" class="md-nav__link">
       Utils
     </a>
@@ -338,14 +350,16 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span><span class="n">MISSING</span><span class="p">,</span> <span class="n">_is_dataclass_instance</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">is_dataclass</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span><span class="n">MISSING</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">is_dataclass</span><span class="p">)</span>
+<span class="c1"># noinspection PyProtectedMember</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">_is_dataclass_instance</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_type_hints</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_type_hints</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 
-<span class="kn">from</span> <span class="nn">typing_inspect</span> <span class="kn">import</span> <span class="n">is_union_type</span>
+<span class="kn">from</span> <span class="nn">typing_inspect</span> <span class="kn">import</span> <span class="n">is_union_type</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_json.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_get_type_cons</span><span class="p">,</span>
@@ -354,7 +368,7 @@
     <span class="n">_is_new_type</span><span class="p">,</span>
     <span class="n">_is_optional</span><span class="p">,</span>
     <span class="n">_isinstance_safe</span><span class="p">,</span>
-    <span class="n">_issubclass_safe</span><span class="p">)</span>
+    <span class="n">_issubclass_safe</span><span class="p">,</span> <span class="n">_handle_undefined_parameters_safe</span><span class="p">)</span>
 
 <span class="n">Json</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
 
@@ -397,7 +411,7 @@
     <span class="k">return</span> <span class="n">overrides</span>
 
 <span class="k">def</span> <span class="nf">_encode_json_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">_ExtendedEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">default</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Json</span><span class="o">.</span><span class="n">__args__</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Json</span><span class="o">.</span><span class="n">__args__</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="n">value</span>
     <span class="k">return</span> <span class="n">default</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
@@ -437,6 +451,7 @@
     <span class="n">decode_names</span> <span class="o">=</span> <span class="n">_decode_letter_case_overrides</span><span class="p">(</span><span class="n">field_names</span><span class="p">,</span> <span class="n">overrides</span><span class="p">)</span>
     <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="n">decode_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kvs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="n">missing_fields</span> <span class="o">=</span> <span class="p">{</span><span class="n">field</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kvs</span><span class="p">}</span>
+
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">missing_fields</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MISSING</span><span class="p">:</span>
             <span class="n">kvs</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">default</span>
@@ -444,6 +459,9 @@
             <span class="n">kvs</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">default_factory</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">infer_missing</span><span class="p">:</span>
             <span class="n">kvs</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="c1"># Perform undefined parameter action</span>
+    <span class="n">kvs</span> <span class="o">=</span> <span class="n">_handle_undefined_parameters_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kvs</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="s2">&quot;from&quot;</span><span class="p">)</span>
 
     <span class="n">init_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">types</span> <span class="o">=</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
@@ -501,6 +519,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">init_kwargs</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_support_extended_types</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span>
                                                               <span class="n">field_value</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">init_kwargs</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">_support_extended_types</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">field_value</span><span class="p">):</span>
@@ -606,6 +625,8 @@
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">_asdict</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span><span class="p">)</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_handle_undefined_parameters_safe</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">kvs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">usage</span><span class="o">=</span><span class="s2">&quot;to&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_encode_overrides</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">_user_overrides</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
                                  <span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
@@ -616,6 +637,9 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_asdict</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="n">KnownParameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<span class="n">UnknownParameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </pre></div>
 
 

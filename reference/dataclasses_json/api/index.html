@@ -346,6 +346,33 @@
     Ancestors (in MRO)
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#undefined" title="Undefined" class="md-nav__link">
+    Undefined
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_2" title="Ancestors (in MRO)" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_1" title="Class variables" class="md-nav__link">
+    Class variables
+  </a>
+  
 </li>
         
       </ul>
@@ -396,6 +423,18 @@
   <li class="md-nav__item">
     <a href="../mm/" title="Mm" class="md-nav__link">
       Mm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../undefined/" title="Undefined" class="md-nav__link">
+      Undefined
     </a>
   </li>
 
@@ -530,6 +569,33 @@
     Ancestors (in MRO)
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#undefined" title="Undefined" class="md-nav__link">
+    Undefined
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_2" title="Ancestors (in MRO)" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_1" title="Class variables" class="md-nav__link">
+    Class variables
+  </a>
+  
 </li>
         
       </ul>
@@ -563,13 +629,20 @@
                     <span class="n">Union</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">marshmallow.fields</span> <span class="kn">import</span> <span class="n">Field</span> <span class="k">as</span> <span class="n">MarshmallowField</span>
-<span class="kn">from</span> <span class="nn">stringcase</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">snakecase</span><span class="p">,</span> <span class="n">spinalcase</span><span class="p">,</span> <span class="n">pascalcase</span>
+<span class="kn">from</span> <span class="nn">stringcase</span> <span class="kn">import</span> <span class="p">(</span><span class="n">camelcase</span><span class="p">,</span> <span class="n">pascalcase</span><span class="p">,</span> <span class="n">snakecase</span><span class="p">,</span>
+                        <span class="n">spinalcase</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_json.core</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Json</span><span class="p">,</span> <span class="n">_ExtendedEncoder</span><span class="p">,</span> <span class="n">_asdict</span><span class="p">,</span>
                                    <span class="n">_decode_dataclass</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dataclasses_json.mm</span> <span class="kn">import</span> <span class="n">JsonData</span><span class="p">,</span> <span class="n">SchemaType</span><span class="p">,</span> <span class="n">build_schema</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json.mm</span> <span class="kn">import</span> <span class="p">(</span><span class="n">JsonData</span><span class="p">,</span> <span class="n">SchemaType</span><span class="p">,</span> <span class="n">UndefinedParameterError</span><span class="p">,</span>
+                                 <span class="n">build_schema</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json.undefined</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_CatchAllUndefinedParameters</span><span class="p">,</span>
+                                        <span class="n">_IgnoreUndefinedParameters</span><span class="p">,</span>
+                                        <span class="n">_RaiseUndefinedParameters</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_handle_undefined_parameters_safe</span><span class="p">,</span>
+                                    <span class="n">_undefined_parameter_action_safe</span><span class="p">)</span>
 
-<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;DataClassJsonMixin&quot;</span><span class="p">)</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">)</span>
 <span class="n">C</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
 <span class="n">Fields</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
@@ -580,11 +653,20 @@
     <span class="n">SNAKE</span> <span class="o">=</span> <span class="n">snakecase</span>
     <span class="n">PASCAL</span> <span class="o">=</span> <span class="n">pascalcase</span>
 
+<span class="k">class</span> <span class="nc">Undefined</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Choose the behavior what happens when an undefined parameter is encountered during class initialization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">INCLUDE</span> <span class="o">=</span> <span class="n">_CatchAllUndefinedParameters</span>
+    <span class="n">RAISE</span> <span class="o">=</span> <span class="n">_RaiseUndefinedParameters</span>
+    <span class="n">EXCLUDE</span> <span class="o">=</span> <span class="n">_IgnoreUndefinedParameters</span>
+
 <span class="k">def</span> <span class="nf">config</span><span class="p">(</span><span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
            <span class="n">encoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
            <span class="n">decoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
            <span class="n">mm_field</span><span class="p">:</span> <span class="n">MarshmallowField</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
            <span class="n">letter_case</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+           <span class="n">undefined</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Undefined</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
            <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
     <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
@@ -612,6 +694,18 @@
 
     <span class="k">if</span> <span class="n">letter_case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">data</span><span class="p">[</span><span class="s1">&#39;letter_case&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">letter_case</span>
+
+    <span class="k">if</span> <span class="n">undefined</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c1"># Get the corresponding action for undefined parameters</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">undefined</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">undefined</span><span class="o">.</span><span class="n">upper</span><span class="p">()):</span>
+                <span class="n">valid_actions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">Undefined</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">UndefinedParameterError</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s2">&quot;Invalid undefined parameter action, &quot;</span>
+                    <span class="n">f</span><span class="s2">&quot;must be one of {valid_actions}&quot;</span><span class="p">)</span>
+            <span class="n">undefined</span> <span class="o">=</span> <span class="n">Undefined</span><span class="p">[</span><span class="n">undefined</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;undefined&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">undefined</span>
 
     <span class="k">return</span> <span class="n">metadata</span>
 
@@ -687,6 +781,13 @@
                <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
                <span class="n">unknown</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaType</span><span class="p">:</span>
         <span class="n">Schema</span> <span class="o">=</span> <span class="n">build_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">,</span> <span class="n">partial</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">unknown</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">undefined_parameter_action</span> <span class="o">=</span> <span class="n">_undefined_parameter_action_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">undefined_parameter_action</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c1"># We can just make use of the same-named mm keywords</span>
+                <span class="n">unknown</span> <span class="o">=</span> <span class="n">undefined_parameter_action</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">Schema</span><span class="p">(</span><span class="n">only</span><span class="o">=</span><span class="n">only</span><span class="p">,</span>
                       <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
                       <span class="n">many</span><span class="o">=</span><span class="n">many</span><span class="p">,</span>
@@ -696,7 +797,8 @@
                       <span class="n">partial</span><span class="o">=</span><span class="n">partial</span><span class="p">,</span>
                       <span class="n">unknown</span><span class="o">=</span><span class="n">unknown</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">dataclass_json</span><span class="p">(</span><span class="n">_cls</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">letter_case</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">dataclass_json</span><span class="p">(</span><span class="n">_cls</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">letter_case</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">undefined</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Undefined</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Based on the code in the `dataclasses` module to handle optional-parens</span>
 <span class="sd">    decorators. See example below:</span>
@@ -708,16 +810,18 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">_process_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">letter_case</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_process_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">letter_case</span><span class="p">,</span> <span class="n">undefined</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">_cls</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">wrap</span>
     <span class="k">return</span> <span class="n">wrap</span><span class="p">(</span><span class="n">_cls</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_process_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">letter_case</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">letter_case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">dataclass_json_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">(</span><span class="n">letter_case</span><span class="o">=</span><span class="n">letter_case</span><span class="p">)[</span>
+<span class="k">def</span> <span class="nf">_process_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">letter_case</span><span class="p">,</span> <span class="n">undefined</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">letter_case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">undefined</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">dataclass_json_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">(</span><span class="n">letter_case</span><span class="o">=</span><span class="n">letter_case</span><span class="p">,</span>
+                                           <span class="n">undefined</span><span class="o">=</span><span class="n">undefined</span><span class="p">)[</span>
             <span class="s1">&#39;dataclasses_json&#39;</span><span class="p">]</span>
+
     <span class="bp">cls</span><span class="o">.</span><span class="n">to_json</span> <span class="o">=</span> <span class="n">DataClassJsonMixin</span><span class="o">.</span><span class="n">to_json</span>
     <span class="c1"># unwrap and rewrap classmethod to tag it to cls rather than the literal</span>
     <span class="c1"># DataClassJsonMixin ABC</span>
@@ -725,6 +829,8 @@
     <span class="bp">cls</span><span class="o">.</span><span class="n">to_dict</span> <span class="o">=</span> <span class="n">DataClassJsonMixin</span><span class="o">.</span><span class="n">to_dict</span>
     <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">DataClassJsonMixin</span><span class="o">.</span><span class="n">from_dict</span><span class="o">.</span><span class="vm">__func__</span><span class="p">)</span>
     <span class="bp">cls</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">DataClassJsonMixin</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="vm">__func__</span><span class="p">)</span>
+
+    <span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span> <span class="o">=</span> <span class="n">_handle_undefined_parameters_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kvs</span><span class="o">=</span><span class="p">(),</span> <span class="n">usage</span><span class="o">=</span><span class="s2">&quot;init&quot;</span><span class="p">)</span>
     <span class="c1"># register cls as a virtual subclass of DataClassJsonMixin</span>
     <span class="n">DataClassJsonMixin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">cls</span>
@@ -741,6 +847,7 @@
     <span class="n">decoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">mm_field</span><span class="p">:</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Field</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">letter_case</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">undefined</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">dataclasses_json</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span>
 </pre></div>
@@ -751,6 +858,7 @@
            <span class="nv">decoder</span>: <span class="nv">Callable</span> <span class="o">=</span> <span class="nv">None</span>,
            <span class="nv">mm_field</span>: <span class="nv">MarshmallowField</span> <span class="o">=</span> <span class="nv">None</span>,
            <span class="nv">letter_case</span>: <span class="nv">Callable</span>[[<span class="nv">str</span>], <span class="nv">str</span>] <span class="o">=</span> <span class="nv">None</span>,
+           <span class="nv">undefined</span>: <span class="nv">Optional</span>[<span class="nv">Union</span>[<span class="nv">str</span>, <span class="nv">Undefined</span>]] <span class="o">=</span> <span class="nv">None</span>,
            <span class="nv">field_name</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">Dict</span>[<span class="nv">str</span>, <span class="nv">dict</span>]:
     <span class="k">if</span> <span class="nv">metadata</span> <span class="nv">is</span> <span class="nv">None</span>:
         <span class="nv">metadata</span> <span class="o">=</span> {}
@@ -779,6 +887,18 @@
     <span class="k">if</span> <span class="nv">letter_case</span> <span class="nv">is</span> <span class="nv">not</span> <span class="nv">None</span>:
         <span class="nv">data</span>[<span class="s1">&#39;</span><span class="s">letter_case</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">letter_case</span>
 
+    <span class="k">if</span> <span class="nv">undefined</span> <span class="nv">is</span> <span class="nv">not</span> <span class="nv">None</span>:
+        # <span class="nv">Get</span> <span class="nv">the</span> <span class="nv">corresponding</span> <span class="nv">action</span> <span class="k">for</span> <span class="nv">undefined</span> <span class="nv">parameters</span>
+        <span class="k">if</span> <span class="nv">isinstance</span><span class="ss">(</span><span class="nv">undefined</span>, <span class="nv">str</span><span class="ss">)</span>:
+            <span class="k">if</span> <span class="nv">not</span> <span class="nv">hasattr</span><span class="ss">(</span><span class="nv">Undefined</span>, <span class="nv">undefined</span>.<span class="nv">upper</span><span class="ss">())</span>:
+                <span class="nv">valid_actions</span> <span class="o">=</span> <span class="nv">list</span><span class="ss">(</span><span class="nv">action</span>.<span class="nv">name</span> <span class="k">for</span> <span class="nv">action</span> <span class="nv">in</span> <span class="nv">Undefined</span><span class="ss">)</span>
+                <span class="nv">raise</span> <span class="nv">UndefinedParameterError</span><span class="ss">(</span>
+                    <span class="nv">f</span><span class="s2">&quot;</span><span class="s">Invalid undefined parameter action, </span><span class="s2">&quot;</span>
+                    <span class="nv">f</span><span class="s2">&quot;</span><span class="s">must be one of {valid_actions}</span><span class="s2">&quot;</span><span class="ss">)</span>
+            <span class="nv">undefined</span> <span class="o">=</span> <span class="nv">Undefined</span>[<span class="nv">undefined</span>.<span class="nv">upper</span><span class="ss">()</span>]
+
+        <span class="nv">data</span>[<span class="s1">&#39;</span><span class="s">undefined</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">undefined</span>
+
     <span class="k">return</span> <span class="nv">metadata</span>
 </pre></div>
 
@@ -787,7 +907,8 @@
 <h5 id="dataclass_json">dataclass_json</h5>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="err">(</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">letter_case</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">letter_case</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">undefined</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">dataclasses_json</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </pre></div>
 
@@ -798,7 +919,8 @@ decorators. See example below:</p>
 @dataclass_json(letter_case=Lettercase.CAMEL)
 class Example:
     ...</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="nv">def</span> <span class="nv">dataclass_json</span><span class="ss">(</span><span class="nv">_cls</span><span class="o">=</span><span class="nv">None</span>, <span class="o">*</span>, <span class="nv">letter_case</span><span class="o">=</span><span class="nv">None</span><span class="ss">)</span>:
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="nv">def</span> <span class="nv">dataclass_json</span><span class="ss">(</span><span class="nv">_cls</span><span class="o">=</span><span class="nv">None</span>, <span class="o">*</span>, <span class="nv">letter_case</span><span class="o">=</span><span class="nv">None</span>,
+                   <span class="nv">undefined</span>: <span class="nv">Optional</span>[<span class="nv">Union</span>[<span class="nv">str</span>, <span class="nv">Undefined</span>]] <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span>:
     <span class="s2">&quot;&quot;&quot;</span>
     <span class="nv">Based</span> <span class="nv">on</span> <span class="nv">the</span> <span class="nv">code</span> <span class="nv">in</span> <span class="nv">the</span> `<span class="nv">dataclasses</span>` <span class="nv">module</span> <span class="nv">to</span> <span class="nv">handle</span> <span class="nv">optional</span><span class="o">-</span><span class="nv">parens</span>
     <span class="nv">decorators</span>. <span class="nv">See</span> <span class="nv">example</span> <span class="nv">below</span>:
@@ -810,7 +932,7 @@ class Example:
     <span class="s2">&quot;&quot;&quot;</span>
 
     <span class="nv">def</span> <span class="nv">wrap</span><span class="ss">(</span><span class="nv">cls</span><span class="ss">)</span>:
-        <span class="k">return</span> <span class="nv">_process_class</span><span class="ss">(</span><span class="nv">cls</span>, <span class="nv">letter_case</span><span class="ss">)</span>
+        <span class="k">return</span> <span class="nv">_process_class</span><span class="ss">(</span><span class="nv">cls</span>, <span class="nv">letter_case</span>, <span class="nv">undefined</span><span class="ss">)</span>
 
     <span class="k">if</span> <span class="nv">_cls</span> <span class="nv">is</span> <span class="nv">None</span>:
         <span class="k">return</span> <span class="nv">wrap</span>
@@ -932,6 +1054,13 @@ class Example:
                    <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">False</span>,
                    <span class="nv">unknown</span><span class="o">=</span><span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">SchemaType</span>:
             <span class="nv">Schema</span> <span class="o">=</span> <span class="nv">build_schema</span><span class="ss">(</span><span class="nv">cls</span>, <span class="nv">DataClassJsonMixin</span>, <span class="nv">infer_missing</span>, <span class="nv">partial</span><span class="ss">)</span>
+
+            <span class="k">if</span> <span class="nv">unknown</span> <span class="nv">is</span> <span class="nv">None</span>:
+                <span class="nv">undefined_parameter_action</span> <span class="o">=</span> <span class="nv">_undefined_parameter_action_safe</span><span class="ss">(</span><span class="nv">cls</span><span class="ss">)</span>
+                <span class="k">if</span> <span class="nv">undefined_parameter_action</span> <span class="nv">is</span> <span class="nv">not</span> <span class="nv">None</span>:
+                    # <span class="nv">We</span> <span class="nv">can</span> <span class="nv">just</span> <span class="nv">make</span> <span class="nv">use</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">same</span><span class="o">-</span><span class="nv">named</span> <span class="nv">mm</span> <span class="nv">keywords</span>
+                    <span class="nv">unknown</span> <span class="o">=</span> <span class="nv">undefined_parameter_action</span>.<span class="nv">name</span>.<span class="nv">lower</span><span class="ss">()</span>
+
             <span class="k">return</span> <span class="nv">Schema</span><span class="ss">(</span><span class="nv">only</span><span class="o">=</span><span class="nv">only</span>,
                           <span class="nv">exclude</span><span class="o">=</span><span class="nv">exclude</span>,
                           <span class="nv">many</span><span class="o">=</span><span class="nv">many</span>,
@@ -1077,6 +1206,13 @@ class Example:
                <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">False</span>,
                <span class="nv">unknown</span><span class="o">=</span><span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">SchemaType</span>:
         <span class="nv">Schema</span> <span class="o">=</span> <span class="nv">build_schema</span><span class="ss">(</span><span class="nv">cls</span>, <span class="nv">DataClassJsonMixin</span>, <span class="nv">infer_missing</span>, <span class="nv">partial</span><span class="ss">)</span>
+
+        <span class="k">if</span> <span class="nv">unknown</span> <span class="nv">is</span> <span class="nv">None</span>:
+            <span class="nv">undefined_parameter_action</span> <span class="o">=</span> <span class="nv">_undefined_parameter_action_safe</span><span class="ss">(</span><span class="nv">cls</span><span class="ss">)</span>
+            <span class="k">if</span> <span class="nv">undefined_parameter_action</span> <span class="nv">is</span> <span class="nv">not</span> <span class="nv">None</span>:
+                # <span class="nv">We</span> <span class="nv">can</span> <span class="nv">just</span> <span class="nv">make</span> <span class="nv">use</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">same</span><span class="o">-</span><span class="nv">named</span> <span class="nv">mm</span> <span class="nv">keywords</span>
+                <span class="nv">unknown</span> <span class="o">=</span> <span class="nv">undefined_parameter_action</span>.<span class="nv">name</span>.<span class="nv">lower</span><span class="ss">()</span>
+
         <span class="k">return</span> <span class="nv">Schema</span><span class="ss">(</span><span class="nv">only</span><span class="o">=</span><span class="nv">only</span>,
                       <span class="nv">exclude</span><span class="o">=</span><span class="nv">exclude</span>,
                       <span class="nv">many</span><span class="o">=</span><span class="nv">many</span>,
@@ -1108,6 +1244,49 @@ class Example:
     <span class="n">KEBAB</span> = <span class="n">spinalcase</span>
     <span class="n">SNAKE</span> = <span class="n">snakecase</span>
     <span class="n">PASCAL</span> = <span class="n">pascalcase</span>
+</pre></div>
+
+
+</details>
+<hr />
+<h5 id="undefined">Undefined</h5>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="err">(</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Choose the behavior what happens when an undefined parameter is encountered during class initialization.</p>
+<h3 id="ancestors-in-mro_2">Ancestors (in MRO)</h3>
+<ul>
+<li>enum.Enum</li>
+</ul>
+<h3 id="class-variables_1">Class variables</h3>
+<div class="codehilite"><pre><span></span>```<span class="nv">python3</span>
+<span class="nv">EXCLUDE</span>
+```
+:
+
+```<span class="nv">python3</span>
+<span class="k">INCLUDE</span>
+```
+:
+
+```<span class="nv">python3</span>
+<span class="nv">RAISE</span>
+```
+:
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="nv">class</span> <span class="nv">Undefined</span><span class="ss">(</span><span class="nv">Enum</span><span class="ss">)</span>:
+    <span class="s2">&quot;&quot;&quot;</span>
+    <span class="nv">Choose</span> <span class="nv">the</span> <span class="nv">behavior</span> <span class="nv">what</span> <span class="nv">happens</span> <span class="nv">when</span> <span class="nv">an</span> <span class="nv">undefined</span> <span class="nv">parameter</span> <span class="nv">is</span> <span class="nv">encountered</span> <span class="nv">during</span> <span class="nv">class</span> <span class="nv">initialization</span>.
+    <span class="s2">&quot;&quot;&quot;</span>
+    <span class="k">INCLUDE</span> <span class="o">=</span> <span class="nv">_CatchAllUndefinedParameters</span>
+    <span class="nv">RAISE</span> <span class="o">=</span> <span class="nv">_RaiseUndefinedParameters</span>
+    <span class="nv">EXCLUDE</span> <span class="o">=</span> <span class="nv">_IgnoreUndefinedParameters</span>
 </pre></div>
 
 

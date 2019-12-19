@@ -278,6 +278,18 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../undefined/" title="Undefined" class="md-nav__link">
+      Undefined
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -337,7 +349,7 @@
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="k">def</span> <span class="nf">_get_type_cons</span><span class="p">(</span><span class="n">type_</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;More spaghetti logic for 3.6 vs. 3.7&quot;&quot;&quot;</span>
@@ -432,6 +444,45 @@
     <span class="n">tz</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">astimezone</span><span class="p">()</span><span class="o">.</span><span class="n">tzinfo</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">tz</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dt</span>
+
+<span class="k">def</span> <span class="nf">_undefined_parameter_action_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">dataclass_json_config</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">action_enum</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">dataclass_json_config</span><span class="p">[</span><span class="s1">&#39;undefined&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">action_enum</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">action_enum</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">return</span> <span class="n">action_enum</span>
+
+<span class="k">def</span> <span class="nf">_handle_undefined_parameters_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kvs</span><span class="p">,</span> <span class="n">usage</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if an undefined parameters action is defined and performs the according action.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">undefined_parameter_action</span> <span class="o">=</span> <span class="n">_undefined_parameter_action_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+    <span class="n">usage</span> <span class="o">=</span> <span class="n">usage</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">undefined_parameter_action</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">kvs</span> <span class="k">if</span> <span class="n">usage</span> <span class="o">!=</span> <span class="s2">&quot;init&quot;</span> <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span>
+    <span class="k">if</span> <span class="n">usage</span> <span class="o">==</span> <span class="s2">&quot;from&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">undefined_parameter_action</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">handle_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span>
+                                                                 <span class="n">kvs</span><span class="o">=</span><span class="n">kvs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">usage</span> <span class="o">==</span> <span class="s2">&quot;to&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">undefined_parameter_action</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">handle_to_dict</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kvs</span><span class="o">=</span><span class="n">kvs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">usage</span> <span class="o">==</span> <span class="s2">&quot;dump&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">undefined_parameter_action</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">handle_dump</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">cls</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">usage</span> <span class="o">==</span> <span class="s2">&quot;init&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">undefined_parameter_action</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">create_init</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">cls</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="n">f</span><span class="s2">&quot;usage must be one of [&#39;to&#39;, &#39;from&#39;, &#39;dump&#39;, &#39;init&#39;](case-insensitive),&quot;</span>
+            <span class="n">f</span><span class="s2">&quot; but is &#39;{usage}&#39;&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define a type for the CatchAll field</span>
+<span class="c1"># https://stackoverflow.com/questions/59360567/define-a-custom-type-that-behaves-like-typing-any</span>
+<span class="n">CatchAllVar</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;CatchAllVar&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Mapping</span><span class="p">)</span>
 </pre></div>
 
 
@@ -456,7 +507,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../mm/" title="Mm" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../undefined/" title="Undefined" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -465,7 +516,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Mm
+                Undefined
               </span>
             </div>
           </a>

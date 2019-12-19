@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf8') as f:
 
 setup(
     name='dataclasses-json',
-    version='0.3.6',
+    version='0.3.7',
     packages=find_packages(exclude=('tests*',)),
     package_data={"dataclasses_json": ["py.typed"]},
     author='lidatong',
@@ -18,7 +18,7 @@ setup(
     keywords='dataclasses json',
     install_requires=[
         'dataclasses;python_version=="3.6"',
-        'marshmallow>=3.0.1,<4.0.0',
+        'marshmallow>=3.3.0,<4.0.0',
         'marshmallow-enum>=1.5.1,<2.0.0',
         'typing-inspect>=0.4.0',
         'stringcase==1.2.0,<2.0.0'
@@ -36,4 +36,5 @@ setup(
     include_package_data=True,
     scripts=['publish.py']
 )
+
 

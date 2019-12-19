@@ -5,6 +5,7 @@ dataclasses_json/__init__.py
 dataclasses_json/api.py
 dataclasses_json/core.py
 dataclasses_json/mm.py
+dataclasses_json/undefined.py
 dataclasses_json/utils.py
 dataclasses_json.egg-info/PKG-INFO
 dataclasses_json.egg-info/SOURCES.txt

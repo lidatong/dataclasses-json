@@ -9,17 +9,18 @@ from decimal import Decimal
 from uuid import UUID
 from enum import Enum
 
-from typing_inspect import is_union_type
+from typing_inspect import is_union_type  # type: ignore
 
-from marshmallow import fields, Schema, post_load
-from marshmallow_enum import EnumField
+from marshmallow import fields, Schema, post_load, types
+from marshmallow_enum import EnumField  # type: ignore
 from marshmallow.exceptions import ValidationError
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
                                    _ExtendedEncoder, _user_overrides)
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
-                                    _is_new_type, _get_type_origin)
+                                    _is_new_type, _get_type_origin,
+                                    _handle_undefined_parameters_safe, CatchAllVar)
 
 
 class _TimestampField(fields.Field):
@@ -124,7 +125,8 @@ TYPES = {
     bool: fields.Bool,
     datetime: _TimestampField,
     UUID: fields.UUID,
-    Decimal: fields.Decimal
+    Decimal: fields.Decimal,
+    CatchAllVar: fields.Dict,
 }
 
 A = typing.TypeVar('A')
@@ -147,9 +149,8 @@ if sys.version_info >= (3, 7):
             raise NotImplementedError()
 
         @typing.overload
-        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[
-            TEncoded]:
-            pass
+        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[TEncoded]:  # type: ignore
+            pass  # mm has the wrong return type annotation (dict) so we can ignore the mypy error
 
         @typing.overload
         def dump(self, obj: A, many: bool = None) -> TEncoded:
@@ -172,38 +173,42 @@ if sys.version_info >= (3, 7):
                   **kwargs) -> str:
             pass
 
-        @typing.overload
+        @typing.overload # type: ignore
         def load(self, data: typing.List[TEncoded],
                  many: bool = True, partial: bool = None,
-                 unknown: bool = None) -> \
+                 unknown: str = None) -> \
                 typing.List[A]:
+            # ignore the mypy error of the decorator because mm does not define lists as an allowed input type
             pass
 
         @typing.overload
         def load(self, data: TEncoded,
                  many: None = None, partial: bool = None,
-                 unknown: bool = None) -> A:
+                 unknown: str = None) -> A:
             pass
 
         def load(self, data: TOneOrMultiEncoded,
                  many: bool = None, partial: bool = None,
-                 unknown: bool = None) -> TOneOrMulti:
+                 unknown: str = None) -> TOneOrMulti:
             pass
 
-        @typing.overload
-        def loads(self, json_data: JsonData,
-                  many: bool = True, partial: bool = None, unknown: bool = None,
+        @typing.overload  # type: ignore
+        def loads(self, json_data: JsonData,  # type: ignore
+                  many: bool = True, partial: bool = None, unknown: str = None,
                   **kwargs) -> typing.List[A]:
+            # ignore the mypy error of the decorator because mm does not define bytes as correct input data
+            # mm has the wrong return type annotation (dict) so we can ignore the mypy error
+            # for the return type overlap
             pass
 
         @typing.overload
         def loads(self, json_data: JsonData,
-                  many: None = None, partial: bool = None, unknown: bool = None,
+                  many: None = None, partial: bool = None, unknown: str = None,
                   **kwargs) -> A:
             pass
 
         def loads(self, json_data: JsonData,
-                  many: bool = None, partial: bool = None, unknown: bool = None,
+                  many: bool = None, partial: bool = None, unknown: str = None,
                   **kwargs) -> TOneOrMulti:
             pass
 
@@ -264,6 +269,8 @@ def build_type(type_, options, mixin, field, cls):
 def schema(cls, mixin, infer_missing):
     schema = {}
     overrides = _user_overrides(cls)
+    # TODO check the undefined parameters and add the proper schema action
+    #  https://marshmallow.readthedocs.io/en/stable/quickstart.html
     for field in dc_fields(cls):
         metadata = (field.metadata or {}).get('dataclasses_json', {})
         metadata = overrides[field.name]
@@ -293,7 +300,9 @@ def schema(cls, mixin, infer_missing):
 
             t = build_type(type_, options, mixin, field, cls)
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
-            schema[field.name] = t
+            if field.type != typing.Optional[CatchAllVar]:
+                schema[field.name] = t
+
     return schema
 
 
@@ -304,7 +313,7 @@ def build_schema(cls: typing.Type[A],
     Meta = type('Meta',
                 (),
                 {'fields': tuple(field.name for field in dc_fields(cls)
-                                 if field.name != 'dataclass_json_config')})
+                                 if field.name != 'dataclass_json_config' and field.type != typing.Optional[CatchAllVar])})
 
     @post_load
     def make_instance(self, kvs, **kwargs):
@@ -316,6 +325,20 @@ def build_schema(cls: typing.Type[A],
 
         return Schema.dumps(self, *args, **kwargs)
 
+    def dump(self, obj, *, many=None):
+        dumped = Schema.dump(self, obj, many=many)
+        # TODO This is hacky, but the other option I can think of is to generate a different schema
+        #  depending on dump and load, which is even more hacky
+
+        # The only problem is the catch all field, we can't statically create a schema for it
+        # so we just update the dumped dict
+        if many:
+            for i, _obj in enumerate(obj):
+                dumped[i].update(_handle_undefined_parameters_safe(cls=_obj, kvs={}, usage="dump"))
+        else:
+            dumped.update(_handle_undefined_parameters_safe(cls=obj, kvs={}, usage="dump"))
+        return dumped
+
     schema_ = schema(cls, mixin, infer_missing)
     DataClassSchema: typing.Type[SchemaType] = type(
         f'{cls.__name__.capitalize()}Schema',
@@ -323,6 +346,14 @@ def build_schema(cls: typing.Type[A],
         {'Meta': Meta,
          f'make_{cls.__name__.lower()}': make_instance,
          'dumps': dumps,
+         'dump': dump,
          **schema_})
 
     return DataClassSchema
+
+
+class UndefinedParameterError(ValidationError):
+    """
+    Raised when something has gone wrong handling undefined parameters.
+    """
+    pass

@@ -362,6 +362,26 @@
     Methods
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#undefinedparametererror" title="UndefinedParameterError" class="md-nav__link">
+    UndefinedParameterError
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_1" title="Ancestors (in MRO)" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
 </li>
         
       </ul>
@@ -377,6 +397,18 @@
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../undefined/" title="Undefined" class="md-nav__link">
+      Undefined
+    </a>
   </li>
 
         
@@ -490,6 +522,26 @@
     Methods
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#undefinedparametererror" title="UndefinedParameterError" class="md-nav__link">
+    UndefinedParameterError
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_1" title="Ancestors (in MRO)" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
 </li>
         
       </ul>
@@ -526,17 +578,18 @@
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">typing_inspect</span> <span class="kn">import</span> <span class="n">is_union_type</span>
+<span class="kn">from</span> <span class="nn">typing_inspect</span> <span class="kn">import</span> <span class="n">is_union_type</span>  <span class="c1"># type: ignore</span>
 
-<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">post_load</span>
-<span class="kn">from</span> <span class="nn">marshmallow_enum</span> <span class="kn">import</span> <span class="n">EnumField</span>
+<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">post_load</span><span class="p">,</span> <span class="n">types</span>
+<span class="kn">from</span> <span class="nn">marshmallow_enum</span> <span class="kn">import</span> <span class="n">EnumField</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">marshmallow.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_json.core</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_is_supported_generic</span><span class="p">,</span> <span class="n">_decode_dataclass</span><span class="p">,</span>
                                    <span class="n">_ExtendedEncoder</span><span class="p">,</span> <span class="n">_user_overrides</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_is_collection</span><span class="p">,</span> <span class="n">_is_optional</span><span class="p">,</span>
                                     <span class="n">_issubclass_safe</span><span class="p">,</span> <span class="n">_timestamp_to_dt_aware</span><span class="p">,</span>
-                                    <span class="n">_is_new_type</span><span class="p">,</span> <span class="n">_get_type_origin</span><span class="p">)</span>
+                                    <span class="n">_is_new_type</span><span class="p">,</span> <span class="n">_get_type_origin</span><span class="p">,</span>
+                                    <span class="n">_handle_undefined_parameters_safe</span><span class="p">,</span> <span class="n">CatchAllVar</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">_TimestampField</span><span class="p">(</span><span class="n">fields</span><span class="o">.</span><span class="n">Field</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">_serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -637,7 +690,8 @@
     <span class="nb">bool</span><span class="p">:</span> <span class="n">fields</span><span class="o">.</span><span class="n">Bool</span><span class="p">,</span>
     <span class="n">datetime</span><span class="p">:</span> <span class="n">_TimestampField</span><span class="p">,</span>
     <span class="n">UUID</span><span class="p">:</span> <span class="n">fields</span><span class="o">.</span><span class="n">UUID</span><span class="p">,</span>
-    <span class="n">Decimal</span><span class="p">:</span> <span class="n">fields</span><span class="o">.</span><span class="n">Decimal</span>
+    <span class="n">Decimal</span><span class="p">:</span> <span class="n">fields</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span>
+    <span class="n">CatchAllVar</span><span class="p">:</span> <span class="n">fields</span><span class="o">.</span><span class="n">Dict</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">A</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
@@ -660,9 +714,8 @@
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
         <span class="nd">@typing.overload</span>
-        <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">A</span><span class="p">],</span> <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span>
-            <span class="n">TEncoded</span><span class="p">]:</span>
-            <span class="k">pass</span>
+        <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">A</span><span class="p">],</span> <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">TEncoded</span><span class="p">]:</span>  <span class="c1"># type: ignore</span>
+            <span class="k">pass</span>  <span class="c1"># mm has the wrong return type annotation (dict) so we can ignore the mypy error</span>
 
         <span class="nd">@typing.overload</span>
         <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TEncoded</span><span class="p">:</span>
@@ -685,38 +738,42 @@
                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">pass</span>
 
-        <span class="nd">@typing.overload</span>
+        <span class="nd">@typing.overload</span> <span class="c1"># type: ignore</span>
         <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">TEncoded</span><span class="p">],</span>
                  <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
-                 <span class="n">unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
+                 <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
                 <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+            <span class="c1"># ignore the mypy error of the decorator because mm does not define lists as an allowed input type</span>
             <span class="k">pass</span>
 
         <span class="nd">@typing.overload</span>
         <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TEncoded</span><span class="p">,</span>
                  <span class="n">many</span><span class="p">:</span> <span class="bp">None</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
-                 <span class="n">unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+                 <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
             <span class="k">pass</span>
 
         <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TOneOrMultiEncoded</span><span class="p">,</span>
                  <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
-                 <span class="n">unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TOneOrMulti</span><span class="p">:</span>
+                 <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TOneOrMulti</span><span class="p">:</span>
             <span class="k">pass</span>
 
-        <span class="nd">@typing.overload</span>
-        <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="n">JsonData</span><span class="p">,</span>
-                  <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="nd">@typing.overload</span>  <span class="c1"># type: ignore</span>
+        <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="n">JsonData</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                  <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+            <span class="c1"># ignore the mypy error of the decorator because mm does not define bytes as correct input data</span>
+            <span class="c1"># mm has the wrong return type annotation (dict) so we can ignore the mypy error</span>
+            <span class="c1"># for the return type overlap</span>
             <span class="k">pass</span>
 
         <span class="nd">@typing.overload</span>
         <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="n">JsonData</span><span class="p">,</span>
-                  <span class="n">many</span><span class="p">:</span> <span class="bp">None</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+                  <span class="n">many</span><span class="p">:</span> <span class="bp">None</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
             <span class="k">pass</span>
 
         <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_data</span><span class="p">:</span> <span class="n">JsonData</span><span class="p">,</span>
-                  <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+                  <span class="n">many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">unknown</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TOneOrMulti</span><span class="p">:</span>
             <span class="k">pass</span>
 
@@ -774,6 +831,8 @@
 <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mixin</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">):</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">overrides</span> <span class="o">=</span> <span class="n">_user_overrides</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+    <span class="c1"># TODO check the undefined parameters and add the proper schema action</span>
+    <span class="c1">#  https://marshmallow.readthedocs.io/en/stable/quickstart.html</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">dc_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataclasses_json&#39;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">overrides</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
@@ -803,7 +862,9 @@
 
             <span class="n">t</span> <span class="o">=</span> <span class="n">build_type</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">mixin</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
             <span class="c1"># if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.</span>
-            <span class="n">schema</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">CatchAllVar</span><span class="p">]:</span>
+                <span class="n">schema</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+
     <span class="k">return</span> <span class="n">schema</span>
 
 <span class="k">def</span> <span class="nf">build_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">],</span>
@@ -813,7 +874,7 @@
     <span class="n">Meta</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Meta&#39;</span><span class="p">,</span>
                 <span class="p">(),</span>
                 <span class="p">{</span><span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">dc_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-                                 <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;dataclass_json_config&#39;</span><span class="p">)})</span>
+                                 <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;dataclass_json_config&#39;</span> <span class="ow">and</span> <span class="n">field</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">CatchAllVar</span><span class="p">])})</span>
 
     <span class="nd">@post_load</span>
     <span class="k">def</span> <span class="nf">make_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kvs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -825,6 +886,20 @@
 
         <span class="k">return</span> <span class="n">Schema</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">dumped</span> <span class="o">=</span> <span class="n">Schema</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="n">many</span><span class="p">)</span>
+        <span class="c1"># TODO This is hacky, but the other option I can think of is to generate a different schema</span>
+        <span class="c1">#  depending on dump and load, which is even more hacky</span>
+
+        <span class="c1"># The only problem is the catch all field, we can&#39;t statically create a schema for it</span>
+        <span class="c1"># so we just update the dumped dict</span>
+        <span class="k">if</span> <span class="n">many</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                <span class="n">dumped</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_handle_undefined_parameters_safe</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">_obj</span><span class="p">,</span> <span class="n">kvs</span><span class="o">=</span><span class="p">{},</span> <span class="n">usage</span><span class="o">=</span><span class="s2">&quot;dump&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dumped</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_handle_undefined_parameters_safe</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">kvs</span><span class="o">=</span><span class="p">{},</span> <span class="n">usage</span><span class="o">=</span><span class="s2">&quot;dump&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">dumped</span>
+
     <span class="n">schema_</span> <span class="o">=</span> <span class="n">schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mixin</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">)</span>
     <span class="n">DataClassSchema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">[</span><span class="n">SchemaType</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span>
         <span class="n">f</span><span class="s1">&#39;{cls.__name__.capitalize()}Schema&#39;</span><span class="p">,</span>
@@ -832,9 +907,16 @@
         <span class="p">{</span><span class="s1">&#39;Meta&#39;</span><span class="p">:</span> <span class="n">Meta</span><span class="p">,</span>
          <span class="n">f</span><span class="s1">&#39;make_{cls.__name__.lower()}&#39;</span><span class="p">:</span> <span class="n">make_instance</span><span class="p">,</span>
          <span class="s1">&#39;dumps&#39;</span><span class="p">:</span> <span class="n">dumps</span><span class="p">,</span>
+         <span class="s1">&#39;dump&#39;</span><span class="p">:</span> <span class="n">dump</span><span class="p">,</span>
          <span class="o">**</span><span class="n">schema_</span><span class="p">})</span>
 
     <span class="k">return</span> <span class="n">DataClassSchema</span>
+
+<span class="k">class</span> <span class="nc">UndefinedParameterError</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when something has gone wrong handling undefined parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
 </pre></div>
 
 
@@ -857,7 +939,7 @@
     <span class="nv">Meta</span> <span class="o">=</span> <span class="nv">type</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Meta</span><span class="s1">&#39;</span>,
                 <span class="ss">()</span>,
                 {<span class="s1">&#39;</span><span class="s">fields</span><span class="s1">&#39;</span>: <span class="nv">tuple</span><span class="ss">(</span><span class="nv">field</span>.<span class="nv">name</span> <span class="k">for</span> <span class="nv">field</span> <span class="nv">in</span> <span class="nv">dc_fields</span><span class="ss">(</span><span class="nv">cls</span><span class="ss">)</span>
-                                 <span class="k">if</span> <span class="nv">field</span>.<span class="nv">name</span> <span class="o">!=</span> <span class="s1">&#39;</span><span class="s">dataclass_json_config</span><span class="s1">&#39;</span><span class="ss">)</span>}<span class="ss">)</span>
+                                 <span class="k">if</span> <span class="nv">field</span>.<span class="nv">name</span> <span class="o">!=</span> <span class="s1">&#39;</span><span class="s">dataclass_json_config</span><span class="s1">&#39;</span> <span class="nv">and</span> <span class="nv">field</span>.<span class="nv">type</span> <span class="o">!=</span> <span class="nv">typing</span>.<span class="nv">Optional</span>[<span class="nv">CatchAllVar</span>]<span class="ss">)</span>}<span class="ss">)</span>
 
     @<span class="nv">post_load</span>
     <span class="nv">def</span> <span class="nv">make_instance</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">kvs</span>, <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span>:
@@ -869,6 +951,20 @@
 
         <span class="k">return</span> <span class="nv">Schema</span>.<span class="nv">dumps</span><span class="ss">(</span><span class="nv">self</span>, <span class="o">*</span><span class="nv">args</span>, <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span>
 
+    <span class="nv">def</span> <span class="nv">dump</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">obj</span>, <span class="o">*</span>, <span class="nv">many</span><span class="o">=</span><span class="nv">None</span><span class="ss">)</span>:
+        <span class="nv">dumped</span> <span class="o">=</span> <span class="nv">Schema</span>.<span class="nv">dump</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">obj</span>, <span class="nv">many</span><span class="o">=</span><span class="nv">many</span><span class="ss">)</span>
+        # <span class="nv">TODO</span> <span class="nv">This</span> <span class="nv">is</span> <span class="nv">hacky</span>, <span class="nv">but</span> <span class="nv">the</span> <span class="nv">other</span> <span class="nv">option</span> <span class="nv">I</span> <span class="nv">can</span> <span class="nv">think</span> <span class="nv">of</span> <span class="nv">is</span> <span class="nv">to</span> <span class="nv">generate</span> <span class="nv">a</span> <span class="nv">different</span> <span class="nv">schema</span>
+        #  <span class="nv">depending</span> <span class="nv">on</span> <span class="nv">dump</span> <span class="nv">and</span> <span class="nv">load</span>, <span class="nv">which</span> <span class="nv">is</span> <span class="nv">even</span> <span class="nv">more</span> <span class="nv">hacky</span>
+
+        # <span class="nv">The</span> <span class="nv">only</span> <span class="nv">problem</span> <span class="nv">is</span> <span class="nv">the</span> <span class="nv">catch</span> <span class="nv">all</span> <span class="nv">field</span>, <span class="nv">we</span> <span class="nv">can</span><span class="s1">&#39;</span><span class="s">t statically create a schema for it</span>
+        # <span class="nv">so</span> <span class="nv">we</span> <span class="nv">just</span> <span class="nv">update</span> <span class="nv">the</span> <span class="nv">dumped</span> <span class="nv">dict</span>
+        <span class="k">if</span> <span class="nv">many</span>:
+            <span class="k">for</span> <span class="nv">i</span>, <span class="nv">_obj</span> <span class="nv">in</span> <span class="nv">enumerate</span><span class="ss">(</span><span class="nv">obj</span><span class="ss">)</span>:
+                <span class="nv">dumped</span>[<span class="nv">i</span>].<span class="nv">update</span><span class="ss">(</span><span class="nv">_handle_undefined_parameters_safe</span><span class="ss">(</span><span class="nv">cls</span><span class="o">=</span><span class="nv">_obj</span>, <span class="nv">kvs</span><span class="o">=</span>{}, <span class="nv">usage</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">dump</span><span class="s2">&quot;</span><span class="ss">))</span>
+        <span class="k">else</span>:
+            <span class="nv">dumped</span>.<span class="nv">update</span><span class="ss">(</span><span class="nv">_handle_undefined_parameters_safe</span><span class="ss">(</span><span class="nv">cls</span><span class="o">=</span><span class="nv">obj</span>, <span class="nv">kvs</span><span class="o">=</span>{}, <span class="nv">usage</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">dump</span><span class="s2">&quot;</span><span class="ss">))</span>
+        <span class="k">return</span> <span class="nv">dumped</span>
+
     <span class="nv">schema_</span> <span class="o">=</span> <span class="nv">schema</span><span class="ss">(</span><span class="nv">cls</span>, <span class="nv">mixin</span>, <span class="nv">infer_missing</span><span class="ss">)</span>
     <span class="nv">DataClassSchema</span>: <span class="nv">typing</span>.<span class="nv">Type</span>[<span class="nv">SchemaType</span>] <span class="o">=</span> <span class="nv">type</span><span class="ss">(</span>
         <span class="nv">f</span><span class="s1">&#39;</span><span class="s">{cls.__name__.capitalize()}Schema</span><span class="s1">&#39;</span>,
@@ -876,6 +972,7 @@
         {<span class="s1">&#39;</span><span class="s">Meta</span><span class="s1">&#39;</span>: <span class="nv">Meta</span>,
          <span class="nv">f</span><span class="s1">&#39;</span><span class="s">make_{cls.__name__.lower()}</span><span class="s1">&#39;</span>: <span class="nv">make_instance</span>,
          <span class="s1">&#39;</span><span class="s">dumps</span><span class="s1">&#39;</span>: <span class="nv">dumps</span>,
+         <span class="s1">&#39;</span><span class="s">dump</span><span class="s1">&#39;</span>: <span class="nv">dump</span>,
          <span class="o">**</span><span class="nv">schema_</span>}<span class="ss">)</span>
 
     <span class="k">return</span> <span class="nv">DataClassSchema</span>
@@ -956,6 +1053,8 @@
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="nv">def</span> <span class="nv">schema</span><span class="ss">(</span><span class="nv">cls</span>, <span class="nv">mixin</span>, <span class="nv">infer_missing</span><span class="ss">)</span>:
     <span class="nv">schema</span> <span class="o">=</span> {}
     <span class="nv">overrides</span> <span class="o">=</span> <span class="nv">_user_overrides</span><span class="ss">(</span><span class="nv">cls</span><span class="ss">)</span>
+    # <span class="nv">TODO</span> <span class="nv">check</span> <span class="nv">the</span> <span class="nv">undefined</span> <span class="nv">parameters</span> <span class="nv">and</span> <span class="nv">add</span> <span class="nv">the</span> <span class="nv">proper</span> <span class="nv">schema</span> <span class="nv">action</span>
+    #  <span class="nv">https</span>:<span class="o">//</span><span class="nv">marshmallow</span>.<span class="nv">readthedocs</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">en</span><span class="o">/</span><span class="nv">stable</span><span class="o">/</span><span class="nv">quickstart</span>.<span class="nv">html</span>
     <span class="k">for</span> <span class="nv">field</span> <span class="nv">in</span> <span class="nv">dc_fields</span><span class="ss">(</span><span class="nv">cls</span><span class="ss">)</span>:
         <span class="nv">metadata</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">field</span>.<span class="nv">metadata</span> <span class="nv">or</span> {}<span class="ss">)</span>.<span class="nv">get</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">dataclasses_json</span><span class="s1">&#39;</span>, {}<span class="ss">)</span>
         <span class="nv">metadata</span> <span class="o">=</span> <span class="nv">overrides</span>[<span class="nv">field</span>.<span class="nv">name</span>]
@@ -985,7 +1084,9 @@
 
             <span class="nv">t</span> <span class="o">=</span> <span class="nv">build_type</span><span class="ss">(</span><span class="nv">type_</span>, <span class="nv">options</span>, <span class="nv">mixin</span>, <span class="nv">field</span>, <span class="nv">cls</span><span class="ss">)</span>
             # <span class="k">if</span> <span class="nv">type</span><span class="ss">(</span><span class="nv">t</span><span class="ss">)</span> <span class="nv">is</span> <span class="nv">not</span> <span class="nv">fields</span>.<span class="nv">Field</span>:  # <span class="k">If</span> <span class="nv">we</span> <span class="nv">use</span> `<span class="nv">isinstance</span>` <span class="nv">we</span> <span class="nv">would</span> <span class="k">return</span> <span class="nv">nothing</span>.
-            <span class="nv">schema</span>[<span class="nv">field</span>.<span class="nv">name</span>] <span class="o">=</span> <span class="nv">t</span>
+            <span class="k">if</span> <span class="nv">field</span>.<span class="nv">type</span> <span class="o">!=</span> <span class="nv">typing</span>.<span class="nv">Optional</span>[<span class="nv">CatchAllVar</span>]:
+                <span class="nv">schema</span>[<span class="nv">field</span>.<span class="nv">name</span>] <span class="o">=</span> <span class="nv">t</span>
+
     <span class="k">return</span> <span class="nv">schema</span>
 </pre></div>
 
@@ -1006,7 +1107,6 @@ This class is helper only.</p>
 <h3 id="ancestors-in-mro">Ancestors (in MRO)</h3>
 <ul>
 <li>marshmallow.schema.Schema</li>
-<li>marshmallow.schema.BaseSchema</li>
 <li>marshmallow.base.SchemaABC</li>
 <li>typing.Generic</li>
 </ul>
@@ -1032,7 +1132,7 @@ This class is helper only.</p>
 <span class="nv">Schema</span><span class="s1">&#39;</span><span class="s">s fields.</span>
 
 <span class="nl">:param</span> <span class="nv">obj</span>: <span class="nv">The</span> <span class="nv">object</span> <span class="nv">to</span> <span class="nv">serialize</span>.
-<span class="nl">:param</span> <span class="nv">bool</span> <span class="nv">many</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">serialize</span> `<span class="nv">obj</span>` <span class="nv">as</span> <span class="nv">a</span> <span class="nv">collection</span>. <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span> <span class="nv">value</span>
+<span class="nl">:param</span> <span class="nv">many</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">serialize</span> `<span class="nv">obj</span>` <span class="nv">as</span> <span class="nv">a</span> <span class="nv">collection</span>. <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span> <span class="nv">value</span>
     <span class="k">for</span> `<span class="nv">self</span>.<span class="nv">many</span>` <span class="nv">is</span> <span class="nv">used</span>.
 <span class="nl">:return</span>: <span class="nv">A</span> <span class="nv">dict</span> <span class="nv">of</span> <span class="nv">serialized</span> <span class="nv">data</span>
 <span class="nl">:rtype</span>: <span class="nv">dict</span>
@@ -1065,7 +1165,7 @@ This class is helper only.</p>
 <span class="nv">Same</span> <span class="nv">as</span> :<span class="nv">meth</span>:`<span class="nv">dump</span>`, <span class="nv">except</span> <span class="k">return</span> <span class="nv">a</span> <span class="nv">JSON</span><span class="o">-</span><span class="nv">encoded</span> <span class="nv">string</span>.
 
 <span class="nl">:param</span> <span class="nv">obj</span>: <span class="nv">The</span> <span class="nv">object</span> <span class="nv">to</span> <span class="nv">serialize</span>.
-<span class="nl">:param</span> <span class="nv">bool</span> <span class="nv">many</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">serialize</span> `<span class="nv">obj</span>` <span class="nv">as</span> <span class="nv">a</span> <span class="nv">collection</span>. <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span> <span class="nv">value</span>
+<span class="nl">:param</span> <span class="nv">many</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">serialize</span> `<span class="nv">obj</span>` <span class="nv">as</span> <span class="nv">a</span> <span class="nv">collection</span>. <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span> <span class="nv">value</span>
     <span class="k">for</span> `<span class="nv">self</span>.<span class="nv">many</span>` <span class="nv">is</span> <span class="nv">used</span>.
 <span class="nl">:return</span>: <span class="nv">A</span> ``<span class="nv">json</span>`` <span class="nv">string</span>
 <span class="nl">:rtype</span>: <span class="nv">str</span>
@@ -1090,23 +1190,22 @@ This class is helper only.</p>
     <span class="nv">data</span>: <span class="nv">Union</span>[<span class="nv">List</span>[<span class="nv">Dict</span>[<span class="nv">str</span>, <span class="nv">Any</span>]], <span class="nv">Dict</span>[<span class="nv">str</span>, <span class="nv">Any</span>]],
     <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
     <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
-    <span class="nv">unknown</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>
+    <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span>
 <span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">Union</span>[<span class="nv">List</span>[<span class="o">~</span><span class="nv">A</span>], <span class="o">~</span><span class="nv">A</span>]
 ```
 <span class="nv">Deserialize</span> <span class="nv">a</span> <span class="nv">data</span> <span class="nv">structure</span> <span class="nv">to</span> <span class="nv">an</span> <span class="nv">object</span> <span class="nv">defined</span> <span class="nv">by</span> <span class="nv">this</span> <span class="nv">Schema</span><span class="s1">&#39;</span><span class="s">s fields.</span>
 
-<span class="nl">:param</span> <span class="nv">dict</span> <span class="nv">data</span>: <span class="nv">The</span> <span class="nv">data</span> <span class="nv">to</span> <span class="nv">deserialize</span>.
-<span class="nl">:param</span> <span class="nv">bool</span> <span class="nv">many</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">deserialize</span> `<span class="nv">data</span>` <span class="nv">as</span> <span class="nv">a</span> <span class="nv">collection</span>. <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span>
+<span class="nl">:param</span> <span class="nv">data</span>: <span class="nv">The</span> <span class="nv">data</span> <span class="nv">to</span> <span class="nv">deserialize</span>.
+<span class="nl">:param</span> <span class="nv">many</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">deserialize</span> `<span class="nv">data</span>` <span class="nv">as</span> <span class="nv">a</span> <span class="nv">collection</span>. <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span>
     <span class="nv">value</span> <span class="k">for</span> `<span class="nv">self</span>.<span class="nv">many</span>` <span class="nv">is</span> <span class="nv">used</span>.
-<span class="nl">:param</span> <span class="nv">bool</span><span class="o">|</span><span class="nv">tuple</span> <span class="nv">partial</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">ignore</span> <span class="nv">missing</span> <span class="nv">fields</span> <span class="nv">and</span> <span class="nv">not</span> <span class="nv">require</span>
+<span class="nl">:param</span> <span class="nv">partial</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">ignore</span> <span class="nv">missing</span> <span class="nv">fields</span> <span class="nv">and</span> <span class="nv">not</span> <span class="nv">require</span>
     <span class="nv">any</span> <span class="nv">fields</span> <span class="nv">declared</span>. <span class="nv">Propagates</span> <span class="nv">down</span> <span class="nv">to</span> ``<span class="nv">Nested</span>`` <span class="nv">fields</span> <span class="nv">as</span> <span class="nv">well</span>. <span class="k">If</span>
     <span class="nv">its</span> <span class="nv">value</span> <span class="nv">is</span> <span class="nv">an</span> <span class="nv">iterable</span>, <span class="nv">only</span> <span class="nv">missing</span> <span class="nv">fields</span> <span class="nv">listed</span> <span class="nv">in</span> <span class="nv">that</span> <span class="nv">iterable</span>
     <span class="nv">will</span> <span class="nv">be</span> <span class="nv">ignored</span>. <span class="nv">Use</span> <span class="nv">dot</span> <span class="nv">delimiters</span> <span class="nv">to</span> <span class="nv">specify</span> <span class="nv">nested</span> <span class="nv">fields</span>.
 <span class="nl">:param</span> <span class="nv">unknown</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">exclude</span>, <span class="k">include</span>, <span class="nv">or</span> <span class="nv">raise</span> <span class="nv">an</span> <span class="nv">error</span> <span class="k">for</span> <span class="nv">unknown</span>
     <span class="nv">fields</span> <span class="nv">in</span> <span class="nv">the</span> <span class="nv">data</span>. <span class="nv">Use</span> `<span class="nv">EXCLUDE</span>`, `<span class="k">INCLUDE</span>` <span class="nv">or</span> `<span class="nv">RAISE</span>`.
     <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span> <span class="nv">value</span> <span class="k">for</span> `<span class="nv">self</span>.<span class="nv">unknown</span>` <span class="nv">is</span> <span class="nv">used</span>.
-<span class="nl">:return</span>: <span class="nv">A</span> <span class="nv">dict</span> <span class="nv">of</span> <span class="nv">deserialized</span> <span class="nv">data</span>
-<span class="nl">:rtype</span>: <span class="nv">dict</span>
+<span class="nl">:return</span>: <span class="nv">Deserialized</span> <span class="nv">data</span>
 
 .. <span class="nv">versionadded</span>:: <span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span>
 .. <span class="nv">versionchanged</span>:: <span class="mi">3</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="nv">b7</span>
@@ -1118,7 +1217,7 @@ This class is helper only.</p>
 ??? <span class="nv">example</span> <span class="s2">&quot;</span><span class="s">View Source</span><span class="s2">&quot;</span>
         <span class="nv">def</span> <span class="nv">load</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">data</span>: <span class="nv">TOneOrMultiEncoded</span>,
                  <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
-                 <span class="nv">unknown</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">TOneOrMulti</span>:
+                 <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">TOneOrMulti</span>:
             <span class="nv">pass</span>
 
 ##### <span class="nv">loads</span>
@@ -1129,24 +1228,23 @@ This class is helper only.</p>
     <span class="nv">json_data</span>: <span class="nv">Union</span>[<span class="nv">str</span>, <span class="nv">bytes</span>, <span class="nv">bytearray</span>],
     <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
     <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
-    <span class="nv">unknown</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
+    <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span>,
     <span class="o">**</span><span class="nv">kwargs</span>
 <span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">Union</span>[<span class="nv">List</span>[<span class="o">~</span><span class="nv">A</span>], <span class="o">~</span><span class="nv">A</span>]
 ```
 <span class="nv">Same</span> <span class="nv">as</span> :<span class="nv">meth</span>:`<span class="nv">load</span>`, <span class="nv">except</span> <span class="nv">it</span> <span class="nv">takes</span> <span class="nv">a</span> <span class="nv">JSON</span> <span class="nv">string</span> <span class="nv">as</span> <span class="nv">input</span>.
 
-<span class="nl">:param</span> <span class="nv">str</span> <span class="nv">json_data</span>: <span class="nv">A</span> <span class="nv">JSON</span> <span class="nv">string</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">data</span> <span class="nv">to</span> <span class="nv">deserialize</span>.
-<span class="nl">:param</span> <span class="nv">bool</span> <span class="nv">many</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">deserialize</span> `<span class="nv">obj</span>` <span class="nv">as</span> <span class="nv">a</span> <span class="nv">collection</span>. <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span>
+<span class="nl">:param</span> <span class="nv">json_data</span>: <span class="nv">A</span> <span class="nv">JSON</span> <span class="nv">string</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">data</span> <span class="nv">to</span> <span class="nv">deserialize</span>.
+<span class="nl">:param</span> <span class="nv">many</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">deserialize</span> `<span class="nv">obj</span>` <span class="nv">as</span> <span class="nv">a</span> <span class="nv">collection</span>. <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span>
     <span class="nv">value</span> <span class="k">for</span> `<span class="nv">self</span>.<span class="nv">many</span>` <span class="nv">is</span> <span class="nv">used</span>.
-<span class="nl">:param</span> <span class="nv">bool</span><span class="o">|</span><span class="nv">tuple</span> <span class="nv">partial</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">ignore</span> <span class="nv">missing</span> <span class="nv">fields</span> <span class="nv">and</span> <span class="nv">not</span> <span class="nv">require</span>
+<span class="nl">:param</span> <span class="nv">partial</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">ignore</span> <span class="nv">missing</span> <span class="nv">fields</span> <span class="nv">and</span> <span class="nv">not</span> <span class="nv">require</span>
     <span class="nv">any</span> <span class="nv">fields</span> <span class="nv">declared</span>. <span class="nv">Propagates</span> <span class="nv">down</span> <span class="nv">to</span> ``<span class="nv">Nested</span>`` <span class="nv">fields</span> <span class="nv">as</span> <span class="nv">well</span>. <span class="k">If</span>
     <span class="nv">its</span> <span class="nv">value</span> <span class="nv">is</span> <span class="nv">an</span> <span class="nv">iterable</span>, <span class="nv">only</span> <span class="nv">missing</span> <span class="nv">fields</span> <span class="nv">listed</span> <span class="nv">in</span> <span class="nv">that</span> <span class="nv">iterable</span>
     <span class="nv">will</span> <span class="nv">be</span> <span class="nv">ignored</span>. <span class="nv">Use</span> <span class="nv">dot</span> <span class="nv">delimiters</span> <span class="nv">to</span> <span class="nv">specify</span> <span class="nv">nested</span> <span class="nv">fields</span>.
 <span class="nl">:param</span> <span class="nv">unknown</span>: <span class="nv">Whether</span> <span class="nv">to</span> <span class="nv">exclude</span>, <span class="k">include</span>, <span class="nv">or</span> <span class="nv">raise</span> <span class="nv">an</span> <span class="nv">error</span> <span class="k">for</span> <span class="nv">unknown</span>
     <span class="nv">fields</span> <span class="nv">in</span> <span class="nv">the</span> <span class="nv">data</span>. <span class="nv">Use</span> `<span class="nv">EXCLUDE</span>`, `<span class="k">INCLUDE</span>` <span class="nv">or</span> `<span class="nv">RAISE</span>`.
     <span class="k">If</span> `<span class="nv">None</span>`, <span class="nv">the</span> <span class="nv">value</span> <span class="k">for</span> `<span class="nv">self</span>.<span class="nv">unknown</span>` <span class="nv">is</span> <span class="nv">used</span>.
-<span class="nl">:return</span>: <span class="nv">A</span> <span class="nv">dict</span> <span class="nv">of</span> <span class="nv">deserialized</span> <span class="nv">data</span>
-<span class="nl">:rtype</span>: <span class="nv">dict</span>
+<span class="nl">:return</span>: <span class="nv">Deserialized</span> <span class="nv">data</span>
 
 .. <span class="nv">versionadded</span>:: <span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span>
 .. <span class="nv">versionchanged</span>:: <span class="mi">3</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="nv">b7</span>
@@ -1157,84 +1255,116 @@ This class is helper only.</p>
 
 ??? <span class="nv">example</span> <span class="s2">&quot;</span><span class="s">View Source</span><span class="s2">&quot;</span>
         <span class="nv">def</span> <span class="nv">loads</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">json_data</span>: <span class="nv">JsonData</span>,
-                  <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">unknown</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
+                  <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span>,
                   <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">TOneOrMulti</span>:
             <span class="nv">pass</span>
 </pre></div>
 
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="n">SchemaF</span><span class="p">(</span><span class="k">Schema</span><span class="p">,</span><span class="w"> </span><span class="n">typing</span><span class="p">.</span><span class="n">Generic</span><span class="o">[</span><span class="n">A</span><span class="o">]</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
-<span class="w">    </span><span class="ss">&quot;&quot;&quot;Lift Schema into a type constructor&quot;&quot;&quot;</span><span class="w"></span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="nv">class</span> <span class="nv">SchemaF</span><span class="ss">(</span><span class="nv">Schema</span>, <span class="nv">typing</span>.<span class="nv">Generic</span>[<span class="nv">A</span>]<span class="ss">)</span>:
+    <span class="s2">&quot;&quot;&quot;</span><span class="s">Lift Schema into a type constructor</span><span class="s2">&quot;&quot;&quot;</span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
-<span class="w">        </span><span class="ss">&quot;&quot;&quot;</span>
-<span class="ss">        Raises exception because this class should not be inherited.</span>
-<span class="ss">        This class is helper only.</span>
-<span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
+    <span class="nv">def</span> <span class="nv">__init__</span><span class="ss">(</span><span class="nv">self</span>, <span class="o">*</span><span class="nv">args</span>, <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span>:
+        <span class="s2">&quot;&quot;&quot;</span>
+        <span class="nv">Raises</span> <span class="nv">exception</span> <span class="nv">because</span> <span class="nv">this</span> <span class="nv">class</span> <span class="nv">should</span> <span class="nv">not</span> <span class="nv">be</span> <span class="nv">inherited</span>.
+        <span class="nv">This</span> <span class="nv">class</span> <span class="nv">is</span> <span class="nv">helper</span> <span class="nv">only</span>.
+        <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">NotImplementedError</span><span class="p">()</span><span class="w"></span>
+        <span class="nv">super</span><span class="ss">()</span>.<span class="nv">__init__</span><span class="ss">(</span><span class="o">*</span><span class="nv">args</span>, <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span>
+        <span class="nv">raise</span> <span class="nv">NotImplementedError</span><span class="ss">()</span>
 
-<span class="w">    </span><span class="nv">@typing</span><span class="p">.</span><span class="n">overload</span><span class="w"></span>
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">dump</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">obj</span><span class="p">:</span><span class="w"> </span><span class="n">typing</span><span class="p">.</span><span class="n">List</span><span class="o">[</span><span class="n">A</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">typing</span><span class="p">.</span><span class="n">List</span><span class="o">[</span><span class="n"></span>
-<span class="n">        TEncoded</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    @<span class="nv">typing</span>.<span class="nv">overload</span>
+    <span class="nv">def</span> <span class="nv">dump</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">obj</span>: <span class="nv">typing</span>.<span class="nv">List</span>[<span class="nv">A</span>], <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">typing</span>.<span class="nv">List</span>[<span class="nv">TEncoded</span>]:  # <span class="nv">type</span>: <span class="nv">ignore</span>
+        <span class="nv">pass</span>  # <span class="nv">mm</span> <span class="nv">has</span> <span class="nv">the</span> <span class="nv">wrong</span> <span class="k">return</span> <span class="nv">type</span> <span class="nv">annotation</span> <span class="ss">(</span><span class="nv">dict</span><span class="ss">)</span> <span class="nv">so</span> <span class="nv">we</span> <span class="nv">can</span> <span class="nv">ignore</span> <span class="nv">the</span> <span class="nv">mypy</span> <span class="nv">error</span>
 
-<span class="w">    </span><span class="nv">@typing</span><span class="p">.</span><span class="n">overload</span><span class="w"></span>
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">dump</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">obj</span><span class="p">:</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">TEncoded</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    @<span class="nv">typing</span>.<span class="nv">overload</span>
+    <span class="nv">def</span> <span class="nv">dump</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">obj</span>: <span class="nv">A</span>, <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">TEncoded</span>:
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">dump</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">obj</span><span class="p">:</span><span class="w"> </span><span class="n">TOneOrMulti</span><span class="p">,</span><span class="w"></span>
-<span class="w">             </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">TOneOrMultiEncoded</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    <span class="nv">def</span> <span class="nv">dump</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">obj</span>: <span class="nv">TOneOrMulti</span>,
+             <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">TOneOrMultiEncoded</span>:
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="nv">@typing</span><span class="p">.</span><span class="n">overload</span><span class="w"></span>
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dumps</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">obj</span><span class="p">:</span><span class="w"> </span><span class="n">typing</span><span class="p">.</span><span class="n">List</span><span class="o">[</span><span class="n">A</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="w"></span>
-<span class="w">              </span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    @<span class="nv">typing</span>.<span class="nv">overload</span>
+    <span class="nv">def</span> <span class="nv">dumps</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">obj</span>: <span class="nv">typing</span>.<span class="nv">List</span>[<span class="nv">A</span>], <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="o">*</span><span class="nv">args</span>,
+              <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">str</span>:
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="nv">@typing</span><span class="p">.</span><span class="n">overload</span><span class="w"></span>
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dumps</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">obj</span><span class="p">:</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    @<span class="nv">typing</span>.<span class="nv">overload</span>
+    <span class="nv">def</span> <span class="nv">dumps</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">obj</span>: <span class="nv">A</span>, <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="o">*</span><span class="nv">args</span>, <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">str</span>:
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dumps</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">obj</span><span class="p">:</span><span class="w"> </span><span class="n">TOneOrMulti</span><span class="p">,</span><span class="w"> </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="w"></span>
-<span class="w">              </span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    <span class="nv">def</span> <span class="nv">dumps</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">obj</span>: <span class="nv">TOneOrMulti</span>, <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="o">*</span><span class="nv">args</span>,
+              <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">str</span>:
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="nv">@typing</span><span class="p">.</span><span class="n">overload</span><span class="w"></span>
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">load</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="err">:</span><span class="w"> </span><span class="n">typing</span><span class="p">.</span><span class="n">List</span><span class="o">[</span><span class="n">TEncoded</span><span class="o">]</span><span class="p">,</span><span class="w"></span>
-<span class="w">             </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="p">,</span><span class="w"> </span><span class="k">partial</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
-<span class="w">             </span><span class="k">unknown</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">\</span><span class="w"></span>
-<span class="w">            </span><span class="n">typing</span><span class="p">.</span><span class="n">List</span><span class="o">[</span><span class="n">A</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    @<span class="nv">typing</span>.<span class="nv">overload</span> # <span class="nv">type</span>: <span class="nv">ignore</span>
+    <span class="nv">def</span> <span class="nv">load</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">data</span>: <span class="nv">typing</span>.<span class="nv">List</span>[<span class="nv">TEncoded</span>],
+             <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">True</span>, <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
+             <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> \
+            <span class="nv">typing</span>.<span class="nv">List</span>[<span class="nv">A</span>]:
+        # <span class="nv">ignore</span> <span class="nv">the</span> <span class="nv">mypy</span> <span class="nv">error</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">decorator</span> <span class="nv">because</span> <span class="nv">mm</span> <span class="nv">does</span> <span class="nv">not</span> <span class="nv">define</span> <span class="nv">lists</span> <span class="nv">as</span> <span class="nv">an</span> <span class="nv">allowed</span> <span class="nv">input</span> <span class="nv">type</span>
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="nv">@typing</span><span class="p">.</span><span class="n">overload</span><span class="w"></span>
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">load</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="err">:</span><span class="w"> </span><span class="n">TEncoded</span><span class="p">,</span><span class="w"></span>
-<span class="w">             </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="k">partial</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
-<span class="w">             </span><span class="k">unknown</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">A</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    @<span class="nv">typing</span>.<span class="nv">overload</span>
+    <span class="nv">def</span> <span class="nv">load</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">data</span>: <span class="nv">TEncoded</span>,
+             <span class="nv">many</span>: <span class="nv">None</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
+             <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">A</span>:
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="k">load</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="err">:</span><span class="w"> </span><span class="n">TOneOrMultiEncoded</span><span class="p">,</span><span class="w"></span>
-<span class="w">             </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="k">partial</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
-<span class="w">             </span><span class="k">unknown</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">TOneOrMulti</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    <span class="nv">def</span> <span class="nv">load</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">data</span>: <span class="nv">TOneOrMultiEncoded</span>,
+             <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>,
+             <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">TOneOrMulti</span>:
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="nv">@typing</span><span class="p">.</span><span class="n">overload</span><span class="w"></span>
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">loads</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">json_data</span><span class="p">:</span><span class="w"> </span><span class="n">JsonData</span><span class="p">,</span><span class="w"></span>
-<span class="w">              </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="p">,</span><span class="w"> </span><span class="k">partial</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="k">unknown</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
-<span class="w">              </span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">typing</span><span class="p">.</span><span class="n">List</span><span class="o">[</span><span class="n">A</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    @<span class="nv">typing</span>.<span class="nv">overload</span>  # <span class="nv">type</span>: <span class="nv">ignore</span>
+    <span class="nv">def</span> <span class="nv">loads</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">json_data</span>: <span class="nv">JsonData</span>,  # <span class="nv">type</span>: <span class="nv">ignore</span>
+              <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">True</span>, <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span>,
+              <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">typing</span>.<span class="nv">List</span>[<span class="nv">A</span>]:
+        # <span class="nv">ignore</span> <span class="nv">the</span> <span class="nv">mypy</span> <span class="nv">error</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">decorator</span> <span class="nv">because</span> <span class="nv">mm</span> <span class="nv">does</span> <span class="nv">not</span> <span class="nv">define</span> <span class="nv">bytes</span> <span class="nv">as</span> <span class="nv">correct</span> <span class="nv">input</span> <span class="nv">data</span>
+        # <span class="nv">mm</span> <span class="nv">has</span> <span class="nv">the</span> <span class="nv">wrong</span> <span class="k">return</span> <span class="nv">type</span> <span class="nv">annotation</span> <span class="ss">(</span><span class="nv">dict</span><span class="ss">)</span> <span class="nv">so</span> <span class="nv">we</span> <span class="nv">can</span> <span class="nv">ignore</span> <span class="nv">the</span> <span class="nv">mypy</span> <span class="nv">error</span>
+        # <span class="k">for</span> <span class="nv">the</span> <span class="k">return</span> <span class="nv">type</span> <span class="nv">overlap</span>
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="nv">@typing</span><span class="p">.</span><span class="n">overload</span><span class="w"></span>
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">loads</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">json_data</span><span class="p">:</span><span class="w"> </span><span class="n">JsonData</span><span class="p">,</span><span class="w"></span>
-<span class="w">              </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="k">partial</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="k">unknown</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
-<span class="w">              </span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">A</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    @<span class="nv">typing</span>.<span class="nv">overload</span>
+    <span class="nv">def</span> <span class="nv">loads</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">json_data</span>: <span class="nv">JsonData</span>,
+              <span class="nv">many</span>: <span class="nv">None</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span>,
+              <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">A</span>:
+        <span class="nv">pass</span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">loads</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">json_data</span><span class="p">:</span><span class="w"> </span><span class="n">JsonData</span><span class="p">,</span><span class="w"></span>
-<span class="w">              </span><span class="nl">many</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="k">partial</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="k">unknown</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
-<span class="w">              </span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">TOneOrMulti</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="n">pass</span><span class="w"></span>
+    <span class="nv">def</span> <span class="nv">loads</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">json_data</span>: <span class="nv">JsonData</span>,
+              <span class="nv">many</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">partial</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">None</span>, <span class="nv">unknown</span>: <span class="nv">str</span> <span class="o">=</span> <span class="nv">None</span>,
+              <span class="o">**</span><span class="nv">kwargs</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">TOneOrMulti</span>:
+        <span class="nv">pass</span>
+</pre></div>
+
+
+</details>
+<hr />
+<h5 id="undefinedparametererror">UndefinedParameterError</h5>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="err">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+    <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;_schema&#39;</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">valid_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Raised when something has gone wrong handling undefined parameters.</p>
+<h3 id="ancestors-in-mro_1">Ancestors (in MRO)</h3>
+<ul>
+<li>marshmallow.exceptions.ValidationError</li>
+<li>marshmallow.exceptions.MarshmallowError</li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="k">class</span> <span class="n">UndefinedParameterError</span>(<span class="n">ValidationError</span>):
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    Raised when something has gone wrong handling undefined parameters.</span>
+<span class="s">    &quot;&quot;&quot;</span>
+    <span class="nb">pass</span>
 </pre></div>
 
 
@@ -1275,13 +1405,13 @@ This class is helper only.</p>
           </a>
         
         
-          <a href="../utils/" title="Utils" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../undefined/" title="Undefined" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Utils
+                Undefined
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

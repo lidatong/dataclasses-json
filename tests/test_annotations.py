@@ -8,13 +8,14 @@ from typing import Any, Dict, List, NewType, Optional, Tuple, Union
 
 from mypy.main import main as mypy_main
 
-from dataclasses_json import DataClassJsonMixin
+from dataclasses_json import DataClassJsonMixin, CatchAll
 
 
 @dataclass
 class User(DataClassJsonMixin):
     id: str
     name: str = "John"
+    ca: CatchAll = None
 
 
 Filename = NewType('Filename', str)
@@ -88,9 +89,10 @@ class TestAnnotations:
             else:
                 msg = level
                 level = None
-
         else:
-            file_name = None
+            # Otherwise we get 'Found 1 error in 1 file (checked 1 source file)' as an error
+            # due to a mypy error in a different file
+            file_name = Filename("") if line.startswith("Found") else None
             line_no = None
             level = None
             msg = line

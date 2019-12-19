@@ -1,15 +1,18 @@
+import abc
 import copy
 import json
 import warnings
 from collections import namedtuple
-from dataclasses import (MISSING, _is_dataclass_instance, fields, is_dataclass)
+from dataclasses import (MISSING, fields, is_dataclass)
+# noinspection PyProtectedMember
+from dataclasses import _is_dataclass_instance  # type: ignore
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Collection, Mapping, Union, get_type_hints
+from typing import Collection, Mapping, Union, get_type_hints, Dict, Any, Tuple, Callable
 from uuid import UUID
 
-from typing_inspect import is_union_type
+from typing_inspect import is_union_type  # type: ignore
 
 from dataclasses_json.utils import (
     _get_type_cons,
@@ -18,7 +21,7 @@ from dataclasses_json.utils import (
     _is_new_type,
     _is_optional,
     _isinstance_safe,
-    _issubclass_safe)
+    _issubclass_safe, _handle_undefined_parameters_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
 
@@ -64,7 +67,7 @@ def _user_overrides(cls):
 
 
 def _encode_json_type(value, default=_ExtendedEncoder().default):
-    if isinstance(value, Json.__args__):
+    if isinstance(value, Json.__args__):  # type: ignore
         return value
     return default(value)
 
@@ -107,6 +110,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
     decode_names = _decode_letter_case_overrides(field_names, overrides)
     kvs = {decode_names.get(k, k): v for k, v in kvs.items()}
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
+
     for field in missing_fields:
         if field.default is not MISSING:
             kvs[field.name] = field.default
@@ -114,6 +118,9 @@ def _decode_dataclass(cls, kvs, infer_missing):
             kvs[field.name] = field.default_factory()
         elif infer_missing:
             kvs[field.name] = None
+
+    # Perform undefined parameter action
+    kvs = _handle_undefined_parameters_safe(cls, kvs, usage="from")
 
     init_kwargs = {}
     types = get_type_hints(cls)
@@ -171,6 +178,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
         else:
             init_kwargs[field.name] = _support_extended_types(field_type,
                                                               field_value)
+
     return cls(**init_kwargs)
 
 
@@ -282,6 +290,8 @@ def _asdict(obj, encode_json=False):
         for field in fields(obj):
             value = _asdict(getattr(obj, field.name), encode_json=encode_json)
             result.append((field.name, value))
+
+        result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result), usage="to")
         return _encode_overrides(dict(result), _user_overrides(obj),
                                  encode_json=encode_json)
     elif isinstance(obj, Mapping):
@@ -292,3 +302,47 @@ def _asdict(obj, encode_json=False):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:
         return copy.deepcopy(obj)
+
+
+KnownParameters = Dict[str, Any]
+UnknownParameters = Dict[str, Any]
+
+
+class UndefinedParameterAction(abc.ABC):
+
+    @staticmethod
+    @abc.abstractmethod
+    def handle_from_dict(cls, kvs: Dict[Any, Any]) -> Dict[str, Any]:
+        """
+        Return the parameters to initialize the class with.
+        """
+        pass
+
+    @staticmethod
+    def handle_to_dict(obj, kvs: Dict[Any, Any]) -> Dict[Any, Any]:
+        """
+        Return the parameters that will be written to the output dict
+        """
+        return kvs
+
+    @staticmethod
+    def handle_dump(obj) -> Dict[Any, Any]:
+        """
+        Return the parameters that will be added to the schema dump.
+        """
+        return {}
+
+    @staticmethod
+    def create_init(obj) -> Callable:
+        return obj.__init__
+
+    @staticmethod
+    def _separate_defined_undefined_kvs(cls, kvs: Dict) -> Tuple[KnownParameters, UnknownParameters]:
+        """
+        Returns a 2 dictionaries: defined and undefined parameters
+        """
+        class_fields = fields(cls)
+        field_names = [field.name for field in class_fields]
+        unknown_given_parameters = {k: v for k, v in kvs.items() if k not in field_names}
+        known_given_parameters = {k: v for k, v in kvs.items() if k in field_names}
+        return known_given_parameters, unknown_given_parameters

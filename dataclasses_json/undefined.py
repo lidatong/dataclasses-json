@@ -38,8 +38,8 @@ class _UndefinedParameterAction(abc.ABC):
         return obj.__init__
 
     @staticmethod
-    def _separate_defined_undefined_kvs(cls, kvs: Dict) -> Tuple[
-        KnownParameters, UnknownParameters]:
+    def _separate_defined_undefined_kvs(cls, kvs: Dict) -> \
+            Tuple[KnownParameters, UnknownParameters]:
         """
         Returns a 2 dictionaries: defined and undefined parameters
         """
@@ -54,13 +54,15 @@ class _UndefinedParameterAction(abc.ABC):
 
 class _RaiseUndefinedParameters(_UndefinedParameterAction):
     """
-    This action raises UndefinedParameterError if it encounters an undefined parameter during initialization.
+    This action raises UndefinedParameterError if it encounters an undefined
+    parameter during initialization.
     """
 
     @staticmethod
     def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
-        known, unknown = _UndefinedParameterAction._separate_defined_undefined_kvs(
-            cls=cls, kvs=kvs)
+        known, unknown = \
+            _UndefinedParameterAction._separate_defined_undefined_kvs(
+                cls=cls, kvs=kvs)
         if len(unknown) > 0:
             raise UndefinedParameterError(
                 f"Received undefined initialization arguments {unknown}")
@@ -73,13 +75,15 @@ CatchAll = Optional[CatchAllVar]
 class _IgnoreUndefinedParameters(_UndefinedParameterAction):
     """
     This action does nothing when it encounters undefined parameters.
-    The undefined parameters can not be retrieved after the class has been created.
+    The undefined parameters can not be retrieved after the class has been
+    created.
     """
 
     @staticmethod
     def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
-        known_given_parameters, _ = _UndefinedParameterAction._separate_defined_undefined_kvs(
-            cls=cls, kvs=kvs)
+        known_given_parameters, _ = \
+            _UndefinedParameterAction._separate_defined_undefined_kvs(
+                cls=cls, kvs=kvs)
         return known_given_parameters
 
     @staticmethod
@@ -89,8 +93,9 @@ class _IgnoreUndefinedParameters(_UndefinedParameterAction):
 
         @functools.wraps(obj.__init__)
         def _ignore_init(self, *args, **kwargs):
-            known_kwargs, _ = _CatchAllUndefinedParameters._separate_defined_undefined_kvs(
-                obj, kwargs)
+            known_kwargs, _ = \
+                _CatchAllUndefinedParameters._separate_defined_undefined_kvs(
+                    obj, kwargs)
             num_params_takeable = len(
                 init_signature.parameters) - 1  # don't count self
             num_args_takeable = num_params_takeable - len(known_kwargs)
@@ -102,8 +107,8 @@ class _IgnoreUndefinedParameters(_UndefinedParameterAction):
 
             arguments = bound_parameters.arguments
             arguments.pop("self", None)
-            final_parameters = _IgnoreUndefinedParameters.handle_from_dict(obj,
-                                                                           arguments)
+            final_parameters = \
+                _IgnoreUndefinedParameters.handle_from_dict(obj, arguments)
             original_init(self, **final_parameters)
 
         return _ignore_init
@@ -111,7 +116,8 @@ class _IgnoreUndefinedParameters(_UndefinedParameterAction):
 
 class _CatchAllUndefinedParameters(_UndefinedParameterAction):
     """
-    This class allows to add a field of type utils.CatchAll which acts as a dictionary into which all
+    This class allows to add a field of type utils.CatchAll which acts as a
+    dictionary into which all
     undefined parameters will be written.
     These parameters are not affected by LetterCase.
     If no undefined parameters are given, this dictionary will be empty.
@@ -122,8 +128,8 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
 
     @staticmethod
     def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
-        known, unknown = _UndefinedParameterAction._separate_defined_undefined_kvs(
-            cls=cls, kvs=kvs)
+        known, unknown = _UndefinedParameterAction \
+            ._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
         catch_all_field = _CatchAllUndefinedParameters._get_catch_all_field(
             cls=cls)
 
@@ -145,8 +151,10 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
                 if len(unknown) > 0:
                     value_to_write.update(unknown)
             else:
-                error_message = f"Received input parameter with same name as catch-all field: " \
-                                f"'{catch_all_field.name}': '{known[catch_all_field.name]}'"
+                error_message = f"Received input field with " \
+                                f"same name as catch-all field: " \
+                                f"'{catch_all_field.name}': " \
+                                f"'{known[catch_all_field.name]}'"
                 raise UndefinedParameterError(error_message)
         else:
             value_to_write = unknown
@@ -156,7 +164,8 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
 
     @staticmethod
     def _get_default(catch_all_field: Field) -> Any:
-        # access to the default factory currently causes a false-positive mypy error (16. Dec 2019):
+        # access to the default factory currently causes
+        # a false-positive mypy error (16. Dec 2019):
         # https://github.com/python/mypy/issues/6910
 
         # noinspection PyProtectedMember
@@ -170,7 +179,8 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
         if has_default:
             default_value = catch_all_field.default
         elif has_default_factory:
-            # This might be unwanted if the default factory constructs something expensive,
+            # This might be unwanted if the default factory constructs
+            # something expensive,
             # because we have to construct it again just for this test
             default_value = catch_all_field.default_factory()  # type: ignore
 
@@ -178,7 +188,8 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
 
     @staticmethod
     def handle_to_dict(obj, kvs: Dict[Any, Any]) -> Dict[Any, Any]:
-        catch_all_field = _CatchAllUndefinedParameters._get_catch_all_field(obj)
+        catch_all_field = \
+            _CatchAllUndefinedParameters._get_catch_all_field(obj)
         undefined_parameters = kvs.pop(catch_all_field.name)
         if isinstance(undefined_parameters, dict):
             kvs.update(
@@ -198,8 +209,9 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
 
         @functools.wraps(obj.__init__)
         def _catch_all_init(self, *args, **kwargs):
-            known_kwargs, unknown_kwargs = _CatchAllUndefinedParameters._separate_defined_undefined_kvs(
-                obj, kwargs)
+            known_kwargs, unknown_kwargs = \
+                _CatchAllUndefinedParameters._separate_defined_undefined_kvs(
+                    obj, kwargs)
             num_params_takeable = len(
                 init_signature.parameters) - 1  # don't count self
             if _CatchAllUndefinedParameters._get_catch_all_field(
@@ -234,6 +246,7 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
                 "No field of type dataclasses_json.CatchAll defined")
         elif number_of_catch_all_fields > 1:
             raise UndefinedParameterError(
-                f"Multiple catch-all fields supplied: {number_of_catch_all_fields}.")
+                f"Multiple catch-all fields supplied: "
+                f"{number_of_catch_all_fields}.")
         else:
             return catch_all_fields[0]

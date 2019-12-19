@@ -1,3 +1,5 @@
+# flake8: noqa
+
 import typing
 import warnings
 import sys
@@ -150,7 +152,8 @@ if sys.version_info >= (3, 7):
 
         @typing.overload
         def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[TEncoded]:  # type: ignore
-            pass  # mm has the wrong return type annotation (dict) so we can ignore the mypy error
+            # mm has the wrong return type annotation (dict) so we can ignore the mypy error
+            pass
 
         @typing.overload
         def dump(self, obj: A, many: bool = None) -> TEncoded:

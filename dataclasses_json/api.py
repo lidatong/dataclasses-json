@@ -34,7 +34,8 @@ class LetterCase(Enum):
 
 class Undefined(Enum):
     """
-    Choose the behavior what happens when an undefined parameter is encountered during class initialization.
+    Choose the behavior what happens when an undefined parameter is encountered
+    during class initialization.
     """
     INCLUDE = _CatchAllUndefinedParameters
     RAISE = _RaiseUndefinedParameters

@@ -126,7 +126,8 @@ def _undefined_parameter_action_safe(cls):
 
 def _handle_undefined_parameters_safe(cls, kvs, usage: str):
     """
-    Checks if an undefined parameters action is defined and performs the according action.
+    Checks if an undefined parameters action is defined and performs the
+    according action.
     """
     undefined_parameter_action = _undefined_parameter_action_safe(cls)
     usage = usage.lower()
@@ -136,15 +137,16 @@ def _handle_undefined_parameters_safe(cls, kvs, usage: str):
         return undefined_parameter_action.value.handle_from_dict(cls=cls,
                                                                  kvs=kvs)
     elif usage == "to":
-        return undefined_parameter_action.value.handle_to_dict(obj=cls, kvs=kvs)
+        return undefined_parameter_action.value.handle_to_dict(obj=cls,
+                                                               kvs=kvs)
     elif usage == "dump":
         return undefined_parameter_action.value.handle_dump(obj=cls)
     elif usage == "init":
         return undefined_parameter_action.value.create_init(obj=cls)
     else:
         raise ValueError(
-            f"usage must be one of ['to', 'from', 'dump', 'init'](case-insensitive),"
-            f" but is '{usage}'")
+            f"usage must be one of ['to', 'from', 'dump', 'init'], "
+            f"but is '{usage}'")
 
 
 # Define a type for the CatchAll field

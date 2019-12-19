@@ -2,25 +2,23 @@ import copy
 import json
 import warnings
 from collections import namedtuple
-from dataclasses import (MISSING, fields, is_dataclass)
 # noinspection PyProtectedMember
-from dataclasses import _is_dataclass_instance  # type: ignore
+from dataclasses import (MISSING, _is_dataclass_instance, fields,
+                         is_dataclass  # type: ignore
+                         )
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Collection, Mapping, Union, get_type_hints, Dict, Any
+from typing import Any, Collection, Dict, Mapping, Union, get_type_hints
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
 
-from dataclasses_json.utils import (
-    _get_type_cons,
-    _is_collection,
-    _is_mapping,
-    _is_new_type,
-    _is_optional,
-    _isinstance_safe,
-    _issubclass_safe, _handle_undefined_parameters_safe)
+from dataclasses_json.utils import (_get_type_cons,
+                                    _handle_undefined_parameters_safe,
+                                    _is_collection, _is_mapping, _is_new_type,
+                                    _is_optional, _isinstance_safe,
+                                    _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
 
@@ -215,13 +213,15 @@ def _decode_generic(type_, value, infer_missing):
     if value is None:
         res = value
     elif _issubclass_safe(type_, Enum):
-        # Convert to an Enum using the type as a constructor. Assumes a direct match is found.
+        # Convert to an Enum using the type as a constructor.
+        # Assumes a direct match is found.
         res = type_(value)
     # FIXME this is a hack to fix a deeper underlying issue. A refactor is due.
     elif _is_collection(type_):
         if _is_mapping(type_):
             k_type, v_type = type_.__args__
-            # a mapping type has `.keys()` and `.values()` (see collections.abc)
+            # a mapping type has `.keys()` and `.values()`
+            # (see collections.abc)
             ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
             vs = _decode_items(v_type, value.values(), infer_missing)
             xs = zip(ks, vs)
@@ -255,7 +255,8 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     """
     # handle NoneType keys... it's weird to type a Dict as NoneType keys
     # but it's valid...
-    key_type = (lambda x: x) if key_type is type(None) else key_type
+    key_type = (lambda x: x) if key_type is type(None) \
+        else key_type  # noqa: E721
     return map(key_type, _decode_items(key_type, xs, infer_missing))
 
 
@@ -290,14 +291,16 @@ def _asdict(obj, encode_json=False):
             value = _asdict(getattr(obj, field.name), encode_json=encode_json)
             result.append((field.name, value))
 
-        result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result), usage="to")
+        result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result),
+                                                   usage="to")
         return _encode_overrides(dict(result), _user_overrides(obj),
                                  encode_json=encode_json)
     elif isinstance(obj, Mapping):
         return dict((_asdict(k, encode_json=encode_json),
                      _asdict(v, encode_json=encode_json)) for k, v in
                     obj.items())
-    elif isinstance(obj, Collection) and not isinstance(obj, str) and not isinstance(obj, bytes):
+    elif isinstance(obj, Collection) and not isinstance(obj, str) \
+            and not isinstance(obj, bytes):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:
         return copy.deepcopy(obj)
@@ -305,5 +308,3 @@ def _asdict(obj, encode_json=False):
 
 KnownParameters = Dict[str, Any]
 UnknownParameters = Dict[str, Any]
-
-

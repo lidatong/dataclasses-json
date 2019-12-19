@@ -1,4 +1,3 @@
-import abc
 import copy
 import json
 import warnings
@@ -9,7 +8,7 @@ from dataclasses import _is_dataclass_instance  # type: ignore
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Collection, Mapping, Union, get_type_hints, Dict, Any, Tuple, Callable
+from typing import Collection, Mapping, Union, get_type_hints, Dict, Any
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -308,41 +307,3 @@ KnownParameters = Dict[str, Any]
 UnknownParameters = Dict[str, Any]
 
 
-class UndefinedParameterAction(abc.ABC):
-
-    @staticmethod
-    @abc.abstractmethod
-    def handle_from_dict(cls, kvs: Dict[Any, Any]) -> Dict[str, Any]:
-        """
-        Return the parameters to initialize the class with.
-        """
-        pass
-
-    @staticmethod
-    def handle_to_dict(obj, kvs: Dict[Any, Any]) -> Dict[Any, Any]:
-        """
-        Return the parameters that will be written to the output dict
-        """
-        return kvs
-
-    @staticmethod
-    def handle_dump(obj) -> Dict[Any, Any]:
-        """
-        Return the parameters that will be added to the schema dump.
-        """
-        return {}
-
-    @staticmethod
-    def create_init(obj) -> Callable:
-        return obj.__init__
-
-    @staticmethod
-    def _separate_defined_undefined_kvs(cls, kvs: Dict) -> Tuple[KnownParameters, UnknownParameters]:
-        """
-        Returns a 2 dictionaries: defined and undefined parameters
-        """
-        class_fields = fields(cls)
-        field_names = [field.name for field in class_fields]
-        unknown_given_parameters = {k: v for k, v in kvs.items() if k not in field_names}
-        known_given_parameters = {k: v for k, v in kvs.items() if k in field_names}
-        return known_given_parameters, unknown_given_parameters

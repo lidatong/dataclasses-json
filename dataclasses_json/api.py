@@ -1,20 +1,23 @@
 import abc
-import dataclasses
 import functools
 import json
-import inspect
-from dataclasses import fields, Field
 from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
 from marshmallow.fields import Field as MarshmallowField
-from stringcase import camelcase, snakecase, spinalcase, pascalcase  # type: ignore
+from stringcase import (camelcase, pascalcase, snakecase,
+                        spinalcase)  # type: ignore
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
-                                   _decode_dataclass, UndefinedParameterAction)
-from dataclasses_json.mm import JsonData, SchemaType, build_schema, UndefinedParameterError
-from dataclasses_json.utils import _undefined_parameter_action_safe, CatchAllVar, _handle_undefined_parameters_safe
+                                   _decode_dataclass)
+from dataclasses_json.mm import (JsonData, SchemaType, UndefinedParameterError,
+                                 build_schema)
+from dataclasses_json.undefined import (_CatchAllUndefinedParameters,
+                                        _IgnoreUndefinedParameters,
+                                        _RaiseUndefinedParameters)
+from dataclasses_json.utils import (_handle_undefined_parameters_safe,
+                                    _undefined_parameter_action_safe)
 
 A = TypeVar('A', bound="DataClassJsonMixin")
 B = TypeVar('B')
@@ -29,177 +32,13 @@ class LetterCase(Enum):
     PASCAL = pascalcase
 
 
-class IgnoreUndefinedParameters(UndefinedParameterAction):
-    """
-    This action does nothing when it encounters undefined parameters.
-    The undefined parameters can not be retrieved after the class has been created.
-    """
-
-    @staticmethod
-    def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
-        known_given_parameters, _ = UndefinedParameterAction._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
-        return known_given_parameters
-
-    @staticmethod
-    def create_init(obj) -> Callable:
-        original_init = obj.__init__
-        init_signature = inspect.signature(original_init)
-
-        @functools.wraps(obj.__init__)
-        def _ignore_init(self, *args, **kwargs):
-            known_kwargs, _ = CatchAllUndefinedParameters._separate_defined_undefined_kvs(obj, kwargs)
-            num_params_takeable = len(init_signature.parameters) - 1  # don't count self
-            num_args_takeable = num_params_takeable - len(known_kwargs)
-
-            args = args[:num_args_takeable]
-            bound_parameters = init_signature.bind_partial(self, *args, **known_kwargs)
-            bound_parameters.apply_defaults()
-
-            arguments = bound_parameters.arguments
-            arguments.pop("self", None)
-            final_parameters = IgnoreUndefinedParameters.handle_from_dict(obj, arguments)
-            original_init(self, **final_parameters)
-
-        return _ignore_init
-
-
-class RaiseUndefinedParameters(UndefinedParameterAction):
-    """
-    This action raises UndefinedParameterError if it encounters an undefined parameter during initialization.
-    """
-
-    @staticmethod
-    def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
-        known, unknown = UndefinedParameterAction._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
-        if len(unknown) > 0:
-            raise UndefinedParameterError(f"Received undefined initialization arguments {unknown}")
-        return known
-
-
-CatchAll = Optional[CatchAllVar]
-
-
-class CatchAllUndefinedParameters(UndefinedParameterAction):
-    """
-    This class allows to add a field of type utils.CatchAll which acts as a dictionary into which all
-    undefined parameters will be written.
-    These parameters are not affected by LetterCase.
-    If no undefined parameters are given, this dictionary will be empty.
-    """
-
-    class _SentinelNoDefault:
-        pass
-
-    @staticmethod
-    def handle_from_dict(cls, kvs: Dict) -> Dict[str, Any]:
-        known, unknown = UndefinedParameterAction._separate_defined_undefined_kvs(cls=cls, kvs=kvs)
-        catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(cls=cls)
-
-        if catch_all_field.name in known:
-
-            already_parsed = isinstance(known[catch_all_field.name], dict)
-            default_value = CatchAllUndefinedParameters._get_default(catch_all_field=catch_all_field)
-            received_default = default_value == known[catch_all_field.name]
-
-            value_to_write: Any
-            if received_default and len(unknown) == 0:
-                value_to_write = default_value
-            elif received_default and len(unknown) > 0:
-                value_to_write = unknown
-            elif already_parsed:
-                # Did not receive default
-                value_to_write = known[catch_all_field.name]
-                if len(unknown) > 0:
-                    value_to_write.update(unknown)
-            else:
-                error_message = f"Received input parameter with same name as catch-all field: " \
-                                f"'{catch_all_field.name}': '{known[catch_all_field.name]}'"
-                raise UndefinedParameterError(error_message)
-        else:
-            value_to_write = unknown
-
-        known[catch_all_field.name] = value_to_write
-        return known
-
-    @staticmethod
-    def _get_default(catch_all_field: Field) -> Any:
-        # access to the default factory currently causes a false-positive mypy error (16. Dec 2019):
-        # https://github.com/python/mypy/issues/6910
-
-        # noinspection PyProtectedMember
-        has_default = not isinstance(catch_all_field.default, dataclasses._MISSING_TYPE)
-        # noinspection PyProtectedMember
-        has_default_factory = not isinstance(catch_all_field.default_factory,  # type: ignore
-                                             dataclasses._MISSING_TYPE)
-        default_value = CatchAllUndefinedParameters._SentinelNoDefault
-        if has_default:
-            default_value = catch_all_field.default
-        elif has_default_factory:
-            # This might be unwanted if the default factory constructs something expensive,
-            # because we have to construct it again just for this test
-            default_value = catch_all_field.default_factory()  # type: ignore
-
-        return default_value
-
-    @staticmethod
-    def handle_to_dict(obj, kvs: Dict[Any, Any]) -> Dict[Any, Any]:
-        catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(obj)
-        undefined_parameters = kvs.pop(catch_all_field.name)
-        if isinstance(undefined_parameters, dict):
-            kvs.update(undefined_parameters)  # If desired handle letter case here
-        return kvs
-
-    @staticmethod
-    def handle_dump(obj) -> Dict[Any, Any]:
-        catch_all_field = CatchAllUndefinedParameters._get_catch_all_field(cls=obj)
-        return getattr(obj, catch_all_field.name)
-
-    @staticmethod
-    def create_init(obj) -> Callable:
-        original_init = obj.__init__
-        init_signature = inspect.signature(original_init)
-
-        @functools.wraps(obj.__init__)
-        def _catch_all_init(self, *args, **kwargs):
-            known_kwargs, unknown_kwargs = CatchAllUndefinedParameters._separate_defined_undefined_kvs(obj, kwargs)
-            num_params_takeable = len(init_signature.parameters) - 1  # don't count self
-            if CatchAllUndefinedParameters._get_catch_all_field(obj).name not in known_kwargs:
-                num_params_takeable -= 1
-            num_args_takeable = num_params_takeable - len(known_kwargs)
-
-            args, unknown_args = args[:num_args_takeable], args[num_args_takeable:]
-            bound_parameters = init_signature.bind_partial(self, *args, **known_kwargs)
-
-            unknown_args = {f"_UNKNOWN{i}": v for i, v in enumerate(unknown_args)}
-            arguments = bound_parameters.arguments
-            arguments.update(unknown_args)
-            arguments.update(unknown_kwargs)
-            arguments.pop("self", None)
-            final_parameters = CatchAllUndefinedParameters.handle_from_dict(obj, arguments)
-            original_init(self, **final_parameters)
-
-        return _catch_all_init
-
-    @staticmethod
-    def _get_catch_all_field(cls) -> Field:
-        catch_all_fields = list(filter(lambda f: f.type == Optional[CatchAllVar], fields(cls)))
-        number_of_catch_all_fields = len(catch_all_fields)
-        if number_of_catch_all_fields == 0:
-            raise UndefinedParameterError("No field of type dataclasses_json.CatchAll defined")
-        elif number_of_catch_all_fields > 1:
-            raise UndefinedParameterError(
-                f"Multiple catch-all fields supplied: {number_of_catch_all_fields}.")
-        else:
-            return catch_all_fields[0]
-
-
 class Undefined(Enum):
     """
     Choose the behavior what happens when an undefined parameter is encountered during class initialization.
     """
-    INCLUDE = CatchAllUndefinedParameters
-    RAISE = RaiseUndefinedParameters
-    EXCLUDE = IgnoreUndefinedParameters
+    INCLUDE = _CatchAllUndefinedParameters
+    RAISE = _RaiseUndefinedParameters
+    EXCLUDE = _IgnoreUndefinedParameters
 
 
 def config(metadata: dict = None, *,
@@ -241,8 +80,9 @@ def config(metadata: dict = None, *,
         if isinstance(undefined, str):
             if not hasattr(Undefined, undefined.upper()):
                 valid_actions = list(action.name for action in Undefined)
-                raise UndefinedParameterError(f"Invalid undefined parameter action, "
-                                              f"must be one of {valid_actions}")
+                raise UndefinedParameterError(
+                    f"Invalid undefined parameter action, "
+                    f"must be one of {valid_actions}")
             undefined = Undefined[undefined.upper()]
 
         data['undefined'] = undefined
@@ -339,7 +179,8 @@ class DataClassJsonMixin(abc.ABC):
                       unknown=unknown)
 
 
-def dataclass_json(_cls=None, *, letter_case=None, undefined: Optional[Union[str, Undefined]] = None):
+def dataclass_json(_cls=None, *, letter_case=None,
+                   undefined: Optional[Union[str, Undefined]] = None):
     """
     Based on the code in the `dataclasses` module to handle optional-parens
     decorators. See example below:
@@ -361,7 +202,8 @@ def dataclass_json(_cls=None, *, letter_case=None, undefined: Optional[Union[str
 def _process_class(cls, letter_case, undefined):
     if letter_case is not None or undefined is not None:
         cls.dataclass_json_config = config(letter_case=letter_case,
-                                           undefined=undefined)['dataclasses_json']
+                                           undefined=undefined)[
+            'dataclasses_json']
 
     cls.to_json = DataClassJsonMixin.to_json
     # unwrap and rewrap classmethod to tag it to cls rather than the literal

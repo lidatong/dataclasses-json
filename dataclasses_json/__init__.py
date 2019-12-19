@@ -2,4 +2,5 @@ from dataclasses_json.api import (DataClassJsonMixin,
                                   LetterCase,
                                   config,
                                   dataclass_json,
-                                  Undefined, CatchAll)
+                                  Undefined)
+from dataclasses_json.undefined import CatchAll

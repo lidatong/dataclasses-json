@@ -1,7 +1,7 @@
 import inspect
 import sys
 from datetime import datetime, timezone
-from typing import Collection, Mapping, Optional, Any, TypeVar, Type
+from typing import Collection, Mapping, Optional, TypeVar
 
 
 def _get_type_cons(type_):
@@ -133,7 +133,8 @@ def _handle_undefined_parameters_safe(cls, kvs, usage: str):
     if undefined_parameter_action is None:
         return kvs if usage != "init" else cls.__init__
     if usage == "from":
-        return undefined_parameter_action.value.handle_from_dict(cls=cls, kvs=kvs)
+        return undefined_parameter_action.value.handle_from_dict(cls=cls,
+                                                                 kvs=kvs)
     elif usage == "to":
         return undefined_parameter_action.value.handle_to_dict(obj=cls, kvs=kvs)
     elif usage == "dump":
@@ -141,8 +142,9 @@ def _handle_undefined_parameters_safe(cls, kvs, usage: str):
     elif usage == "init":
         return undefined_parameter_action.value.create_init(obj=cls)
     else:
-        raise ValueError(f"usage must be one of ['to', 'from', 'dump', 'init'](case-insensitive),"
-                         f" but is '{usage}'")
+        raise ValueError(
+            f"usage must be one of ['to', 'from', 'dump', 'init'](case-insensitive),"
+            f" but is '{usage}'")
 
 
 # Define a type for the CatchAll field

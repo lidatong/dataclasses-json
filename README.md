@@ -1,5 +1,7 @@
 # Dataclasses JSON
 
+![](https://github.com/lidatong/dataclasses-json/workflows/dataclasses-json/badge.svg)
+
 This library provides a simple API for encoding and decoding [dataclasses](https://docs.python.org/3/library/dataclasses.html) to and from JSON.
 
 It's very easy to get started.

@@ -35,7 +35,7 @@ class TestAnnotations:
     sch = User.schema()
     users1: List[User] = sch.loads(json.dumps(jMany), many=True)
     n: str = users1[1].name
-    users2: List[User] = sch.load(jMany, many=True)
+    users2: List[User] = sch.load(jMany, many=True)  # type: ignore
     u3: User = sch.load(jMany[1])
     j2: Dict[str, Any] = sch.dump(u)
     j3: List[Dict[str, Any]] = sch.dump([u2, u3], many=True)

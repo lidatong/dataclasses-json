@@ -30,7 +30,8 @@ setup(
             'ipython',
             'mypy>=0.710',
             'hypothesis',
-            'portray'
+            'portray',
+            'flake8'
         ]
     },
     include_package_data=True,

@@ -17,6 +17,8 @@ from marshmallow import fields
 
 import dataclasses_json
 from datetime import datetime
+
+from core import Json
 from dataclasses_json import (DataClassJsonMixin, LetterCase, dataclass_json)
 
 A = TypeVar('A')
@@ -246,3 +248,24 @@ class DataClassWithOptionalDecimal:
 @dataclass
 class DataClassWithOptionalUuid:
     a: Optional[UUID]
+
+
+class StripNoneDataClassJsonMixin(DataClassJsonMixin):
+    """
+    Strip fields in serialization if their value is None
+    """
+
+    def to_dict(self, encode_json=False) -> Dict[str, Json]:
+        return {k: v for k, v in super().to_dict(encode_json).items() if v is not None}
+
+
+@dataclass
+class DataClassWithCustomEncoder(StripNoneDataClassJsonMixin):
+    a: int
+    b: Optional[bool] = None
+
+
+@dataclass_json
+@dataclass
+class DataClassWithNestedCustomEncoder:
+    a: DataClassWithCustomEncoder

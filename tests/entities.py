@@ -13,12 +13,12 @@ from typing import (Collection,
                     Union)
 from uuid import UUID
 
+from dataclasses_json.core import Json
 from marshmallow import fields
 
 import dataclasses_json
 from datetime import datetime
 
-from core import Json
 from dataclasses_json import (DataClassJsonMixin, LetterCase, dataclass_json)
 
 A = TypeVar('A')

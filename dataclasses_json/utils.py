@@ -1,7 +1,7 @@
 import inspect
 import sys
 from datetime import datetime, timezone
-from typing import Collection, Mapping, Optional
+from typing import Collection, Mapping, Optional, TypeVar
 
 
 def _get_type_cons(type_):
@@ -108,3 +108,47 @@ def _timestamp_to_dt_aware(timestamp: float):
     tz = datetime.now(timezone.utc).astimezone().tzinfo
     dt = datetime.fromtimestamp(timestamp, tz=tz)
     return dt
+
+
+def _undefined_parameter_action_safe(cls):
+    try:
+        if cls.dataclass_json_config is None:
+            return
+        action_enum = cls.dataclass_json_config['undefined']
+    except (AttributeError, KeyError):
+        return
+
+    if action_enum is None or action_enum.value is None:
+        return
+
+    return action_enum
+
+
+def _handle_undefined_parameters_safe(cls, kvs, usage: str):
+    """
+    Checks if an undefined parameters action is defined and performs the
+    according action.
+    """
+    undefined_parameter_action = _undefined_parameter_action_safe(cls)
+    usage = usage.lower()
+    if undefined_parameter_action is None:
+        return kvs if usage != "init" else cls.__init__
+    if usage == "from":
+        return undefined_parameter_action.value.handle_from_dict(cls=cls,
+                                                                 kvs=kvs)
+    elif usage == "to":
+        return undefined_parameter_action.value.handle_to_dict(obj=cls,
+                                                               kvs=kvs)
+    elif usage == "dump":
+        return undefined_parameter_action.value.handle_dump(obj=cls)
+    elif usage == "init":
+        return undefined_parameter_action.value.create_init(obj=cls)
+    else:
+        raise ValueError(
+            f"usage must be one of ['to', 'from', 'dump', 'init'], "
+            f"but is '{usage}'")
+
+
+# Define a type for the CatchAll field
+# https://stackoverflow.com/questions/59360567/define-a-custom-type-that-behaves-like-typing-any
+CatchAllVar = TypeVar("CatchAllVar", bound=Mapping)

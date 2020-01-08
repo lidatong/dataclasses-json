@@ -2,23 +2,23 @@ import copy
 import json
 import warnings
 from collections import namedtuple
-from dataclasses import (MISSING, _is_dataclass_instance, fields, is_dataclass)
+# noinspection PyProtectedMember
+from dataclasses import (MISSING, _is_dataclass_instance, fields,
+                         is_dataclass  # type: ignore
+                         )
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Collection, Mapping, Union, get_type_hints, Any
+from typing import Any, Collection, Dict, Mapping, Union, get_type_hints
 from uuid import UUID
 
-from typing_inspect import is_union_type
+from typing_inspect import is_union_type  # type: ignore
 
-from dataclasses_json.utils import (
-    _get_type_cons,
-    _is_collection,
-    _is_mapping,
-    _is_new_type,
-    _is_optional,
-    _isinstance_safe,
-    _issubclass_safe)
+from dataclasses_json.utils import (_get_type_cons,
+                                    _handle_undefined_parameters_safe,
+                                    _is_collection, _is_mapping, _is_new_type,
+                                    _is_optional, _isinstance_safe,
+                                    _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
 
@@ -64,7 +64,7 @@ def _user_overrides(cls):
 
 
 def _encode_json_type(value, default=_ExtendedEncoder().default):
-    if isinstance(value, Json.__args__):
+    if isinstance(value, Json.__args__):  # type: ignore
         return value
     return default(value)
 
@@ -107,6 +107,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
     decode_names = _decode_letter_case_overrides(field_names, overrides)
     kvs = {decode_names.get(k, k): v for k, v in kvs.items()}
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
+
     for field in missing_fields:
         if field.default is not MISSING:
             kvs[field.name] = field.default
@@ -114,6 +115,9 @@ def _decode_dataclass(cls, kvs, infer_missing):
             kvs[field.name] = field.default_factory()
         elif infer_missing:
             kvs[field.name] = None
+
+    # Perform undefined parameter action
+    kvs = _handle_undefined_parameters_safe(cls, kvs, usage="from")
 
     init_kwargs = {}
     types = get_type_hints(cls)
@@ -171,6 +175,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
         else:
             init_kwargs[field.name] = _support_extended_types(field_type,
                                                               field_value)
+
     return cls(**init_kwargs)
 
 
@@ -208,13 +213,15 @@ def _decode_generic(type_, value, infer_missing):
     if value is None:
         res = value
     elif _issubclass_safe(type_, Enum):
-        # Convert to an Enum using the type as a constructor. Assumes a direct match is found.
+        # Convert to an Enum using the type as a constructor.
+        # Assumes a direct match is found.
         res = type_(value)
     # FIXME this is a hack to fix a deeper underlying issue. A refactor is due.
     elif _is_collection(type_):
         if _is_mapping(type_):
             k_type, v_type = getattr(type_, "__args__", (Any, Any))
-            # a mapping type has `.keys()` and `.values()` (see collections.abc)
+            # a mapping type has `.keys()` and `.values()`
+            # (see collections.abc)
             ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
             vs = _decode_items(v_type, value.values(), infer_missing)
             xs = zip(ks, vs)
@@ -248,7 +255,7 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     """
     # handle NoneType keys... it's weird to type a Dict as NoneType keys
     # but it's valid...
-    key_type = (lambda x: x) if key_type is type(None) or key_type == Any else key_type
+    key_type = (lambda x: x) if key_type is type(None) or key_type == Any else key_type  # noqa: E721
     return map(key_type, _decode_items(key_type, xs, infer_missing))
 
 
@@ -282,13 +289,21 @@ def _asdict(obj, encode_json=False):
         for field in fields(obj):
             value = _asdict(getattr(obj, field.name), encode_json=encode_json)
             result.append((field.name, value))
+
+        result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result),
+                                                   usage="to")
         return _encode_overrides(dict(result), _user_overrides(obj),
                                  encode_json=encode_json)
     elif isinstance(obj, Mapping):
         return dict((_asdict(k, encode_json=encode_json),
                      _asdict(v, encode_json=encode_json)) for k, v in
                     obj.items())
-    elif isinstance(obj, Collection) and not isinstance(obj, str) and not isinstance(obj, bytes):
+    elif isinstance(obj, Collection) and not isinstance(obj, str) \
+            and not isinstance(obj, bytes):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:
         return copy.deepcopy(obj)
+
+
+KnownParameters = Dict[str, Any]
+UnknownParameters = Dict[str, Any]

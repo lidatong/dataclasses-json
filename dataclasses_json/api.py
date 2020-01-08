@@ -6,13 +6,20 @@ from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
 from marshmallow.fields import Field as MarshmallowField
-from stringcase import camelcase, snakecase, spinalcase, pascalcase
+from stringcase import (camelcase, pascalcase, snakecase,
+                        spinalcase)  # type: ignore
 
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass)
-from dataclasses_json.mm import JsonData, SchemaType, build_schema
+from dataclasses_json.mm import (JsonData, SchemaType, UndefinedParameterError,
+                                 build_schema)
+from dataclasses_json.undefined import (_CatchAllUndefinedParameters,
+                                        _IgnoreUndefinedParameters,
+                                        _RaiseUndefinedParameters)
+from dataclasses_json.utils import (_handle_undefined_parameters_safe,
+                                    _undefined_parameter_action_safe)
 
-A = TypeVar('A')
+A = TypeVar('A', bound="DataClassJsonMixin")
 B = TypeVar('B')
 C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
@@ -25,11 +32,22 @@ class LetterCase(Enum):
     PASCAL = pascalcase
 
 
+class Undefined(Enum):
+    """
+    Choose the behavior what happens when an undefined parameter is encountered
+    during class initialization.
+    """
+    INCLUDE = _CatchAllUndefinedParameters
+    RAISE = _RaiseUndefinedParameters
+    EXCLUDE = _IgnoreUndefinedParameters
+
+
 def config(metadata: dict = None, *,
            encoder: Callable = None,
            decoder: Callable = None,
            mm_field: MarshmallowField = None,
            letter_case: Callable[[str], str] = None,
+           undefined: Optional[Union[str, Undefined]] = None,
            field_name: str = None) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}
@@ -57,6 +75,18 @@ def config(metadata: dict = None, *,
 
     if letter_case is not None:
         data['letter_case'] = letter_case
+
+    if undefined is not None:
+        # Get the corresponding action for undefined parameters
+        if isinstance(undefined, str):
+            if not hasattr(Undefined, undefined.upper()):
+                valid_actions = list(action.name for action in Undefined)
+                raise UndefinedParameterError(
+                    f"Invalid undefined parameter action, "
+                    f"must be one of {valid_actions}")
+            undefined = Undefined[undefined.upper()]
+
+        data['undefined'] = undefined
 
     return metadata
 
@@ -133,6 +163,13 @@ class DataClassJsonMixin(abc.ABC):
                partial: bool = False,
                unknown=None) -> SchemaType:
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
+
+        if unknown is None:
+            undefined_parameter_action = _undefined_parameter_action_safe(cls)
+            if undefined_parameter_action is not None:
+                # We can just make use of the same-named mm keywords
+                unknown = undefined_parameter_action.name.lower()
+
         return Schema(only=only,
                       exclude=exclude,
                       many=many,
@@ -143,7 +180,8 @@ class DataClassJsonMixin(abc.ABC):
                       unknown=unknown)
 
 
-def dataclass_json(_cls=None, *, letter_case=None):
+def dataclass_json(_cls=None, *, letter_case=None,
+                   undefined: Optional[Union[str, Undefined]] = None):
     """
     Based on the code in the `dataclasses` module to handle optional-parens
     decorators. See example below:
@@ -155,17 +193,19 @@ def dataclass_json(_cls=None, *, letter_case=None):
     """
 
     def wrap(cls):
-        return _process_class(cls, letter_case)
+        return _process_class(cls, letter_case, undefined)
 
     if _cls is None:
         return wrap
     return wrap(_cls)
 
 
-def _process_class(cls, letter_case):
-    if letter_case is not None:
-        cls.dataclass_json_config = config(letter_case=letter_case)[
+def _process_class(cls, letter_case, undefined):
+    if letter_case is not None or undefined is not None:
+        cls.dataclass_json_config = config(letter_case=letter_case,
+                                           undefined=undefined)[
             'dataclasses_json']
+
     cls.to_json = DataClassJsonMixin.to_json
     # unwrap and rewrap classmethod to tag it to cls rather than the literal
     # DataClassJsonMixin ABC
@@ -173,6 +213,8 @@ def _process_class(cls, letter_case):
     cls.to_dict = DataClassJsonMixin.to_dict
     cls.from_dict = classmethod(DataClassJsonMixin.from_dict.__func__)
     cls.schema = classmethod(DataClassJsonMixin.schema.__func__)
+
+    cls.__init__ = _handle_undefined_parameters_safe(cls, kvs=(), usage="init")
     # register cls as a virtual subclass of DataClassJsonMixin
     DataClassJsonMixin.register(cls)
     return cls

@@ -66,7 +66,7 @@ Any other Collection types are encoded into JSON arrays, but decoded into the or
 objects. `datetime` objects are encoded to `float` (JSON number) using 
 [timestamp](https://docs.python.org/3/library/datetime.html#datetime.datetime.timestamp).
 As specified in the `datetime` docs, if your `datetime` object is naive, it will 
-assume your system local timezone when calling `.timestamp()`. JSON nunbers 
+assume your system local timezone when calling `.timestamp()`. JSON numbers 
 corresponding to a `datetime` field in your dataclass are decoded 
 into a datetime-aware object, with `tzinfo` set to your system local timezone.
 Thus, if you encode a datetime-naive object, you will decode into a 

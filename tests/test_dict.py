@@ -45,9 +45,21 @@ class TestDecoder:
 class TestValidator:
     @pytest.mark.parametrize('metadata_dict, is_valid', [
         ({}, True),
-        (example_metadata_dict, True)
+        (example_metadata_dict, True),
+        ({"is_boolean": True}, True)
+    ])
+    def test_dataclass_with_dict(self, metadata_dict, is_valid):
+        schema = DataWithDict.schema()
+        res = schema.validate({"metadata": metadata_dict})
+        assert not res == is_valid
+
+    @pytest.mark.parametrize('metadata_dict, is_valid', [
+        ({}, True),
+        (example_metadata_dict, True),
+        ({"is_boolean": True}, False),
+        ({5: "a number"}, False)
     ])
     def test_dataclass_with_typed_dict(self, metadata_dict, is_valid):
-        schema = DataWithDict.schema()
+        schema = DataWithTypedDict.schema()
         res = schema.validate({"metadata": metadata_dict})
         assert not res == is_valid

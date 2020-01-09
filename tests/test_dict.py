@@ -1,18 +1,15 @@
-import json
-from typing import Dict, List, Union
+from typing import Dict, Union, Any
 import pytest
 
 from dataclasses import dataclass
 
 from dataclasses_json import dataclass_json
 
-from marshmallow.exceptions import ValidationError
-
 
 @dataclass_json
 @dataclass(frozen=True)
 class DataWithDict:
-    metadata: Dict
+    metadata: Dict[Any, Any]
 
 
 @dataclass_json

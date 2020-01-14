@@ -119,6 +119,7 @@ TYPES = {
     typing.Dict: fields.Dict,
     typing.Tuple: fields.Tuple,
     typing.Callable: fields.Function,
+    typing.Any: fields.Raw,
     dict: fields.Dict,
     list: fields.List,
     str: fields.Str,
@@ -248,6 +249,9 @@ def build_type(type_, options, mixin, field, cls):
         origin = getattr(type_, '__origin__', type_)
         args = [inner(a, {}) for a in getattr(type_, '__args__', []) if
                 a is not type(None)]
+
+        if _is_optional(type_):
+            options["allow_none"] = True
 
         if origin in TYPES:
             return TYPES[origin](*args, **options)

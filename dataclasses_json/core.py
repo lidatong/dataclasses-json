@@ -9,7 +9,7 @@ from dataclasses import (MISSING, _is_dataclass_instance, fields,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Dict, Mapping, Union, get_type_hints
+from typing import Any, Collection, Dict, Mapping, Union
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -120,7 +120,6 @@ def _decode_dataclass(cls, kvs, infer_missing):
     kvs = _handle_undefined_parameters_safe(cls, kvs, usage="from")
 
     init_kwargs = {}
-    types = get_type_hints(cls)
     for field in fields(cls):
         # The field should be skipped from being added
         # to init_kwargs as it's not intended as a constructor argument.
@@ -128,7 +127,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
             continue
 
         field_value = kvs[field.name]
-        field_type = types[field.name]
+        field_type = field.type
         if field_value is None and not _is_optional(field_type):
             warning = (f"value of non-optional type {field.name} detected "
                        f"when decoding {cls.__name__}")

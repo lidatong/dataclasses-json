@@ -10,7 +10,8 @@ from typing import (Collection,
                     Set,
                     Tuple,
                     TypeVar,
-                    Union)
+                    Union,
+                    Any)
 from uuid import UUID
 
 from marshmallow import fields
@@ -246,3 +247,21 @@ class DataClassWithOptionalDecimal:
 @dataclass
 class DataClassWithOptionalUuid:
     a: Optional[UUID]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithNestedAny:
+    a: Dict[str, Any]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithNestedOptionalAny:
+    a: Dict[str, Optional[Any]]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithNestedOptional:
+    a: Dict[str, Optional[int]]

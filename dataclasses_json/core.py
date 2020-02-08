@@ -219,7 +219,7 @@ def _decode_generic(type_, value, infer_missing):
     # FIXME this is a hack to fix a deeper underlying issue. A refactor is due.
     elif _is_collection(type_):
         if _is_mapping(type_):
-            k_type, v_type = type_.__args__
+            k_type, v_type = getattr(type_, "__args__", (Any, Any))
             # a mapping type has `.keys()` and `.values()`
             # (see collections.abc)
             ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
@@ -232,7 +232,7 @@ def _decode_generic(type_, value, infer_missing):
         # otherwise fallback on constructing using type_ itself
         try:
             res = _get_type_cons(type_)(xs)
-        except TypeError:
+        except (TypeError, AttributeError):
             res = type_(xs)
     else:  # Optional or Union
         if _is_optional(type_) and len(type_.__args__) == 2:  # Optional
@@ -255,8 +255,8 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     """
     # handle NoneType keys... it's weird to type a Dict as NoneType keys
     # but it's valid...
-    key_type = (lambda x: x) if key_type is type(None) \
-        else key_type  # noqa: E721
+    key_type = ((lambda x: x) if key_type is type(None) or key_type == Any
+                else key_type)  # noqa: E721
     return map(key_type, _decode_items(key_type, xs, infer_missing))
 
 

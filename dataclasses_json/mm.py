@@ -13,7 +13,7 @@ from enum import Enum
 
 from typing_inspect import is_union_type  # type: ignore
 
-from marshmallow import fields, Schema, post_load, types
+from marshmallow import fields, Schema, post_load
 from marshmallow_enum import EnumField  # type: ignore
 from marshmallow.exceptions import ValidationError
 

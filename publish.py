@@ -2,7 +2,7 @@ import argparse
 import re
 import subprocess
 
-version_pattern = '\d\.\d\.\d'
+version_pattern = r'\d\.\d\.\d'
 parser = argparse.ArgumentParser()
 parser.add_argument('version', help='a SEMVER string X.Y.Z')
 args = parser.parse_args()

@@ -23,7 +23,7 @@ from dataclasses_json.utils import (_get_type_cons,
                                     _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
-_MAX_CACHE_SIZE = 1
+_MAX_CACHE_SIZE = 128
 _get_type_hints_cache = LRUCache(maxsize=_MAX_CACHE_SIZE)
 _is_supported_generic_cache = LRUCache(maxsize=_MAX_CACHE_SIZE)
 _user_overrides_cache = LRUCache(maxsize=_MAX_CACHE_SIZE)

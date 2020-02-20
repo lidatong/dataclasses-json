@@ -6,7 +6,7 @@ from collections import namedtuple
 from dataclasses import (MISSING, _is_dataclass_instance, fields,
                          is_dataclass  # type: ignore
                          )
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Collection, Dict, Mapping, Union, get_type_hints
@@ -33,6 +33,8 @@ class _ExtendedEncoder(json.JSONEncoder):
                 result = list(o)
         elif _isinstance_safe(o, datetime):
             result = o.timestamp()
+        elif _isinstance_safe(o, timedelta):
+            result = o.total_seconds()
         elif _isinstance_safe(o, UUID):
             result = str(o)
         elif _isinstance_safe(o, Enum):
@@ -189,6 +191,10 @@ def _support_extended_types(field_type, field_value):
         else:
             tz = datetime.now(timezone.utc).astimezone().tzinfo
             res = datetime.fromtimestamp(field_value, tz=tz)
+    elif _issubclass_safe(field_type, timedelta):
+        res = (field_value
+               if isinstance(field_value, timedelta)
+               else timedelta(seconds=field_value))
     elif _issubclass_safe(field_type, Decimal):
         res = (field_value
                if isinstance(field_value, Decimal)

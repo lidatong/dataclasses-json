@@ -6,7 +6,7 @@ import sys
 from copy import deepcopy
 
 from dataclasses import MISSING, is_dataclass, fields as dc_fields
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from uuid import UUID
 from enum import Enum
@@ -38,6 +38,26 @@ class _TimestampField(fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
         if value is not None:
             return _timestamp_to_dt_aware(value)
+        else:
+            if not self.required:
+                return None
+            else:
+                raise ValidationError(self.default_error_messages["required"])
+
+
+class _TimedeltaField(fields.Field):
+    def _serialize(self, value, attr, obj, **kwargs):
+        if value is not None:
+            return value.total_seconds()
+        else:
+            if not self.required:
+                return None
+            else:
+                raise ValidationError(self.default_error_messages["required"])
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        if value is not None:
+            return timedelta(seconds=value)
         else:
             if not self.required:
                 return None
@@ -127,6 +147,7 @@ TYPES = {
     float: fields.Float,
     bool: fields.Bool,
     datetime: _TimestampField,
+    timedelta: _TimedeltaField,
     UUID: fields.UUID,
     Decimal: fields.Decimal,
     CatchAllVar: fields.Dict,

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from dataclasses import dataclass, field
 import sys
 
@@ -13,6 +13,12 @@ from dataclasses_json.mm import _IsoField
 @dataclass
 class DataClassWithDatetime:
     created_at: datetime
+
+
+@dataclass_json
+@dataclass
+class DataClassWithTimedelta:
+    delay: timedelta
 
 
 if sys.version_info >= (3, 7):
@@ -46,6 +52,11 @@ class TestTime:
     dc_ts_json = f'{{"created_at": {ts}}}'
     dc_ts = DataClassWithDatetime(datetime.fromtimestamp(ts, tz=tz))
 
+    td = timedelta(days=14, hours=8, seconds=8)
+    ts = td.total_seconds()
+    dc_td_json = f'{{"delay": {ts}}}'
+    dc_td = DataClassWithTimedelta(timedelta(seconds=ts))
+
     if sys.version_info >= (3, 7):
         iso = dt.isoformat()
         dc_iso_json = f'{{"created_at": "{iso}"}}'
@@ -56,6 +67,12 @@ class TestTime:
 
     def test_datetime_decode(self):
         assert (DataClassWithDatetime.from_json(self.dc_ts_json) == self.dc_ts)
+
+    def test_timedelta_encode(self):
+        assert (self.dc_td.to_json() == self.dc_td_json)
+
+    def test_timedelta_decode(self):
+        assert (DataClassWithTimedelta.from_json(self.dc_td_json) == self.dc_td)
 
     @pytest.mark.skipif(sys.version_info < (3, 7),
                         reason="requires python3.7")
@@ -75,6 +92,14 @@ class TestTime:
     def test_datetime_schema_decode(self):
         assert (DataClassWithDatetime.schema().loads(self.dc_ts_json)
                 == self.dc_ts)
+
+    def test_timedelta_schema_encode(self):
+        assert (DataClassWithTimedelta.schema().dumps(self.dc_td)
+                == self.dc_td_json)
+
+    def test_timedelta_schema_decode(self):
+        assert (DataClassWithTimedelta.schema().loads(self.dc_td_json)
+                == self.dc_td)
 
     @pytest.mark.skipif(sys.version_info < (3, 7),
                         reason="requires python3.7")

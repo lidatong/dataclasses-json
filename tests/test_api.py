@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from uuid import UUID
 
@@ -14,6 +14,7 @@ from tests.entities import (DataClassBoolImmutableDefault,
                             DataClassWithNestedNewType, DataClassWithNewType,
                             DataClassWithOptional,
                             DataClassWithOptionalDatetime,
+                            DataClassWithOptionalTimedelta,
                             DataClassWithOptionalDecimal,
                             DataClassWithOptionalNested,
                             DataClassWithOptionalUuid, DataClassWithUuid, Id,
@@ -41,6 +42,12 @@ class TestGenericExtendedTypes:
         dt = datetime(2018, 11, 17, 16, 55, 28, 456753, tzinfo=timezone.utc)
         dc = DataClassWithOptionalDatetime(dt)
         assert (DataClassWithOptionalDatetime.from_json(dc.to_json())
+                == dc)
+
+    def test_optional_timedelta(self):
+        td = timedelta(days=14, hours=8, seconds=8)
+        dc = DataClassWithOptionalTimedelta(td)
+        assert (DataClassWithOptionalTimedelta.from_json(dc.to_json())
                 == dc)
 
     def test_optional_decimal(self):

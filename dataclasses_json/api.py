@@ -184,9 +184,7 @@ class DataClassJsonMixin(abc.ABC):
 
 
 def dataclass_json(_cls=None, *, letter_case=None,
-                   undefined: Optional[Union[str, Undefined]] = None,
-                   encoder_lib,
-                   decoder_lib):
+                   undefined: Optional[Union[str, Undefined]] = None):
     """
     Based on the code in the `dataclasses` module to handle optional-parens
     decorators. See example below:

@@ -123,8 +123,9 @@ lidatong = Person('lidatong')
 assert Person.from_json(lidatong.to_json()) == lidatong
 ```
 
-Pick whichever approach suits your taste. The differences in implementation are
-invisible in usage.
+Pick whichever approach suits your taste. Note that there is better support for
+ the mixin approach when using _static analysis_ tools (e.g. linting, typing),
+ but the differences in implementation will be invisible in _runtime_ usage.
 
 ## How do I...
 

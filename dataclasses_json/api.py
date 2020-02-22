@@ -20,44 +20,12 @@ from dataclasses_json.undefined import (_CatchAllUndefinedParameters,
 from dataclasses_json.utils import (_handle_undefined_parameters_safe,
                                     _undefined_parameter_action_safe)
 
+from dataclasses_json.global_config import global_config
+
 A = TypeVar('A', bound="DataClassJsonMixin")
 B = TypeVar('B')
 C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
-
-
-class GlobalConfig:
-    _disable_msg = "You can capture all warnings with logging.captureWarnings."
-
-    def __init__(self):
-        self._suppress_warnings: bool = False
-        self.encoders: Dict[type, Callable] = {}
-        self.decoders: Dict[type, Callable] = {}
-        self._encoder_lib: Callable = json.dumps
-        self._decoder_lib: Callable = json.loads
-
-    @property
-    def encoder_lib(self):
-        return self._encoder_lib
-
-    @encoder_lib.setter
-    def encoder_lib(self, value: Callable):
-        warnings.warn(f"Now using {value.__name__} to encode JSON. "
-                      f"{self._disable_msg}")
-        self._encoder_lib = value
-
-    @property
-    def decoder_lib(self):
-        return self._decoder_lib
-
-    @decoder_lib.setter
-    def decoder_lib(self, value: Callable):
-        warnings.warn(f"Now using {value.__name__} to decode JSON. "
-                      f"{self._disable_msg}")
-        self._decoder_lib = value
-
-
-global_config = GlobalConfig()
 
 
 class LetterCase(Enum):
@@ -145,17 +113,17 @@ class DataClassJsonMixin(abc.ABC):
                 default: Callable = None,
                 sort_keys: bool = False,
                 **kw) -> str:
-        return global_config.encoder_lib(self.to_dict(encode_json=False),
-                                         cls=_ExtendedEncoder,
-                                         skipkeys=skipkeys,
-                                         ensure_ascii=ensure_ascii,
-                                         check_circular=check_circular,
-                                         allow_nan=allow_nan,
-                                         indent=indent,
-                                         separators=separators,
-                                         default=default,
-                                         sort_keys=sort_keys,
-                                         **kw)
+        return global_config.json_module.dumps(self.to_dict(encode_json=False),
+                                               cls=_ExtendedEncoder,
+                                               skipkeys=skipkeys,
+                                               ensure_ascii=ensure_ascii,
+                                               check_circular=check_circular,
+                                               allow_nan=allow_nan,
+                                               indent=indent,
+                                               separators=separators,
+                                               default=default,
+                                               sort_keys=sort_keys,
+                                               **kw)
 
     @classmethod
     def from_json(cls: Type[A],
@@ -167,12 +135,12 @@ class DataClassJsonMixin(abc.ABC):
                   parse_constant=None,
                   infer_missing=False,
                   **kw) -> A:
-        kvs = json.loads(s,
-                         encoding=encoding,
-                         parse_float=parse_float,
-                         parse_int=parse_int,
-                         parse_constant=parse_constant,
-                         **kw)
+        kvs = global_config.json_module.loads(s,
+                                              encoding=encoding,
+                                              parse_float=parse_float,
+                                              parse_int=parse_int,
+                                              parse_constant=parse_constant,
+                                              **kw)
         return cls.from_dict(kvs, infer_missing=infer_missing)
 
     @classmethod

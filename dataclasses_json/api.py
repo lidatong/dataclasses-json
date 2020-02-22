@@ -109,7 +109,11 @@ class DataClassJsonMixin(abc.ABC):
                 separators: Tuple[str, str] = None,
                 default: Callable = None,
                 sort_keys: bool = False,
+                json_encoder: Callable = None,
                 **kw) -> str:
+        if json_encoder:
+            return json_encoder(self.to_dict(encode_json=False), **kw)
+
         return json.dumps(self.to_dict(encode_json=False),
                           cls=_ExtendedEncoder,
                           skipkeys=skipkeys,
@@ -131,13 +135,17 @@ class DataClassJsonMixin(abc.ABC):
                   parse_int=None,
                   parse_constant=None,
                   infer_missing=False,
+                  json_loader: Callable = None,
                   **kw) -> A:
-        kvs = json.loads(s,
-                         encoding=encoding,
-                         parse_float=parse_float,
-                         parse_int=parse_int,
-                         parse_constant=parse_constant,
-                         **kw)
+        if json_loader:
+            kvs = json_loader(s, **kw)
+        else:
+            kvs = json.loads(s,
+                             encoding=encoding,
+                             parse_float=parse_float,
+                             parse_int=parse_int,
+                             parse_constant=parse_constant,
+                             **kw)
         return cls.from_dict(kvs, infer_missing=infer_missing)
 
     @classmethod

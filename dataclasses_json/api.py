@@ -1,6 +1,7 @@
 import abc
 import functools
 import json
+import warnings
 from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
@@ -23,6 +24,40 @@ A = TypeVar('A', bound="DataClassJsonMixin")
 B = TypeVar('B')
 C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
+
+
+class GlobalConfig:
+    _disable_msg = "You can capture all warnings with logging.captureWarnings."
+
+    def __init__(self):
+        self._suppress_warnings: bool = False
+        self.encoders: Dict[type, Callable] = {}
+        self.decoders: Dict[type, Callable] = {}
+        self._encoder_lib: Callable = json.dumps
+        self._decoder_lib: Callable = json.loads
+
+    @property
+    def encoder_lib(self):
+        return self._encoder_lib
+
+    @encoder_lib.setter
+    def encoder_lib(self, value: Callable):
+        warnings.warn(f"Now using {value.__name__} to encode JSON. "
+                      f"{self._disable_msg}")
+        self._encoder_lib = value
+
+    @property
+    def decoder_lib(self):
+        return self._decoder_lib
+
+    @decoder_lib.setter
+    def decoder_lib(self, value: Callable):
+        warnings.warn(f"Now using {value.__name__} to decode JSON. "
+                      f"{self._disable_msg}")
+        self._decoder_lib = value
+
+
+global_config = GlobalConfig()
 
 
 class LetterCase(Enum):
@@ -109,22 +144,18 @@ class DataClassJsonMixin(abc.ABC):
                 separators: Tuple[str, str] = None,
                 default: Callable = None,
                 sort_keys: bool = False,
-                json_encoder: Callable = None,
                 **kw) -> str:
-        if json_encoder:
-            return json_encoder(self.to_dict(encode_json=False), **kw)
-
-        return json.dumps(self.to_dict(encode_json=False),
-                          cls=_ExtendedEncoder,
-                          skipkeys=skipkeys,
-                          ensure_ascii=ensure_ascii,
-                          check_circular=check_circular,
-                          allow_nan=allow_nan,
-                          indent=indent,
-                          separators=separators,
-                          default=default,
-                          sort_keys=sort_keys,
-                          **kw)
+        return global_config.encoder_lib(self.to_dict(encode_json=False),
+                                         cls=_ExtendedEncoder,
+                                         skipkeys=skipkeys,
+                                         ensure_ascii=ensure_ascii,
+                                         check_circular=check_circular,
+                                         allow_nan=allow_nan,
+                                         indent=indent,
+                                         separators=separators,
+                                         default=default,
+                                         sort_keys=sort_keys,
+                                         **kw)
 
     @classmethod
     def from_json(cls: Type[A],
@@ -135,17 +166,13 @@ class DataClassJsonMixin(abc.ABC):
                   parse_int=None,
                   parse_constant=None,
                   infer_missing=False,
-                  json_loader: Callable = None,
                   **kw) -> A:
-        if json_loader:
-            kvs = json_loader(s, **kw)
-        else:
-            kvs = json.loads(s,
-                             encoding=encoding,
-                             parse_float=parse_float,
-                             parse_int=parse_int,
-                             parse_constant=parse_constant,
-                             **kw)
+        kvs = json.loads(s,
+                         encoding=encoding,
+                         parse_float=parse_float,
+                         parse_int=parse_int,
+                         parse_constant=parse_constant,
+                         **kw)
         return cls.from_dict(kvs, infer_missing=infer_missing)
 
     @classmethod
@@ -189,7 +216,9 @@ class DataClassJsonMixin(abc.ABC):
 
 
 def dataclass_json(_cls=None, *, letter_case=None,
-                   undefined: Optional[Union[str, Undefined]] = None):
+                   undefined: Optional[Union[str, Undefined]] = None,
+                   encoder_lib,
+                   decoder_lib):
     """
     Based on the code in the `dataclasses` module to handle optional-parens
     decorators. See example below:

@@ -31,7 +31,8 @@ setup(
             'mypy>=0.710',
             'hypothesis',
             'portray',
-            'flake8'
+            'flake8',
+            'simplejson'
         ]
     },
     include_package_data=True,

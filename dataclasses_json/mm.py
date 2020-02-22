@@ -326,7 +326,9 @@ def build_schema(cls: typing.Type[A],
                                  if
                                  field.name != 'dataclass_json_config' and field.type !=
                                  typing.Optional[CatchAllVar]),
-                 'render_module': global_config.json_module})
+                 # TODO #180
+                 # 'render_module': global_config.json_module
+                 })
 
     @post_load
     def make_instance(self, kvs, **kwargs):

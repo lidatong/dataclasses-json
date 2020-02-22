@@ -113,17 +113,17 @@ class DataClassJsonMixin(abc.ABC):
                 default: Callable = None,
                 sort_keys: bool = False,
                 **kw) -> str:
-        return global_config.json_module.dumps(self.to_dict(encode_json=False),
-                                               cls=_ExtendedEncoder,
-                                               skipkeys=skipkeys,
-                                               ensure_ascii=ensure_ascii,
-                                               check_circular=check_circular,
-                                               allow_nan=allow_nan,
-                                               indent=indent,
-                                               separators=separators,
-                                               default=default,
-                                               sort_keys=sort_keys,
-                                               **kw)
+        return json.dumps(self.to_dict(encode_json=False),
+                          cls=_ExtendedEncoder,
+                          skipkeys=skipkeys,
+                          ensure_ascii=ensure_ascii,
+                          check_circular=check_circular,
+                          allow_nan=allow_nan,
+                          indent=indent,
+                          separators=separators,
+                          default=default,
+                          sort_keys=sort_keys,
+                          **kw)
 
     @classmethod
     def from_json(cls: Type[A],
@@ -135,12 +135,12 @@ class DataClassJsonMixin(abc.ABC):
                   parse_constant=None,
                   infer_missing=False,
                   **kw) -> A:
-        kvs = global_config.json_module.loads(s,
-                                              encoding=encoding,
-                                              parse_float=parse_float,
-                                              parse_int=parse_int,
-                                              parse_constant=parse_constant,
-                                              **kw)
+        kvs = json.loads(s,
+                         encoding=encoding,
+                         parse_float=parse_float,
+                         parse_int=parse_int,
+                         parse_constant=parse_constant,
+                         **kw)
         return cls.from_dict(kvs, infer_missing=infer_missing)
 
     @classmethod

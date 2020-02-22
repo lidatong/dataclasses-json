@@ -12,15 +12,16 @@ class GlobalConfig:
         self.decoders: Dict[type, Callable] = {}
         self._json_module = json
 
-    @property
-    def json_module(self):
-        return self._json_module
-
-    @json_module.setter
-    def json_module(self, value):
-        warnings.warn(f"Now using {value.__name__} module to handle JSON. "
-                      f"{self._disable_msg}")
-        self._json_module = value
+    # TODO: #180
+    # @property
+    # def json_module(self):
+    #     return self._json_module
+    #
+    # @json_module.setter
+    # def json_module(self, value):
+    #     warnings.warn(f"Now using {value.__name__} module to handle JSON. "
+    #                   f"{self._disable_msg}")
+    #     self._json_module = value
 
 
 global_config = GlobalConfig()

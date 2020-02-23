@@ -1,0 +1,789 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+    
+    
+      
+        <title>Cfg - dataclasses-json</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.1b62728e.css">
+      
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#4caf50">
+      
+    
+    
+      <script src="../../../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="green" data-md-color-accent="lightgreen">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#module-dataclasses_jsoncfg" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../.." title="dataclasses-json" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              dataclasses-json
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Cfg
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/lidatong/dataclasses-json/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    dataclasses-json
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../.." title="dataclasses-json" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    dataclasses-json
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/lidatong/dataclasses-json/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    dataclasses-json
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-1" type="checkbox" id="nav-2-1" checked>
+    
+    <label class="md-nav__link" for="nav-2-1">
+      Dataclasses Json
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-1">
+        Dataclasses Json
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Cfg
+      </label>
+    
+    <a href="./" title="Cfg" class="md-nav__link md-nav__link--active">
+      Cfg
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    config
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../core/" title="Core" class="md-nav__link">
+      Core
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mm/" title="Mm" class="md-nav__link">
+      Mm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../undefined/" title="Undefined" class="md-nav__link">
+      Undefined
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    config
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/lidatong/dataclasses-json/edit/master/reference/dataclasses_json/cfg.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="module-dataclasses_jsoncfg">Module dataclasses_json.cfg</h1>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">marshmallow.fields</span> <span class="kn">import</span> <span class="n">Field</span> <span class="k">as</span> <span class="n">MarshmallowField</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_json.undefined</span> <span class="kn">import</span> <span class="n">Undefined</span><span class="p">,</span> <span class="n">UndefinedParameterError</span>
+
+<span class="c1"># TODO: add warnings?</span>
+
+<span class="k">class</span> <span class="nc">_GlobalConfig</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoders</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoders</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># self._json_module = json</span>
+
+    <span class="c1"># TODO: #180</span>
+
+    <span class="c1"># @property</span>
+
+    <span class="c1"># def json_module(self):</span>
+
+    <span class="c1">#     return self._json_module</span>
+
+    <span class="c1">#</span>
+
+    <span class="c1"># @json_module.setter</span>
+
+    <span class="c1"># def json_module(self, value):</span>
+
+    <span class="c1">#     warnings.warn(f&quot;Now using {value.__name__} module to handle JSON. &quot;</span>
+
+    <span class="c1">#                   f&quot;{self._disable_msg}&quot;)</span>
+
+    <span class="c1">#     self._json_module = value</span>
+
+<span class="n">global_config</span> <span class="o">=</span> <span class="n">_GlobalConfig</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">config</span><span class="p">(</span><span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+
+           <span class="n">encoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+
+           <span class="n">decoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+
+           <span class="n">mm_field</span><span class="p">:</span> <span class="n">MarshmallowField</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+
+           <span class="n">letter_case</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+
+           <span class="n">undefined</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Undefined</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+
+           <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+
+    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">lib_metadata</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;dataclasses_json&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+    <span class="k">if</span> <span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">lib_metadata</span><span class="p">[</span><span class="s1">&#39;encoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoder</span>
+
+    <span class="k">if</span> <span class="n">decoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">lib_metadata</span><span class="p">[</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">decoder</span>
+
+    <span class="k">if</span> <span class="n">mm_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">lib_metadata</span><span class="p">[</span><span class="s1">&#39;mm_field&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mm_field</span>
+
+    <span class="k">if</span> <span class="n">field_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">letter_case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+            <span class="nd">@functools.wraps</span><span class="p">(</span><span class="n">letter_case</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_letter_case</span><span class="o">=</span><span class="n">letter_case</span><span class="p">,</span> <span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">):</span>
+
+                <span class="k">return</span> <span class="n">_letter_case</span><span class="p">(</span><span class="n">_field_name</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">):</span>
+
+                <span class="k">return</span> <span class="n">_field_name</span>
+
+        <span class="n">letter_case</span> <span class="o">=</span> <span class="n">override</span>
+
+    <span class="k">if</span> <span class="n">letter_case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">lib_metadata</span><span class="p">[</span><span class="s1">&#39;letter_case&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">letter_case</span>
+
+    <span class="k">if</span> <span class="n">undefined</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="c1"># Get the corresponding action for undefined parameters</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">undefined</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">undefined</span><span class="o">.</span><span class="n">upper</span><span class="p">()):</span>
+
+                <span class="n">valid_actions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">Undefined</span><span class="p">)</span>
+
+                <span class="k">raise</span> <span class="n">UndefinedParameterError</span><span class="p">(</span>
+
+                    <span class="n">f</span><span class="s2">&quot;Invalid undefined parameter action, &quot;</span>
+
+                    <span class="n">f</span><span class="s2">&quot;must be one of {valid_actions}&quot;</span><span class="p">)</span>
+
+            <span class="n">undefined</span> <span class="o">=</span> <span class="n">Undefined</span><span class="p">[</span><span class="n">undefined</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+
+        <span class="n">lib_metadata</span><span class="p">[</span><span class="s1">&#39;undefined&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">undefined</span>
+
+    <span class="k">return</span> <span class="n">metadata</span>
+</pre></div>
+
+
+</details>
+<h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><span class="n">global_config</span>
+</pre></div>
+
+
+<h2 id="functions">Functions</h2>
+<h3 id="config">config</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">config</span><span class="p">(</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">encoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">decoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mm_field</span><span class="p">:</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Field</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">letter_case</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">undefined</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">dataclasses_json</span><span class="o">.</span><span class="n">undefined</span><span class="o">.</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="n">def</span><span class="w"> </span><span class="n">config</span><span class="p">(</span><span class="nl">metadata</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">           </span><span class="nl">encoder</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">           </span><span class="nl">decoder</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">           </span><span class="nl">mm_field</span><span class="p">:</span><span class="w"> </span><span class="n">MarshmallowField</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">           </span><span class="nl">letter_case</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">[str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nf">str</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">           </span><span class="nl">undefined</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Union[str, Undefined</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">           </span><span class="nl">field_name</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dict</span><span class="o">[</span><span class="n">str, dict</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">metadata</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">lib_metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">metadata</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;dataclasses_json&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">{}</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">encoder</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">lib_metadata</span><span class="o">[</span><span class="n">&#39;encoder&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">encoder</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">decoder</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">lib_metadata</span><span class="o">[</span><span class="n">&#39;decoder&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">decoder</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">mm_field</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">lib_metadata</span><span class="o">[</span><span class="n">&#39;mm_field&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mm_field</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">field_name</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">letter_case</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="nv">@functools</span><span class="p">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">letter_case</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">def</span><span class="w"> </span><span class="n">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_letter_case</span><span class="o">=</span><span class="n">letter_case</span><span class="p">,</span><span class="w"> </span><span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">_letter_case</span><span class="p">(</span><span class="n">_field_name</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">def</span><span class="w"> </span><span class="n">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">_field_name</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">letter_case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">override</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">letter_case</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">lib_metadata</span><span class="o">[</span><span class="n">&#39;letter_case&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">letter_case</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">undefined</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="k">Get</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">corresponding</span><span class="w"> </span><span class="k">action</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">undefined</span><span class="w"> </span><span class="k">parameters</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">undefined</span><span class="p">,</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">hasattr</span><span class="p">(</span><span class="n">Undefined</span><span class="p">,</span><span class="w"> </span><span class="n">undefined</span><span class="p">.</span><span class="nf">upper</span><span class="p">())</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">valid_actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="p">(</span><span class="k">action</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">action</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">Undefined</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">UndefinedParameterError</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;Invalid undefined parameter action, &quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;must be one of {valid_actions}&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">undefined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Undefined</span><span class="o">[</span><span class="n">undefined.upper()</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">lib_metadata</span><span class="o">[</span><span class="n">&#39;undefined&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">undefined</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">metadata</span><span class="w"></span>
+</pre></div>
+
+
+</details>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../api/" title="API" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                API
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../core/" title="Core" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Core
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Powered by
+        <a href="http://timothycrosley.github.io/portray">portray.</a>
+        You too can
+        <a href="http://timothycrosley.github.io/portray">
+          portray</a>
+        your Python project well using automatic documentation.
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/application.808e90bb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
+      
+    
+  </body>
+</html>

@@ -286,6 +286,18 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../cfg/" title="Cfg" class="md-nav__link">
+      Cfg
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -443,11 +455,15 @@
 
 <span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">namedtuple</span>
 
 <span class="c1"># noinspection PyProtectedMember</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span><span class="n">MISSING</span><span class="p">,</span> <span class="n">_is_dataclass_instance</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span><span class="n">MISSING</span><span class="p">,</span>
+
+                         <span class="n">_is_dataclass_instance</span><span class="p">,</span>
+
+                         <span class="n">fields</span><span class="p">,</span>
 
                          <span class="n">is_dataclass</span>  <span class="c1"># type: ignore</span>
 
@@ -459,11 +475,13 @@
 
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_type_hints</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_type_hints</span>
 
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 
 <span class="kn">from</span> <span class="nn">typing_inspect</span> <span class="kn">import</span> <span class="n">is_union_type</span>  <span class="c1"># type: ignore</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">cfg</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_json.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_type_cons</span><span class="p">,</span>
 
@@ -515,15 +533,27 @@
 
         <span class="k">return</span> <span class="n">result</span>
 
-<span class="k">def</span> <span class="nf">_user_overrides</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_user_overrides_or_exts</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 
     <span class="n">confs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="s1">&#39;decoder&#39;</span><span class="p">,</span> <span class="s1">&#39;mm_field&#39;</span><span class="p">,</span> <span class="s1">&#39;letter_case&#39;</span><span class="p">]</span>
 
     <span class="n">FieldOverride</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;FieldOverride&#39;</span><span class="p">,</span> <span class="n">confs</span><span class="p">)</span>
 
-    <span class="n">overrides</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">global_metadata</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
 
-    <span class="c1"># overrides at the class-level</span>
+    <span class="n">encoders</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">encoders</span>
+
+    <span class="n">decoders</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">decoders</span>
+
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="n">encoders</span><span class="p">:</span>
+
+            <span class="n">global_metadata</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;encoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoders</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="n">decoders</span><span class="p">:</span>
+
+            <span class="n">global_metadata</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">decoders</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
 
     <span class="k">try</span><span class="p">:</span>
 
@@ -535,11 +565,33 @@
 
         <span class="n">cls_config</span> <span class="o">=</span> <span class="p">{}</span>
 
+    <span class="n">overrides</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 
         <span class="n">field_config</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataclasses_json&#39;</span><span class="p">,</span> <span class="p">{})</span>
 
+        <span class="c1"># first apply global overrides or extensions</span>
+
+        <span class="n">field_metadata</span> <span class="o">=</span> <span class="n">global_metadata</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;encoder&#39;</span> <span class="ow">in</span> <span class="n">field_metadata</span><span class="p">:</span>
+
+            <span class="n">field_config</span><span class="p">[</span><span class="s1">&#39;encoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_metadata</span><span class="p">[</span><span class="s1">&#39;encoder&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;decoder&#39;</span> <span class="ow">in</span> <span class="n">field_metadata</span><span class="p">:</span>
+
+            <span class="n">field_config</span><span class="p">[</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_metadata</span><span class="p">[</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;mm&#39;</span> <span class="ow">in</span> <span class="n">field_metadata</span><span class="p">:</span>
+
+            <span class="n">field_config</span><span class="p">[</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_metadata</span><span class="p">[</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span>
+
+        <span class="c1"># then apply class-level overrides or extensions</span>
+
         <span class="n">field_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cls_config</span><span class="p">)</span>
+
+        <span class="c1"># last apply field-level overrides or extensions</span>
 
         <span class="n">overrides</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">FieldOverride</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">field_config</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">confs</span><span class="p">))</span>
 
@@ -605,7 +657,7 @@
 
         <span class="k">return</span> <span class="n">kvs</span>
 
-    <span class="n">overrides</span> <span class="o">=</span> <span class="n">_user_overrides</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+    <span class="n">overrides</span> <span class="o">=</span> <span class="n">_user_overrides_or_exts</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
     <span class="n">kvs</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">kvs</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">infer_missing</span> <span class="k">else</span> <span class="n">kvs</span>
 
@@ -949,7 +1001,7 @@
 
                                                    <span class="n">usage</span><span class="o">=</span><span class="s2">&quot;to&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">_encode_overrides</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">_user_overrides</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
+        <span class="k">return</span> <span class="n">_encode_overrides</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">_user_overrides_or_exts</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
 
                                  <span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span><span class="p">)</span>
 
@@ -970,24 +1022,12 @@
     <span class="k">else</span><span class="p">:</span>
 
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-
-<span class="n">KnownParameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-
-<span class="n">UnknownParameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </pre></div>
 
 
 </details>
 <h2 id="variables">Variables</h2>
 <div class="codehilite"><pre><span></span><span class="n">Json</span>
-</pre></div>
-
-
-<div class="codehilite"><pre><span></span><span class="n">KnownParameters</span>
-</pre></div>
-
-
-<div class="codehilite"><pre><span></span><span class="n">UnknownParameters</span>
 </pre></div>
                 
                   
@@ -1010,7 +1050,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../api/" title="API" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../cfg/" title="Cfg" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1019,7 +1059,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                API
+                Cfg
               </span>
             </div>
           </a>

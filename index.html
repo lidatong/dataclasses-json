@@ -480,6 +480,18 @@
 
 
   <li class="md-nav__item">
+    <a href="reference/dataclasses_json/cfg/" title="Cfg" class="md-nav__link">
+      Cfg
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="reference/dataclasses_json/core/" title="Core" class="md-nav__link">
       Core
     </a>
@@ -864,8 +876,9 @@ decorator (order matters!)</p>
 </pre></div>
 
 
-<p>Pick whichever approach suits your taste. The differences in implementation are
-invisible in usage.</p>
+<p>Pick whichever approach suits your taste. Note that there is better support for
+ the mixin approach when using <em>static analysis</em> tools (e.g. linting, typing),
+ but the differences in implementation will be invisible in <em>runtime</em> usage.</p>
 <h2 id="how-do-i">How do I...</h2>
 <h3 id="use-my-dataclass-with-json-arrays-or-objects">Use my dataclass with JSON arrays or objects?</h3>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>

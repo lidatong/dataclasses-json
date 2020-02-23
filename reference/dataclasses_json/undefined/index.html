@@ -288,6 +288,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../cfg/" title="Cfg" class="md-nav__link">
+      Cfg
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../core/" title="Core" class="md-nav__link">
       Core
     </a>
@@ -357,6 +369,100 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#undefined" class="md-nav__link">
+    Undefined
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#undefinedparametererror" class="md-nav__link">
+    UndefinedParameterError
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_1" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_1" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#normalized_messages" class="md-nav__link">
+    normalized_messages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with_traceback" class="md-nav__link">
+    with_traceback
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -417,6 +523,100 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#undefined" class="md-nav__link">
+    Undefined
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#undefinedparametererror" class="md-nav__link">
+    UndefinedParameterError
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_1" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_1" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#normalized_messages" class="md-nav__link">
+    normalized_messages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with_traceback" class="md-nav__link">
+    with_traceback
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -449,11 +649,15 @@
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_json.core</span> <span class="kn">import</span> <span class="n">KnownParameters</span><span class="p">,</span> <span class="n">UnknownParameters</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_json.mm</span> <span class="kn">import</span> <span class="n">UndefinedParameterError</span>
+<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">ValidationError</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_json.utils</span> <span class="kn">import</span> <span class="n">CatchAllVar</span>
+
+<span class="n">KnownParameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+
+<span class="n">UnknownParameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 
 <span class="k">class</span> <span class="nc">_UndefinedParameterAction</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 
@@ -862,6 +1066,32 @@
         <span class="k">else</span><span class="p">:</span>
 
             <span class="k">return</span> <span class="n">catch_all_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">Undefined</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Choose the behavior what happens when an undefined parameter is encountered</span>
+
+<span class="sd">    during class initialization.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">INCLUDE</span> <span class="o">=</span> <span class="n">_CatchAllUndefinedParameters</span>
+
+    <span class="n">RAISE</span> <span class="o">=</span> <span class="n">_RaiseUndefinedParameters</span>
+
+    <span class="n">EXCLUDE</span> <span class="o">=</span> <span class="n">_IgnoreUndefinedParameters</span>
+
+<span class="k">class</span> <span class="nc">UndefinedParameterError</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Raised when something has gone wrong handling undefined parameters.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">pass</span>
 </pre></div>
 
 
@@ -869,6 +1099,139 @@
 <h2 id="variables">Variables</h2>
 <div class="codehilite"><pre><span></span><span class="n">CatchAll</span>
 </pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">KnownParameters</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">UnknownParameters</span>
+</pre></div>
+
+
+<h2 id="classes">Classes</h2>
+<h3 id="undefined">Undefined</h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Undefined</span><span class="p">(</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Choose the behavior what happens when an undefined parameter is encountered
+during class initialization.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="k">class</span> <span class="n">Undefined</span>(<span class="n">Enum</span>):
+
+    <span class="s">&quot;&quot;&quot;</span>
+
+<span class="s">    Choose the behavior what happens when an undefined parameter is encountered</span>
+
+<span class="s">    during class initialization.</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+    <span class="n">INCLUDE</span> = <span class="n">_CatchAllUndefinedParameters</span>
+
+    <span class="n">RAISE</span> = <span class="n">_RaiseUndefinedParameters</span>
+
+    <span class="n">EXCLUDE</span> = <span class="n">_IgnoreUndefinedParameters</span>
+</pre></div>
+
+
+</details>
+<hr />
+<h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
+<ul>
+<li>enum.Enum</li>
+</ul>
+<h4 id="class-variables">Class variables</h4>
+<div class="codehilite"><pre><span></span><span class="n">EXCLUDE</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">INCLUDE</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">RAISE</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">name</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">value</span>
+</pre></div>
+
+
+<h3 id="undefinedparametererror">UndefinedParameterError</h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">UndefinedParameterError</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+    <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;_schema&#39;</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">valid_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Raised when something has gone wrong handling undefined parameters.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="k">class</span> <span class="n">UndefinedParameterError</span>(<span class="n">ValidationError</span>):
+
+    <span class="s">&quot;&quot;&quot;</span>
+
+<span class="s">    Raised when something has gone wrong handling undefined parameters.</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+    <span class="nb">pass</span>
+</pre></div>
+
+
+</details>
+<hr />
+<h4 id="ancestors-in-mro_1">Ancestors (in MRO)</h4>
+<ul>
+<li>marshmallow.exceptions.ValidationError</li>
+<li>marshmallow.exceptions.MarshmallowError</li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<h4 id="class-variables_1">Class variables</h4>
+<div class="codehilite"><pre><span></span><span class="n">args</span>
+</pre></div>
+
+
+<h4 id="methods">Methods</h4>
+<h5 id="normalized_messages">normalized_messages</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">normalized_messages</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="n">def</span> <span class="n">normalized_messages</span><span class="p">(</span><span class="k">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="k">self</span><span class="p">.</span><span class="n">field_name</span> <span class="o">==</span> <span class="k">SCHEMA</span> <span class="k">and</span> <span class="n">isinstance</span><span class="p">(</span><span class="k">self</span><span class="p">.</span><span class="n">messages</span><span class="p">,</span> <span class="n">dict</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="k">self</span><span class="p">.</span><span class="n">messages</span>
+
+        <span class="k">return</span> <span class="err">{</span><span class="k">self</span><span class="p">.</span><span class="n">field_name</span><span class="p">:</span> <span class="k">self</span><span class="p">.</span><span class="n">messages</span><span class="err">}</span>
+</pre></div>
+
+
+</details>
+<h5 id="with_traceback">with_traceback</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">with_traceback</span><span class="p">(</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Exception.with_traceback(tb) --
+set self.<strong>traceback</strong> to tb and return self.</p>
                 
                   
                 

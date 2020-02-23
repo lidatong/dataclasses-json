@@ -333,6 +333,73 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fieldoverride" class="md-nav__link">
+    FieldOverride
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#count" class="md-nav__link">
+    count
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    index
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -429,6 +496,73 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fieldoverride" class="md-nav__link">
+    FieldOverride
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#count" class="md-nav__link">
+    count
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    index
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -475,9 +609,13 @@
 
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_type_hints</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_type_hints</span>
 
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+
+<span class="kn">from</span> <span class="nn">cachetools</span> <span class="kn">import</span> <span class="n">cached</span>
+
+<span class="kn">from</span> <span class="nn">cachetools.lru</span> <span class="kn">import</span> <span class="n">LRUCache</span>
 
 <span class="kn">from</span> <span class="nn">typing_inspect</span> <span class="kn">import</span> <span class="n">is_union_type</span>  <span class="c1"># type: ignore</span>
 
@@ -494,6 +632,14 @@
                                     <span class="n">_issubclass_safe</span><span class="p">)</span>
 
 <span class="n">Json</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+
+<span class="n">_MAX_CACHE_SIZE</span> <span class="o">=</span> <span class="mi">128</span>
+
+<span class="n">_get_type_hints_cache</span> <span class="o">=</span> <span class="n">LRUCache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="n">_MAX_CACHE_SIZE</span><span class="p">)</span>
+
+<span class="n">_is_supported_generic_cache</span> <span class="o">=</span> <span class="n">LRUCache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="n">_MAX_CACHE_SIZE</span><span class="p">)</span>
+
+<span class="n">_user_overrides_cache</span> <span class="o">=</span> <span class="n">LRUCache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="n">_MAX_CACHE_SIZE</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">_ExtendedEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
 
@@ -533,11 +679,17 @@
 
         <span class="k">return</span> <span class="n">result</span>
 
-<span class="k">def</span> <span class="nf">_user_overrides_or_exts</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="n">confs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="s1">&#39;decoder&#39;</span><span class="p">,</span> <span class="s1">&#39;mm_field&#39;</span><span class="p">,</span> <span class="s1">&#39;letter_case&#39;</span><span class="p">]</span>
 
-    <span class="n">confs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="s1">&#39;decoder&#39;</span><span class="p">,</span> <span class="s1">&#39;mm_field&#39;</span><span class="p">,</span> <span class="s1">&#39;letter_case&#39;</span><span class="p">]</span>
+<span class="n">FieldOverride</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;FieldOverride&#39;</span><span class="p">,</span> <span class="n">confs</span><span class="p">)</span>
 
-    <span class="n">FieldOverride</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;FieldOverride&#39;</span><span class="p">,</span> <span class="n">confs</span><span class="p">)</span>
+<span class="nd">@cached</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">_user_overrides_cache</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_user_overrides_or_exts</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldOverride</span><span class="p">]:</span>
+
+    <span class="n">overrides</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># overrides at the class-level</span>
 
     <span class="n">global_metadata</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
 
@@ -605,7 +757,7 @@
 
     <span class="k">return</span> <span class="n">default</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_encode_overrides</span><span class="p">(</span><span class="n">kvs</span><span class="p">,</span> <span class="n">overrides</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_encode_overrides</span><span class="p">(</span><span class="n">kvs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">overrides</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
 
     <span class="n">override_kvs</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -651,6 +803,12 @@
 
     <span class="k">return</span> <span class="n">names</span>
 
+<span class="nd">@cached</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">_get_type_hints_cache</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_get_type_hints_cached</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
 <span class="k">def</span> <span class="nf">_decode_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kvs</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kvs</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
@@ -689,7 +847,7 @@
 
     <span class="n">init_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">types</span> <span class="o">=</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+    <span class="n">types</span> <span class="o">=</span> <span class="n">_get_type_hints_cached</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 
@@ -834,6 +992,8 @@
         <span class="n">res</span> <span class="o">=</span> <span class="n">field_value</span>
 
     <span class="k">return</span> <span class="n">res</span>
+
+<span class="nd">@cached</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="n">_is_supported_generic_cache</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">_is_supported_generic</span><span class="p">(</span><span class="n">type_</span><span class="p">):</span>
 
@@ -1029,6 +1189,68 @@
 <h2 id="variables">Variables</h2>
 <div class="codehilite"><pre><span></span><span class="n">Json</span>
 </pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">confs</span>
+</pre></div>
+
+
+<h2 id="classes">Classes</h2>
+<h3 id="fieldoverride">FieldOverride</h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">FieldOverride</span><span class="p">(</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>FieldOverride(encoder, decoder, mm_field, letter_case)</p>
+<h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
+<ul>
+<li>builtins.tuple</li>
+</ul>
+<h4 id="class-variables">Class variables</h4>
+<div class="codehilite"><pre><span></span><span class="n">decoder</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">encoder</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">letter_case</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">mm_field</span>
+</pre></div>
+
+
+<h4 id="methods">Methods</h4>
+<h5 id="count">count</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">count</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">,</span>
+    <span class="o">/</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Return number of occurrences of value.</p>
+<h5 id="index">index</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">index</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">,</span>
+    <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">stop</span><span class="o">=</span><span class="mi">9223372036854775807</span><span class="p">,</span>
+    <span class="o">/</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
                 
                   
                 

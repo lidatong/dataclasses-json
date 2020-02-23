@@ -11,9 +11,11 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Mapping, Union, get_type_hints
+from typing import Any, Collection, Dict, Mapping, Union, get_type_hints
 from uuid import UUID
 
+from cachetools import cached
+from cachetools.lru import LRUCache
 from typing_inspect import is_union_type  # type: ignore
 
 from dataclasses_json import cfg
@@ -24,6 +26,10 @@ from dataclasses_json.utils import (_get_type_cons,
                                     _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
+_MAX_CACHE_SIZE = 128
+_get_type_hints_cache = LRUCache(maxsize=_MAX_CACHE_SIZE)
+_is_supported_generic_cache = LRUCache(maxsize=_MAX_CACHE_SIZE)
+_user_overrides_cache = LRUCache(maxsize=_MAX_CACHE_SIZE)
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -47,10 +53,14 @@ class _ExtendedEncoder(json.JSONEncoder):
         return result
 
 
-def _user_overrides_or_exts(cls):
-    confs = ['encoder', 'decoder', 'mm_field', 'letter_case']
-    FieldOverride = namedtuple('FieldOverride', confs)
+confs = ['encoder', 'decoder', 'mm_field', 'letter_case']
+FieldOverride = namedtuple('FieldOverride', confs)
 
+
+@cached(cache=_user_overrides_cache, key=id)
+def _user_overrides_or_exts(cls) -> Dict[str, FieldOverride]:
+    overrides = {}
+    # overrides at the class-level
     global_metadata = defaultdict(dict)
     encoders = cfg.global_config.encoders
     decoders = cfg.global_config.decoders
@@ -89,7 +99,7 @@ def _encode_json_type(value, default=_ExtendedEncoder().default):
     return default(value)
 
 
-def _encode_overrides(kvs, overrides, encode_json=False):
+def _encode_overrides(kvs: Dict[str, Any], overrides, encode_json=False):
     override_kvs = {}
     for k, v in kvs.items():
         if k in overrides:
@@ -118,6 +128,11 @@ def _decode_letter_case_overrides(field_names, overrides):
     return names
 
 
+@cached(cache=_get_type_hints_cache, key=id)
+def _get_type_hints_cached(cls):
+    return get_type_hints(cls)
+
+
 def _decode_dataclass(cls, kvs, infer_missing):
     if isinstance(kvs, cls):
         return kvs
@@ -140,7 +155,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
     kvs = _handle_undefined_parameters_safe(cls, kvs, usage="from")
 
     init_kwargs = {}
-    types = get_type_hints(cls)
+    types = _get_type_hints_cached(cls)
     for field in fields(cls):
         # The field should be skipped from being added
         # to init_kwargs as it's not intended as a constructor argument.
@@ -222,6 +237,7 @@ def _support_extended_types(field_type, field_value):
     return res
 
 
+@cached(cache=_is_supported_generic_cache, key=id)
 def _is_supported_generic(type_):
     not_str = not _issubclass_safe(type_, str)
     is_enum = _issubclass_safe(type_, Enum)

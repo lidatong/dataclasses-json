@@ -52,14 +52,14 @@ def _user_overrides_or_exts(cls):
     confs = ['encoder', 'decoder', 'mm_field', 'letter_case']
     FieldOverride = namedtuple('FieldOverride', confs)
 
-    global_fields_metadata = defaultdict(dict)
+    global_metadata = defaultdict(dict)
     encoders = cfg.global_config.encoders
     decoders = cfg.global_config.decoders
     for field in fields(cls):
         if field.type in encoders:
-            global_fields_metadata[field.name]['encoder'] = encoders[field.type]
+            global_metadata[field.name]['encoder'] = encoders[field.type]
         if field.type in decoders:
-            global_fields_metadata[field.name]['decoder'] = decoders[field.type]
+            global_metadata[field.name]['decoder'] = decoders[field.type]
     try:
         cls_config = (cls.dataclass_json_config
                       if cls.dataclass_json_config is not None else {})
@@ -70,7 +70,7 @@ def _user_overrides_or_exts(cls):
     for field in fields(cls):
         field_config = field.metadata.get('dataclasses_json', {})
         # first apply global overrides or extensions
-        field_metadata = global_fields_metadata[field.name]
+        field_metadata = global_metadata[field.name]
         if 'encoder' in field_metadata:
             field_config['encoder'] = field_metadata['encoder']
         if 'decoder' in field_metadata:

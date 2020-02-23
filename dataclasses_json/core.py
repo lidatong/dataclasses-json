@@ -11,7 +11,7 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Mapping, Union, get_type_hints
+from typing import Any, Collection, Dict, Mapping, Union, get_type_hints
 from uuid import UUID
 
 from cachetools import cached
@@ -59,7 +59,6 @@ FieldOverride = namedtuple('FieldOverride', confs)
 
 @cached(cache=_user_overrides_cache, key=id)
 def _user_overrides_or_exts(cls) -> Dict[str, FieldOverride]:
-
     overrides = {}
     # overrides at the class-level
     global_metadata = defaultdict(dict)

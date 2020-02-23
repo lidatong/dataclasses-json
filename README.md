@@ -341,7 +341,7 @@ Assume you want to instantiate a dataclass with the following dictionary:
 dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "undefined_field_name": [1, 2, 3]}
 ```
 
-1. You can enforce to always raise an error by setting the undefined_parameters keyword to `UndefinedParameters.RAISE`
+1. You can enforce to always raise an error by setting the `undefined` keyword to `Undefined.RAISE`
  (`'RAISE'` as a case-insensitive string works as well). Of course it works normally if you don't pass any undefined parameters.
     
     ```python
@@ -356,7 +356,7 @@ dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "u
     dump = ExactAPIDump.from_dict(dump_dict)  # raises UndefinedParameterError
     ```
 
-2. You can simply ignore any undefined parameters by setting the undefined_parameters keyword to `UndefinedParameters.EXCLUDE`
+2. You can simply ignore any undefined parameters by setting the `undefined` keyword to `Undefined.EXCLUDE`
  (`'EXCLUDE'` as a case-insensitive string works as well). Note that you will not be able to retrieve them using `to_dict`:
     
     ```python
@@ -372,8 +372,8 @@ dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "u
     dump.to_dict()  # {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}}
     ```
 
-3. You can save them in a catch-all field and do whatever needs to be done later. Simply set the undefined_parameters
-keyword to `UndefinedParameters.INCLUDE` (`'INCLUDE'` as a case-insensitive string works as well) and define a field
+3. You can save them in a catch-all field and do whatever needs to be done later. Simply set the `undefined`
+keyword to `Undefined.INCLUDE` (`'INCLUDE'` as a case-insensitive string works as well) and define a field
 of type `CatchAll` where all unknown values will end up.
  This simply represents a dictionary that can hold anything. 
  If there are no undefined parameters, this will be an empty dictionary.
@@ -392,7 +392,7 @@ of type `CatchAll` where all unknown values will end up.
     dump.to_dict()  # {'endpoint': 'some_api_endpoint', 'data': {'foo': 1, 'bar': '2'}, 'undefined_field_name': [1, 2, 3]}
     ```
 
-    - When using `UndefinedParameters.INCLUDE`, an `UndefinedParameterError` will be raised if you don't specify
+    - When using `Undefined.INCLUDE`, an `UndefinedParameterError` will be raised if you don't specify
     exactly one field of type `CatchAll`.
     - Note that `LetterCase` does not affect values written into the `CatchAll` field, they will be as they are given.
     - When specifying a default (or a default factory) for the the `CatchAll`-field, e.g. `unknown_things: CatchAll = None`, the default value will be used instead of an empty dict if there are no undefined parameters.
@@ -617,4 +617,3 @@ Avoid using
 from __future__ import annotations
 ```
 as it will cause problems with the way dataclasses_json accesses the type annotations.
-

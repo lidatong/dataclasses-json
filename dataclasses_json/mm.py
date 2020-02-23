@@ -18,11 +18,12 @@ from marshmallow_enum import EnumField  # type: ignore
 from marshmallow.exceptions import ValidationError
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
-                                   _ExtendedEncoder, _user_overrides)
+                                   _ExtendedEncoder, _user_overrides_or_exts)
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
                                     _is_new_type, _get_type_origin,
-                                    _handle_undefined_parameters_safe, CatchAllVar)
+                                    _handle_undefined_parameters_safe,
+                                    CatchAllVar)
 
 
 class _TimestampField(fields.Field):
@@ -152,7 +153,8 @@ if sys.version_info >= (3, 7):
             raise NotImplementedError()
 
         @typing.overload
-        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[TEncoded]:  # type: ignore
+        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[
+            TEncoded]:  # type: ignore
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             pass
 
@@ -177,7 +179,7 @@ if sys.version_info >= (3, 7):
                   **kwargs) -> str:
             pass
 
-        @typing.overload # type: ignore
+        @typing.overload  # type: ignore
         def load(self, data: typing.List[TEncoded],
                  many: bool = True, partial: bool = None,
                  unknown: str = None) -> \
@@ -275,7 +277,7 @@ def build_type(type_, options, mixin, field, cls):
 
 def schema(cls, mixin, infer_missing):
     schema = {}
-    overrides = _user_overrides(cls)
+    overrides = _user_overrides_or_exts(cls)
     # TODO check the undefined parameters and add the proper schema action
     #  https://marshmallow.readthedocs.io/en/stable/quickstart.html
     for field in dc_fields(cls):
@@ -320,7 +322,12 @@ def build_schema(cls: typing.Type[A],
     Meta = type('Meta',
                 (),
                 {'fields': tuple(field.name for field in dc_fields(cls)
-                                 if field.name != 'dataclass_json_config' and field.type != typing.Optional[CatchAllVar])})
+                                 if
+                                 field.name != 'dataclass_json_config' and field.type !=
+                                 typing.Optional[CatchAllVar]),
+                 # TODO #180
+                 # 'render_module': global_config.json_module
+                 })
 
     @post_load
     def make_instance(self, kvs, **kwargs):
@@ -341,9 +348,12 @@ def build_schema(cls: typing.Type[A],
         # so we just update the dumped dict
         if many:
             for i, _obj in enumerate(obj):
-                dumped[i].update(_handle_undefined_parameters_safe(cls=_obj, kvs={}, usage="dump"))
+                dumped[i].update(
+                    _handle_undefined_parameters_safe(cls=_obj, kvs={},
+                                                      usage="dump"))
         else:
-            dumped.update(_handle_undefined_parameters_safe(cls=obj, kvs={}, usage="dump"))
+            dumped.update(_handle_undefined_parameters_safe(cls=obj, kvs={},
+                                                            usage="dump"))
         return dumped
 
     schema_ = schema(cls, mixin, infer_missing)
@@ -359,8 +369,3 @@ def build_schema(cls: typing.Type[A],
     return DataClassSchema
 
 
-class UndefinedParameterError(ValidationError):
-    """
-    Raised when something has gone wrong handling undefined parameters.
-    """
-    pass

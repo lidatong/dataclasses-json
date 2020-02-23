@@ -1,5 +1,4 @@
 import functools
-import json
 from typing import (Callable, Dict, Optional, Union)
 
 from marshmallow.fields import Field as MarshmallowField

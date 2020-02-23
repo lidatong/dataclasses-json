@@ -7,7 +7,7 @@ import marshmallow
 from dataclasses_json.core import Json
 from dataclasses_json.api import dataclass_json, LetterCase, Undefined, DataClassJsonMixin
 from dataclasses_json import CatchAll
-from dataclasses_json.mm import UndefinedParameterError
+from dataclasses_json.undefined import UndefinedParameterError
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)

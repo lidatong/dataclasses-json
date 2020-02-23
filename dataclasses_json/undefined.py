@@ -4,10 +4,14 @@ import functools
 import inspect
 from dataclasses import Field, fields
 from typing import Any, Callable, Dict, Optional, Tuple
+from enum import Enum
 
-from dataclasses_json.core import KnownParameters, UnknownParameters
-from dataclasses_json.mm import UndefinedParameterError
+from marshmallow import ValidationError
+
 from dataclasses_json.utils import CatchAllVar
+
+KnownParameters = Dict[str, Any]
+UnknownParameters = Dict[str, Any]
 
 
 class _UndefinedParameterAction(abc.ABC):
@@ -250,3 +254,20 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
                 f"{number_of_catch_all_fields}.")
         else:
             return catch_all_fields[0]
+
+
+class Undefined(Enum):
+    """
+    Choose the behavior what happens when an undefined parameter is encountered
+    during class initialization.
+    """
+    INCLUDE = _CatchAllUndefinedParameters
+    RAISE = _RaiseUndefinedParameters
+    EXCLUDE = _IgnoreUndefinedParameters
+
+
+class UndefinedParameterError(ValidationError):
+    """
+    Raised when something has gone wrong handling undefined parameters.
+    """
+    pass

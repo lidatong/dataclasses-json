@@ -17,9 +17,8 @@ from marshmallow import fields, Schema, post_load
 from marshmallow_enum import EnumField  # type: ignore
 from marshmallow.exceptions import ValidationError
 
-from dataclasses_json.global_config import global_config
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
-                                   _ExtendedEncoder, _user_overrides)
+                                   _ExtendedEncoder, _user_overrides_or_exts)
 from dataclasses_json.utils import (_is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
                                     _is_new_type, _get_type_origin,
@@ -278,7 +277,7 @@ def build_type(type_, options, mixin, field, cls):
 
 def schema(cls, mixin, infer_missing):
     schema = {}
-    overrides = _user_overrides(cls)
+    overrides = _user_overrides_or_exts(cls)
     # TODO check the undefined parameters and add the proper schema action
     #  https://marshmallow.readthedocs.io/en/stable/quickstart.html
     for field in dc_fields(cls):
@@ -370,8 +369,3 @@ def build_schema(cls: typing.Type[A],
     return DataClassSchema
 
 
-class UndefinedParameterError(ValidationError):
-    """
-    Raised when something has gone wrong handling undefined parameters.
-    """
-    pass

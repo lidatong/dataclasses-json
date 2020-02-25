@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List, Tuple, Any
 
 from dataclasses_json import DataClassJsonMixin, dataclass_json
+# noinspection PyProtectedMember
 from dataclasses_json.core import _hash_key
 
 

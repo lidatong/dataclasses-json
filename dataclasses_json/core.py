@@ -57,7 +57,7 @@ confs = ['encoder', 'decoder', 'mm_field', 'letter_case']
 FieldOverride = namedtuple('FieldOverride', confs)
 
 
-@cached(cache=_user_overrides_cache, key=id)
+@cached(cache=_user_overrides_cache, key=repr)
 def _user_overrides_or_exts(cls) -> Dict[str, FieldOverride]:
     overrides = {}
     # overrides at the class-level
@@ -128,7 +128,7 @@ def _decode_letter_case_overrides(field_names, overrides):
     return names
 
 
-@cached(cache=_get_type_hints_cache, key=id)
+@cached(cache=_get_type_hints_cache, key=repr)
 def _get_type_hints_cached(cls):
     return get_type_hints(cls)
 
@@ -237,7 +237,7 @@ def _support_extended_types(field_type, field_value):
     return res
 
 
-@cached(cache=_is_supported_generic_cache, key=id)
+@cached(cache=_is_supported_generic_cache, key=repr)
 def _is_supported_generic(type_):
     not_str = not _issubclass_safe(type_, str)
     is_enum = _issubclass_safe(type_, Enum)

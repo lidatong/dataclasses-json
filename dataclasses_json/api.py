@@ -1,5 +1,6 @@
 import abc
 import json
+import uuid
 from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
@@ -35,6 +36,10 @@ class DataClassJsonMixin(abc.ABC):
     As with other ABCs, it should not be instantiated directly.
     """
     dataclass_json_config = None
+    _dataclass_hash: str
+
+    def __init_subclass__(cls, **kwargs):
+        cls._dataclass_hash = str(uuid.uuid4())
 
     def to_json(self,
                 *,
@@ -150,6 +155,7 @@ def _process_class(cls, letter_case, undefined):
     cls.to_dict = DataClassJsonMixin.to_dict
     cls.from_dict = classmethod(DataClassJsonMixin.from_dict.__func__)
     cls.schema = classmethod(DataClassJsonMixin.schema.__func__)
+    cls._dataclass_hash = str(uuid.uuid4())
 
     cls.__init__ = _handle_undefined_parameters_safe(cls, kvs=(), usage="init")
     # register cls as a virtual subclass of DataClassJsonMixin

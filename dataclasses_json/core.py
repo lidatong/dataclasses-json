@@ -12,9 +12,8 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Collection, Mapping, Union, get_type_hints
-from uuid import UUID
-
 from typing_inspect import is_union_type  # type: ignore
+from uuid import UUID
 
 from dataclasses_json import cfg
 from dataclasses_json.utils import (_get_type_cons,
@@ -206,6 +205,11 @@ def _support_extended_types(field_type, field_value):
         # but need this for the object creation hook
         if isinstance(field_value, datetime):
             res = field_value
+        elif isinstance(field_value, str):
+            try:
+                res = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S%z")
+            except:
+                res = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S.%f%z")
         else:
             tz = datetime.now(timezone.utc).astimezone().tzinfo
             res = datetime.fromtimestamp(field_value, tz=tz)

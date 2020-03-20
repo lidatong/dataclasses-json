@@ -208,7 +208,7 @@ def _support_extended_types(field_type, field_value):
         elif isinstance(field_value, str):
             try:
                 res = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S%z")
-            except:
+            except Exception:
                 res = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S.%f%z")
         else:
             tz = datetime.now(timezone.utc).astimezone().tzinfo

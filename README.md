@@ -283,9 +283,9 @@ from dataclasses_json import config, dataclass_json
 class Person:
     given_name: str = field(metadata=config(field_name="overriddenGivenName"))
 
-Person(given_name="Alice", family_name='Liddell')  # Person('Alice')
+Person(given_name="Alice")  # Person('Alice')
 Person.from_json('{"overriddenGivenName": "Alice"}')  # Person('Alice')
-Person('Alice', 'Liddell').to_json()  # {"overriddenGivenName": "Alice"}
+Person('Alice').to_json()  # {"overriddenGivenName": "Alice"}
 ```
 
 ### Handle missing or optional field values when decoding?

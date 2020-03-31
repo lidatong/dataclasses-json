@@ -124,7 +124,7 @@ def dataclass_json(_cls=None, *, letter_case=None,
     decorators. See example below:
 
     @dataclass_json
-    @dataclass_json(letter_case=Lettercase.CAMEL)
+    @dataclass_json(letter_case=LetterCase.CAMEL)
     class Example:
         ...
     """

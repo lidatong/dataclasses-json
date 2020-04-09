@@ -4,6 +4,7 @@ from uuid import UUID
 
 import pytest
 
+from dataclasses_json.errors import DataclassSerializationException
 from tests.entities import (DataClassBoolImmutableDefault,
                             DataClassIntImmutableDefault,
                             DataClassJsonDecorator,
@@ -127,7 +128,7 @@ class TestWarnings:
 
 class TestErrors:
     def test_error_when_nonoptional_field_is_missing(self):
-        with pytest.raises(KeyError):
+        with pytest.raises(DataclassSerializationException):
             actual = DataClassWithDataClass.from_json('{"dc_with_list": {}}')
             expected = DataClassWithDataClass(DataClassWithList(None))
             assert (actual == expected)

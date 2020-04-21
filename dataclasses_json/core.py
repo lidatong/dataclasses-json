@@ -67,7 +67,7 @@ def _user_overrides_or_exts(cls):
 
     overrides = {}
     for field in fields(cls):
-        field_config = field.metadata.get('dataclasses_json', {})
+        field_config = {}
         # first apply global overrides or extensions
         field_metadata = global_metadata[field.name]
         if 'encoder' in field_metadata:
@@ -79,6 +79,7 @@ def _user_overrides_or_exts(cls):
         # then apply class-level overrides or extensions
         field_config.update(cls_config)
         # last apply field-level overrides or extensions
+        field_config.update(field.metadata.get('dataclasses_json', {}))
         overrides[field.name] = FieldOverride(*map(field_config.get, confs))
     return overrides
 

@@ -1,3 +1,8 @@
-class DataclassSerializationException(KeyError):
+class DataclassJsonError(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+
+
+class DataclassJsonSerializationException(KeyError):
     def __init__(self, *args, **kwargs) -> None:
-        super(DataclassSerializationException, self).__init__(*args, **kwargs)
+        super(DataclassJsonSerializationException, self).__init__(*args, **kwargs)

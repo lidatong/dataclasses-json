@@ -17,7 +17,7 @@ from uuid import UUID
 from typing_inspect import is_union_type  # type: ignore
 
 from dataclasses_json import cfg
-from dataclasses_json.errors import DataclassSerializationException
+from dataclasses_json.errors import DataclassJsonSerializationException
 from dataclasses_json.utils import (_get_type_cons,
                                     _handle_undefined_parameters_safe,
                                     _is_collection, _is_mapping, _is_new_type,
@@ -153,7 +153,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
         except KeyError as ex:
             qualified = f"{cls.__module__}.{cls.__qualname__}"
             args = ", ".join(ex.args)
-            raise DataclassSerializationException(
+            raise DataclassJsonSerializationException(
                 f"Error decoding dataclass {qualified} encountered "
                 f"at field {args}") from ex
         field_type = types[field.name]

@@ -120,8 +120,8 @@ class TestValidator:
         ('str1', True),
         ('str2', True),
         ('str3', True),
-        (1, True),
-        (1.23, True),
+        (1, False),
+        (1.23, False),
         ('str4', False),
         (2, False),
         (1.24, False),
@@ -130,7 +130,8 @@ class TestValidator:
         data = '{"name": "myname", "my_enum": "' + str(enum_value) + '"}'
         schema = DataWithEnum.schema()
         res = schema.validate(json.loads(data))
-        assert not res == is_valid
+        no_errors = not res
+        assert no_errors == is_valid, str(res)
 
     @pytest.mark.parametrize('enum_value, is_valid', [
         ('str1', True),

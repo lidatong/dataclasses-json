@@ -104,6 +104,9 @@ class DataClassJsonMixin(abc.ABC):
         if unknown is None:
             undefined_parameter_action = _undefined_parameter_action_safe(cls)
             if undefined_parameter_action is not None:
+                if undefined_parameter_action == Undefined.WARN:
+                    # mm has no warn implementation, so we resolve to ignore
+                    undefined_parameter_action = Undefined.EXCLUDE
                 # We can just make use of the same-named mm keywords
                 unknown = undefined_parameter_action.name.lower()
 

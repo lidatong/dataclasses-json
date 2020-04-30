@@ -372,7 +372,24 @@ dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "u
     dump.to_dict()  # {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}}
     ```
 
-3. You can save them in a catch-all field and do whatever needs to be done later. Simply set the `undefined`
+3. You can issue a `RuntimeWarning` for undefined parameters by setting the `undefined` keyword to `Undefined.WARN`
+  (`WARN` as a case-insensitive string works as well). Note that you will not be able to retrieve them using `to_dict`:
+  
+    ```python
+    from dataclasses_json import Undefined
+    
+    @dataclass_json(undefined=Undefined.WARN)
+    @dataclass()
+    class WarnAPIDump:
+        endpoint: str
+        data: Dict[str, Any]
+    
+    dump = WarnAPIDump.from_dict(dump_dict)  # WarnAPIDump(endpoint='some_api_endpoint', data={'foo': 1, 'bar': '2'})
+    # RuntimeWarning("Received undefined initialization arguments (, {'undefined_field_name': [1, 2, 3]})")
+    dump.to_dict()  # {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}}
+    ```
+
+4. You can save them in a catch-all field and do whatever needs to be done later. Simply set the `undefined`
 keyword to `Undefined.INCLUDE` (`'INCLUDE'` as a case-insensitive string works as well) and define a field
 of type `CatchAll` where all unknown values will end up.
  This simply represents a dictionary that can hold anything. 
@@ -398,11 +415,13 @@ of type `CatchAll` where all unknown values will end up.
     - When specifying a default (or a default factory) for the the `CatchAll`-field, e.g. `unknown_things: CatchAll = None`, the default value will be used instead of an empty dict if there are no undefined parameters.
     - Calling __init__ with non-keyword arguments resolves the arguments to the defined fields and writes everything else into the catch-all field.
 
-4. All 3 options work as well using `schema().loads` and `schema().dumps`, as long as you don't overwrite it by specifying `schema(unknown=<a marshmallow value>)`.
+4. The `INCLUDE, EXCLUDE, RAISE` options work as well using `schema().loads` and `schema().dumps`, as long as you don't overwrite it by specifying `schema(unknown=<a marshmallow value>)`.
 marshmallow uses the same 3 keywords ['include', 'exclude', 'raise'](https://marshmallow.readthedocs.io/en/stable/quickstart.html#handling-unknown-fields).
+Marshmallow does not have an equivalent of `WARN`, so when using `schema().loads` we fall back to ignoring undefined parameters.
 
-5. All 3 operations work as well using `__init__`, e.g. `UnknownAPIDump(**dump_dict)` will **not** raise a `TypeError`, but write all unknown values to the field tagged as `CatchAll`.
+5. All 4 operations work as well using `__init__`, e.g. `UnknownAPIDump(**dump_dict)` will **not** raise a `TypeError`, but write all unknown values to the field tagged as `CatchAll`.
    Classes tagged with `EXCLUDE` will also simply ignore unknown parameters. Note that classes tagged as `RAISE` still raise a `TypeError`, and **not** a `UndefinedParameterError` if supplied with unknown keywords.
+   Classes tagged with `WARN, IGNORE` will resolve keyword arguments before resolving arguments. 
 
 ### Explanation
 

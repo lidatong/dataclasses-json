@@ -1,3 +1,4 @@
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
@@ -313,6 +314,69 @@ class TestRaiseUndefinedParameters:
     def test_it_has_python_semantics_in_init(self, invalid_response):
         with pytest.raises(TypeError):
             WellKnownAPIDump(**invalid_response)
+
+
+class TestWarnUndefinedParameters:
+
+    def test_it_raises_with_undefined_parameters(self, invalid_response):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            WarnApiDump.from_dict(invalid_response)
+
+        assert len(w) == 1
+        assert issubclass(w[-1].category, RuntimeWarning)
+        expected_message = "Received undefined initialization arguments " \
+                           "{'undefined_field_name': [1, 2, 3]}"
+        assert expected_message == w[-1].message.args[0]
+
+    def test_it_doesnt_raise_with_known_parameters(self, valid_response):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            roundtrip = WarnApiDump.from_dict(valid_response).to_dict()
+
+        assert valid_response == roundtrip
+        assert len(w) == 0
+
+    def test_it_warns_in_init_kwargs(self, invalid_response):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            WarnApiDump(**invalid_response)
+
+        assert len(w) == 1
+        assert issubclass(w[-1].category, RuntimeWarning)
+        expected_message = "Received undefined initialization arguments " \
+                           "(, {'undefined_field_name': [1, 2, 3]})"
+        assert w[-1].message.args[0] == expected_message
+
+    def test_it_warns_init_args_kwargs_mixed_preferring_kwargs(self,
+                                                               invalid_response):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            dump = WarnApiDump("some-arg", **invalid_response)
+
+        assert dump.endpoint == invalid_response["endpoint"]
+        assert dump.data == invalid_response["data"]
+        assert len(w) == 1
+        assert issubclass(w[-1].category, RuntimeWarning)
+        expected_message = "Received undefined initialization arguments " \
+                           "(('some-arg',), {'undefined_field_name': [1, 2, 3]})"
+        assert w[-1].message.args[0] == expected_message
+
+    def test_it_ignores_when_using_schema(self, invalid_response):
+        import json
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            dump = WarnApiDump.schema().loads(json.dumps(invalid_response))
+
+        assert len(w) == 0
+        assert dump.endpoint == invalid_response["endpoint"]
+        assert dump.data == invalid_response["data"]
 
 
 class TestIgnoreUndefinedParameters:

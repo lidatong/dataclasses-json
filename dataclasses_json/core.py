@@ -234,9 +234,18 @@ def _decode_generic(type_, value, infer_missing):
     if value is None:
         res = value
     elif _issubclass_safe(type_, Enum):
-        # Convert to an Enum using the type as a constructor.
-        # Assumes a direct match is found.
-        res = type_(value)
+        # we got the enum value
+        for enum_member in type_:
+            # We rely on the user that the enum values are unique
+            # We need to check for the string value
+            if str(enum_member.value) == value:
+                res = enum_member
+                break
+        else:
+            # Convert to an Enum using the type as a constructor.
+            # Assumes a direct match is found.
+            # Enums can overwrite missing, so we can try this as a last resort
+            res = type_(value)
     # FIXME this is a hack to fix a deeper underlying issue. A refactor is due.
     elif _is_collection(type_):
         if _is_mapping(type_):
@@ -326,5 +335,7 @@ def _asdict(obj, encode_json=False):
     elif isinstance(obj, Collection) and not isinstance(obj, str) \
             and not isinstance(obj, bytes):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
+    elif isinstance(obj, Enum):
+        return _asdict(obj.value, encode_json=encode_json)
     else:
         return copy.deepcopy(obj)

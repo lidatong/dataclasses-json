@@ -65,6 +65,18 @@ container = EnumContainer(
     dict_enum_value={"key1str": MyEnum.STR1, "key1float": MyEnum.FLOAT1})
 
 
+@dataclass_json
+@dataclass(frozen=True)
+class DataWithEnumKeys:
+    name: str
+    enum_dict: Dict[MyEnum, str]
+
+
+keys_json = '{"name": "name1", "enum_dict": {"str1": "str_test", "1": "int_test"}}'
+d_keys = DataWithEnumKeys(name="name1", enum_dict={MyEnum.STR1: "str_test",
+                                                   MyEnum.INT1: "int_test"})
+
+
 class TestEncoder:
     def test_data_with_enum(self):
         assert d1.to_json() == d1_json, f'Actual: {d1.to_json()}, Expected: {d1_json}'
@@ -81,6 +93,9 @@ class TestEncoder:
 
     def test_collection_with_enum(self):
         assert container.to_json() == container_json
+
+    def test_enum_dict_keys(self):
+        assert d_keys.to_json() == keys_json
 
 
 class TestDecoder:
@@ -114,6 +129,11 @@ class TestDecoder:
         assert container == container_from_json
         assert container_from_json.to_json() == container_json
 
+    def test_enum_dict_keys(self):
+        dict_keys_from_json = DataWithEnumKeys.from_json(keys_json)
+        assert dict_keys_from_json == d_keys
+        assert dict_keys_from_json.to_json() == keys_json
+
 
 class TestValidator:
     @pytest.mark.parametrize('enum_value, is_valid', [
@@ -140,7 +160,21 @@ class TestValidator:
         data = '{"my_str_enum": "' + str(enum_value) + '"}'
         schema = DataWithStrEnum.schema()
         res = schema.validate(json.loads(data))
-        assert not res == is_valid
+        no_errors = not res
+        assert no_errors == is_valid
+
+    @pytest.mark.parametrize("enum_value, is_valid", [
+        ("str1", True),
+        # This may be counter intuitive, but json only allows string keys
+        ("1", False), (1, False),
+        ("FOO", False)
+    ])
+    def test_data_with_enum_keys(self, enum_value, is_valid):
+        data = '{"name": "name1", "enum_dict": {"' + str(enum_value) + '": "bar"}}'
+        schema = DataWithEnumKeys.schema()
+        res = schema.validate(json.loads(data))
+        no_errors = not res
+        assert no_errors == is_valid
 
 
 class TestLoader:
@@ -170,3 +204,18 @@ class TestLoader:
         schema = DataWithStrEnum.schema()
         with pytest.raises(ValidationError):
             schema.loads('{"my_str_enum": "str2"}')
+
+    def test_data_with_enum_keys_works_with_str_values(self):
+        schema = DataWithEnumKeys.schema()
+        data = '{"name": "name1", "enum_dict": {"str1": "bar"}}'
+        loaded = schema.loads(data)
+        assert loaded == DataWithEnumKeys(name="name1",
+                                          enum_dict={MyEnum.STR1: "bar"})
+
+    @pytest.mark.parametrize("enum_value", [MyEnum.INT1.value,
+                                            MyEnum.FLOAT1.value])
+    def test_data_with_enum_keys_requires_str_values(self, enum_value):
+        schema = DataWithEnumKeys.schema()
+        data = '{"name": "name1", "enum_dict": {"' + str(enum_value) + '": "bar"}}'
+        with pytest.raises(ValidationError):
+            schema.loads(data)

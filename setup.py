@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf8') as f:
 
 setup(
     name='dataclasses-json',
-    version='0.3.7',
+    version='0.4.2',
     packages=find_packages(exclude=('tests*',)),
     package_data={"dataclasses_json": ["py.typed"]},
     author='lidatong',
@@ -31,11 +31,16 @@ setup(
             'mypy>=0.710',
             'hypothesis',
             'portray',
-            'flake8'
+            'flake8',
+            'simplejson'
         ]
     },
     include_package_data=True,
     scripts=['publish.py']
 )
+
+
+
+
 
 

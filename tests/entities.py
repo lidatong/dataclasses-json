@@ -18,6 +18,8 @@ from marshmallow import fields
 
 import dataclasses_json
 from datetime import datetime
+
+from dataclasses_json.cfg import config
 from dataclasses_json import (DataClassJsonMixin, LetterCase, dataclass_json)
 
 A = TypeVar('A')
@@ -185,7 +187,7 @@ class DataClassWithConfigManual:
 @dataclass_json
 @dataclass
 class DataClassWithConfigHelper:
-    id: float = field(metadata=dataclasses_json.config(encoder=str))
+    id: float = field(metadata=config(encoder=str))
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)

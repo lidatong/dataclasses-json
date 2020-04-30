@@ -1,21 +1,17 @@
 import abc
-import functools
 import json
 from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
-from marshmallow.fields import Field as MarshmallowField
 from stringcase import (camelcase, pascalcase, snakecase,
                         spinalcase)  # type: ignore
 
+from dataclasses_json.cfg import config
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass)
-from dataclasses_json.mm import (JsonData, SchemaType, UndefinedParameterError,
-                                 build_schema)
-from dataclasses_json.undefined import (_CatchAllUndefinedParameters,
-                                        _IgnoreUndefinedParameters,
-                                        _RaiseUndefinedParameters)
+from dataclasses_json.mm import (JsonData, SchemaType, build_schema)
+from dataclasses_json.undefined import Undefined
 from dataclasses_json.utils import (_handle_undefined_parameters_safe,
                                     _undefined_parameter_action_safe)
 
@@ -30,65 +26,6 @@ class LetterCase(Enum):
     KEBAB = spinalcase
     SNAKE = snakecase
     PASCAL = pascalcase
-
-
-class Undefined(Enum):
-    """
-    Choose the behavior what happens when an undefined parameter is encountered
-    during class initialization.
-    """
-    INCLUDE = _CatchAllUndefinedParameters
-    RAISE = _RaiseUndefinedParameters
-    EXCLUDE = _IgnoreUndefinedParameters
-
-
-def config(metadata: dict = None, *,
-           encoder: Callable = None,
-           decoder: Callable = None,
-           mm_field: MarshmallowField = None,
-           letter_case: Callable[[str], str] = None,
-           undefined: Optional[Union[str, Undefined]] = None,
-           field_name: str = None) -> Dict[str, dict]:
-    if metadata is None:
-        metadata = {}
-
-    data = metadata.setdefault('dataclasses_json', {})
-
-    if encoder is not None:
-        data['encoder'] = encoder
-
-    if decoder is not None:
-        data['decoder'] = decoder
-
-    if mm_field is not None:
-        data['mm_field'] = mm_field
-
-    if field_name is not None:
-        if letter_case is not None:
-            @functools.wraps(letter_case)
-            def override(_, _letter_case=letter_case, _field_name=field_name):
-                return _letter_case(_field_name)
-        else:
-            def override(_, _field_name=field_name):
-                return _field_name
-        letter_case = override
-
-    if letter_case is not None:
-        data['letter_case'] = letter_case
-
-    if undefined is not None:
-        # Get the corresponding action for undefined parameters
-        if isinstance(undefined, str):
-            if not hasattr(Undefined, undefined.upper()):
-                valid_actions = list(action.name for action in Undefined)
-                raise UndefinedParameterError(
-                    f"Invalid undefined parameter action, "
-                    f"must be one of {valid_actions}")
-            undefined = Undefined[undefined.upper()]
-
-        data['undefined'] = undefined
-
-    return metadata
 
 
 class DataClassJsonMixin(abc.ABC):
@@ -187,7 +124,7 @@ def dataclass_json(_cls=None, *, letter_case=None,
     decorators. See example below:
 
     @dataclass_json
-    @dataclass_json(letter_case=Lettercase.CAMEL)
+    @dataclass_json(letter_case=LetterCase.CAMEL)
     class Example:
         ...
     """

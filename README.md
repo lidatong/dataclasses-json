@@ -66,7 +66,7 @@ Any other Collection types are encoded into JSON arrays, but decoded into the or
 objects. `datetime` objects are encoded to `float` (JSON number) using 
 [timestamp](https://docs.python.org/3/library/datetime.html#datetime.datetime.timestamp).
 As specified in the `datetime` docs, if your `datetime` object is naive, it will 
-assume your system local timezone when calling `.timestamp()`. JSON nunbers 
+assume your system local timezone when calling `.timestamp()`. JSON numbers 
 corresponding to a `datetime` field in your dataclass are decoded 
 into a datetime-aware object, with `tzinfo` set to your system local timezone.
 Thus, if you encode a datetime-naive object, you will decode into a 
@@ -123,8 +123,9 @@ lidatong = Person('lidatong')
 assert Person.from_json(lidatong.to_json()) == lidatong
 ```
 
-Pick whichever approach suits your taste. The differences in implementation are
-invisible in usage.
+Pick whichever approach suits your taste. Note that there is better support for
+ the mixin approach when using _static analysis_ tools (e.g. linting, typing),
+ but the differences in implementation will be invisible in _runtime_ usage.
 
 ## How do I...
 
@@ -282,9 +283,9 @@ from dataclasses_json import config, dataclass_json
 class Person:
     given_name: str = field(metadata=config(field_name="overriddenGivenName"))
 
-Person(given_name="Alice", family_name='Liddell')  # Person('Alice')
+Person(given_name="Alice")  # Person('Alice')
 Person.from_json('{"overriddenGivenName": "Alice"}')  # Person('Alice')
-Person('Alice', 'Liddell').to_json()  # {"overriddenGivenName": "Alice"}
+Person('Alice').to_json()  # {"overriddenGivenName": "Alice"}
 ```
 
 ### Handle missing or optional field values when decoding?
@@ -340,7 +341,7 @@ Assume you want to instantiate a dataclass with the following dictionary:
 dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "undefined_field_name": [1, 2, 3]}
 ```
 
-1. You can enforce to always raise an error by setting the undefined_parameters keyword to `UndefinedParameters.RAISE`
+1. You can enforce to always raise an error by setting the `undefined` keyword to `Undefined.RAISE`
  (`'RAISE'` as a case-insensitive string works as well). Of course it works normally if you don't pass any undefined parameters.
     
     ```python
@@ -355,7 +356,7 @@ dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "u
     dump = ExactAPIDump.from_dict(dump_dict)  # raises UndefinedParameterError
     ```
 
-2. You can simply ignore any undefined parameters by setting the undefined_parameters keyword to `UndefinedParameters.EXCLUDE`
+2. You can simply ignore any undefined parameters by setting the `undefined` keyword to `Undefined.EXCLUDE`
  (`'EXCLUDE'` as a case-insensitive string works as well). Note that you will not be able to retrieve them using `to_dict`:
     
     ```python
@@ -371,8 +372,8 @@ dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "u
     dump.to_dict()  # {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}}
     ```
 
-3. You can save them in a catch-all field and do whatever needs to be done later. Simply set the undefined_parameters
-keyword to `UndefinedParameters.INCLUDE` (`'INCLUDE'` as a case-insensitive string works as well) and define a field
+3. You can save them in a catch-all field and do whatever needs to be done later. Simply set the `undefined`
+keyword to `Undefined.INCLUDE` (`'INCLUDE'` as a case-insensitive string works as well) and define a field
 of type `CatchAll` where all unknown values will end up.
  This simply represents a dictionary that can hold anything. 
  If there are no undefined parameters, this will be an empty dictionary.
@@ -391,7 +392,7 @@ of type `CatchAll` where all unknown values will end up.
     dump.to_dict()  # {'endpoint': 'some_api_endpoint', 'data': {'foo': 1, 'bar': '2'}, 'undefined_field_name': [1, 2, 3]}
     ```
 
-    - When using `UndefinedParameters.INCLUDE`, an `UndefinedParameterError` will be raised if you don't specify
+    - When using `Undefined.INCLUDE`, an `UndefinedParameterError` will be raised if you don't specify
     exactly one field of type `CatchAll`.
     - Note that `LetterCase` does not affect values written into the `CatchAll` field, they will be as they are given.
     - When specifying a default (or a default factory) for the the `CatchAll`-field, e.g. `unknown_things: CatchAll = None`, the default value will be used instead of an empty dict if there are no undefined parameters.
@@ -616,4 +617,3 @@ Avoid using
 from __future__ import annotations
 ```
 as it will cause problems with the way dataclasses_json accesses the type annotations.
-

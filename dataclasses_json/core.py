@@ -1,19 +1,22 @@
 import copy
 import json
 import warnings
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 # noinspection PyProtectedMember
-from dataclasses import (MISSING, _is_dataclass_instance, fields,
+from dataclasses import (MISSING,
+                         _is_dataclass_instance,
+                         fields,
                          is_dataclass  # type: ignore
                          )
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Dict, Mapping, Union, get_type_hints
+from typing import Any, Collection, Mapping, Union, get_type_hints
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
 
+from dataclasses_json import cfg
 from dataclasses_json.utils import (_get_type_cons,
                                     _handle_undefined_parameters_safe,
                                     _is_collection, _is_mapping, _is_new_type,
@@ -44,21 +47,39 @@ class _ExtendedEncoder(json.JSONEncoder):
         return result
 
 
-def _user_overrides(cls):
+def _user_overrides_or_exts(cls):
     confs = ['encoder', 'decoder', 'mm_field', 'letter_case']
     FieldOverride = namedtuple('FieldOverride', confs)
 
-    overrides = {}
-    # overrides at the class-level
+    global_metadata = defaultdict(dict)
+    encoders = cfg.global_config.encoders
+    decoders = cfg.global_config.decoders
+    for field in fields(cls):
+        if field.type in encoders:
+            global_metadata[field.name]['encoder'] = encoders[field.type]
+        if field.type in decoders:
+            global_metadata[field.name]['decoder'] = decoders[field.type]
     try:
         cls_config = (cls.dataclass_json_config
                       if cls.dataclass_json_config is not None else {})
     except AttributeError:
         cls_config = {}
 
+    overrides = {}
     for field in fields(cls):
-        field_config = field.metadata.get('dataclasses_json', {})
+        field_config = {}
+        # first apply global overrides or extensions
+        field_metadata = global_metadata[field.name]
+        if 'encoder' in field_metadata:
+            field_config['encoder'] = field_metadata['encoder']
+        if 'decoder' in field_metadata:
+            field_config['decoder'] = field_metadata['decoder']
+        if 'mm' in field_metadata:
+            field_config['decoder'] = field_metadata['decoder']
+        # then apply class-level overrides or extensions
         field_config.update(cls_config)
+        # last apply field-level overrides or extensions
+        field_config.update(field.metadata.get('dataclasses_json', {}))
         overrides[field.name] = FieldOverride(*map(field_config.get, confs))
     return overrides
 
@@ -101,7 +122,7 @@ def _decode_letter_case_overrides(field_names, overrides):
 def _decode_dataclass(cls, kvs, infer_missing):
     if isinstance(kvs, cls):
         return kvs
-    overrides = _user_overrides(cls)
+    overrides = _user_overrides_or_exts(cls)
     kvs = {} if kvs is None and infer_missing else kvs
     field_names = [field.name for field in fields(cls)]
     decode_names = _decode_letter_case_overrides(field_names, overrides)
@@ -219,7 +240,7 @@ def _decode_generic(type_, value, infer_missing):
     # FIXME this is a hack to fix a deeper underlying issue. A refactor is due.
     elif _is_collection(type_):
         if _is_mapping(type_):
-            k_type, v_type = type_.__args__
+            k_type, v_type = getattr(type_, "__args__", (Any, Any))
             # a mapping type has `.keys()` and `.values()`
             # (see collections.abc)
             ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
@@ -232,7 +253,7 @@ def _decode_generic(type_, value, infer_missing):
         # otherwise fallback on constructing using type_ itself
         try:
             res = _get_type_cons(type_)(xs)
-        except TypeError:
+        except (TypeError, AttributeError):
             res = type_(xs)
     else:  # Optional or Union
         if not hasattr(type_, "__args__"):
@@ -258,8 +279,8 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     """
     # handle NoneType keys... it's weird to type a Dict as NoneType keys
     # but it's valid...
-    key_type = (lambda x: x) if key_type is type(None) \
-        else key_type  # noqa: E721
+    key_type = ((lambda x: x) if key_type is type(None) or key_type == Any
+                else key_type)  # noqa: E721
     return map(key_type, _decode_items(key_type, xs, infer_missing))
 
 
@@ -296,7 +317,7 @@ def _asdict(obj, encode_json=False):
 
         result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result),
                                                    usage="to")
-        return _encode_overrides(dict(result), _user_overrides(obj),
+        return _encode_overrides(dict(result), _user_overrides_or_exts(obj),
                                  encode_json=encode_json)
     elif isinstance(obj, Mapping):
         return dict((_asdict(k, encode_json=encode_json),
@@ -307,7 +328,3 @@ def _asdict(obj, encode_json=False):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:
         return copy.deepcopy(obj)
-
-
-KnownParameters = Dict[str, Any]
-UnknownParameters = Dict[str, Any]

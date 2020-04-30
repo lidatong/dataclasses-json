@@ -141,7 +141,8 @@ class TestValidator:
         data = '{"my_str_enum": "' + str(enum_value) + '"}'
         schema = DataWithStrEnum.schema()
         res = schema.validate(json.loads(data))
-        assert not res == is_valid
+        no_errors = not res
+        assert no_errors == is_valid
 
 
 class TestLoader:

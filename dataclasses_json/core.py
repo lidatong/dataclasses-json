@@ -279,7 +279,7 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     """
     # handle NoneType keys... it's weird to type a Dict as NoneType keys
     # but it's valid...
-    key_type = ((lambda x: x) if key_type is type(None) or key_type == Any
+    key_type = ((lambda x: x) if key_type is None or key_type == Any
                 else key_type)  # noqa: E721
     return map(key_type, _decode_items(key_type, xs, infer_missing))
 

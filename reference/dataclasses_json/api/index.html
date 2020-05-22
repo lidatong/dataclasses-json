@@ -961,7 +961,7 @@
 
 <span class="sd">    @dataclass_json</span>
 
-<span class="sd">    @dataclass_json(letter_case=Lettercase.CAMEL)</span>
+<span class="sd">    @dataclass_json(letter_case=LetterCase.CAMEL)</span>
 
 <span class="sd">    class Example:</span>
 
@@ -1045,7 +1045,7 @@
 <p>Based on the code in the <code>dataclasses</code> module to handle optional-parens
 decorators. See example below:</p>
 <p>@dataclass_json
-@dataclass_json(letter_case=Lettercase.CAMEL)
+@dataclass_json(letter_case=LetterCase.CAMEL)
 class Example:
     ...</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="n">def</span> <span class="nf">dataclass_json</span><span class="p">(</span><span class="n">_cls</span><span class="o">=</span><span class="n">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">letter_case</span><span class="o">=</span><span class="n">None</span><span class="p">,</span>
@@ -1060,7 +1060,7 @@ class Example:
 
 <span class="s2">    @dataclass_json</span>
 
-<span class="s2">    @dataclass_json(letter_case=Lettercase.CAMEL)</span>
+<span class="s2">    @dataclass_json(letter_case=LetterCase.CAMEL)</span>
 
 <span class="s2">    class Example:</span>
 

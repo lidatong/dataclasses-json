@@ -569,7 +569,7 @@
 
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 
-        <span class="n">field_config</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataclasses_json&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">field_config</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># first apply global overrides or extensions</span>
 
@@ -592,6 +592,8 @@
         <span class="n">field_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cls_config</span><span class="p">)</span>
 
         <span class="c1"># last apply field-level overrides or extensions</span>
+
+        <span class="n">field_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataclasses_json&#39;</span><span class="p">,</span> <span class="p">{}))</span>
 
         <span class="n">overrides</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">FieldOverride</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">field_config</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">confs</span><span class="p">))</span>
 
@@ -937,7 +939,7 @@
 
     <span class="c1"># but it&#39;s valid...</span>
 
-    <span class="n">key_type</span> <span class="o">=</span> <span class="p">((</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">key_type</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key_type</span> <span class="o">==</span> <span class="n">Any</span>
+    <span class="n">key_type</span> <span class="o">=</span> <span class="p">((</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">key_type</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">key_type</span> <span class="o">==</span> <span class="n">Any</span>
 
                 <span class="k">else</span> <span class="n">key_type</span><span class="p">)</span>  <span class="c1"># noqa: E721</span>
 

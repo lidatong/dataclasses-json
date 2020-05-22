@@ -1009,9 +1009,9 @@ the behavior of encoding/decoding is undefined (most likely it will result in su
 <span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
     <span class="n">given_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;overriddenGivenName&quot;</span><span class="p">))</span>
 
-<span class="n">Person</span><span class="p">(</span><span class="n">given_name</span><span class="o">=</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="n">family_name</span><span class="o">=</span><span class="s1">&#39;Liddell&#39;</span><span class="p">)</span>  <span class="c1"># Person(&#39;Alice&#39;)</span>
+<span class="n">Person</span><span class="p">(</span><span class="n">given_name</span><span class="o">=</span><span class="s2">&quot;Alice&quot;</span><span class="p">)</span>  <span class="c1"># Person(&#39;Alice&#39;)</span>
 <span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;overriddenGivenName&quot;: &quot;Alice&quot;}&#39;</span><span class="p">)</span>  <span class="c1"># Person(&#39;Alice&#39;)</span>
-<span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Liddell&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># {&quot;overriddenGivenName&quot;: &quot;Alice&quot;}</span>
+<span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># {&quot;overriddenGivenName&quot;: &quot;Alice&quot;}</span>
 </pre></div>
 
 

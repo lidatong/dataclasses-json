@@ -1,9 +1,23 @@
 import functools
-from typing import (Callable, Dict, Optional, Union)
+from typing import Callable, Dict, NamedTuple, Optional, TypeVar, Union
 
 from marshmallow.fields import Field as MarshmallowField
 
 from dataclasses_json.undefined import Undefined, UndefinedParameterError
+
+T = TypeVar("T")
+
+
+class _Exclude(NamedTuple):
+    """
+    Whether or not the field should be excluded when encoded
+    """
+
+    ALWAYS: Callable[[T], bool] = lambda _: True
+    NEVER: Callable[[T], bool] = lambda _: False
+
+
+Exclude = _Exclude()
 
 
 # TODO: add warnings?
@@ -35,7 +49,9 @@ def config(metadata: dict = None, *,
            mm_field: MarshmallowField = None,
            letter_case: Callable[[str], str] = None,
            undefined: Optional[Union[str, Undefined]] = None,
-           field_name: str = None) -> Dict[str, dict]:
+           field_name: str = None,
+           exclude: Optional[Callable[[str, T], bool]] = None,
+           ) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}
 
@@ -74,5 +90,8 @@ def config(metadata: dict = None, *,
             undefined = Undefined[undefined.upper()]
 
         lib_metadata['undefined'] = undefined
+
+    if exclude is not None:
+        lib_metadata['exclude'] = exclude
 
     return metadata

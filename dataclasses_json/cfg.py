@@ -42,6 +42,8 @@ global_config = _GlobalConfig()
 
 
 def config(metadata: dict = None, *,
+           # TODO: these can be typed more precisely
+           # Specifically, a Callable[A, B], where `B` is bound as a JSON type
            encoder: Callable = None,
            decoder: Callable = None,
            mm_field: MarshmallowField = None,

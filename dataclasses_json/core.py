@@ -75,7 +75,7 @@ def _user_overrides_or_exts(cls):
         if 'decoder' in field_metadata:
             field_config['decoder'] = field_metadata['decoder']
         if 'mm' in field_metadata:
-            field_config['decoder'] = field_metadata['decoder']
+            field_config['mm'] = field_metadata['mm']
         # then apply class-level overrides or extensions
         field_config.update(cls_config)
         # last apply field-level overrides or extensions

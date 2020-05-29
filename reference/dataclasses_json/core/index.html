@@ -535,7 +535,7 @@
 
 <span class="k">def</span> <span class="nf">_user_overrides_or_exts</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 
-    <span class="n">confs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="s1">&#39;decoder&#39;</span><span class="p">,</span> <span class="s1">&#39;mm_field&#39;</span><span class="p">,</span> <span class="s1">&#39;letter_case&#39;</span><span class="p">]</span>
+    <span class="n">confs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="s1">&#39;decoder&#39;</span><span class="p">,</span> <span class="s1">&#39;mm_field&#39;</span><span class="p">,</span> <span class="s1">&#39;letter_case&#39;</span><span class="p">,</span> <span class="s1">&#39;exclude&#39;</span><span class="p">]</span>
 
     <span class="n">FieldOverride</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;FieldOverride&#39;</span><span class="p">,</span> <span class="n">confs</span><span class="p">)</span>
 
@@ -544,6 +544,8 @@
     <span class="n">encoders</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">encoders</span>
 
     <span class="n">decoders</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">decoders</span>
+
+    <span class="n">mm_fields</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">mm_fields</span>
 
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 
@@ -554,6 +556,10 @@
         <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="n">decoders</span><span class="p">:</span>
 
             <span class="n">global_metadata</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">decoders</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="n">mm_fields</span><span class="p">:</span>
+
+            <span class="n">global_metadata</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;mm_fields&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mm_fields</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
 
     <span class="k">try</span><span class="p">:</span>
 
@@ -583,9 +589,9 @@
 
             <span class="n">field_config</span><span class="p">[</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_metadata</span><span class="p">[</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;mm&#39;</span> <span class="ow">in</span> <span class="n">field_metadata</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;mm_field&#39;</span> <span class="ow">in</span> <span class="n">field_metadata</span><span class="p">:</span>
 
-            <span class="n">field_config</span><span class="p">[</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_metadata</span><span class="p">[</span><span class="s1">&#39;decoder&#39;</span><span class="p">]</span>
+            <span class="n">field_config</span><span class="p">[</span><span class="s1">&#39;mm_field&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_metadata</span><span class="p">[</span><span class="s1">&#39;mm_field&#39;</span><span class="p">]</span>
 
         <span class="c1"># then apply class-level overrides or extensions</span>
 
@@ -614,6 +620,16 @@
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kvs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 
         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">overrides</span><span class="p">:</span>
+
+            <span class="n">exclude</span> <span class="o">=</span> <span class="n">overrides</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">exclude</span>
+
+            <span class="c1"># If the exclude predicate returns true, the key should be</span>
+
+            <span class="c1">#  excluded from encoding, so skip the rest of the loop</span>
+
+            <span class="k">if</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="n">exclude</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+
+                <span class="k">continue</span>
 
             <span class="n">letter_case</span> <span class="o">=</span> <span class="n">overrides</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">letter_case</span>
 

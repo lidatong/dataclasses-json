@@ -341,6 +341,59 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exclude" class="md-nav__link">
+    Exclude
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#always" class="md-nav__link">
+    ALWAYS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never" class="md-nav__link">
+    NEVER
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -469,6 +522,59 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exclude" class="md-nav__link">
+    Exclude
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#always" class="md-nav__link">
+    ALWAYS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never" class="md-nav__link">
+    NEVER
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -491,11 +597,27 @@
                 <h1 id="module-dataclasses_jsoncfg">Module dataclasses_json.cfg</h1>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">marshmallow.fields</span> <span class="kn">import</span> <span class="n">Field</span> <span class="k">as</span> <span class="n">MarshmallowField</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_json.undefined</span> <span class="kn">import</span> <span class="n">Undefined</span><span class="p">,</span> <span class="n">UndefinedParameterError</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Exclude</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Pre-defined constants for exclusion. By default, fields are configured to</span>
+
+<span class="sd">    be included.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ALWAYS</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="bp">True</span>
+
+    <span class="n">NEVER</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="bp">False</span>
 
 <span class="c1"># TODO: add warnings?</span>
 
@@ -506,6 +628,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">encoders</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">decoders</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm_fields</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">MarshmallowField</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># self._json_module = json</span>
 
@@ -533,6 +657,10 @@
 
 <span class="k">def</span> <span class="nf">config</span><span class="p">(</span><span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
 
+           <span class="c1"># TODO: these can be typed more precisely</span>
+
+           <span class="c1"># Specifically, a Callable[A, B], where `B` is bound as a JSON type</span>
+
            <span class="n">encoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
 
            <span class="n">decoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
@@ -543,7 +671,11 @@
 
            <span class="n">undefined</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Undefined</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
 
-           <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+           <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+
+           <span class="n">exclude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+
+           <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 
     <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
 
@@ -605,12 +737,20 @@
 
         <span class="n">lib_metadata</span><span class="p">[</span><span class="s1">&#39;undefined&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">undefined</span>
 
+    <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">lib_metadata</span><span class="p">[</span><span class="s1">&#39;exclude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exclude</span>
+
     <span class="k">return</span> <span class="n">metadata</span>
 </pre></div>
 
 
 </details>
 <h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><span class="n">T</span>
+</pre></div>
+
+
 <div class="codehilite"><pre><span></span><span class="n">global_config</span>
 </pre></div>
 
@@ -625,12 +765,17 @@
     <span class="n">mm_field</span><span class="p">:</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Field</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">letter_case</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">undefined</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">dataclasses_json</span><span class="o">.</span><span class="n">undefined</span><span class="o">.</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="o">~</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span>
 </pre></div>
 
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="n">def</span><span class="w"> </span><span class="n">config</span><span class="p">(</span><span class="nl">metadata</span><span class="p">:</span><span class="w"> </span><span class="n">dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">           </span><span class="err">#</span><span class="w"> </span><span class="nl">TODO</span><span class="p">:</span><span class="w"> </span><span class="n">these</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">typed</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">precisely</span><span class="w"></span>
+
+<span class="w">           </span><span class="err">#</span><span class="w"> </span><span class="n">Specifically</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">A, B</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="err">`</span><span class="n">B</span><span class="err">`</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">bound</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="n">type</span><span class="w"></span>
 
 <span class="w">           </span><span class="nl">encoder</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
 
@@ -642,7 +787,11 @@
 
 <span class="w">           </span><span class="nl">undefined</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Union[str, Undefined</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">           </span><span class="nl">field_name</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dict</span><span class="o">[</span><span class="n">str, dict</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+<span class="w">           </span><span class="nl">field_name</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">           </span><span class="nl">exclude</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Callable[[str, T</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bool</span><span class="err">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">           </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dict</span><span class="o">[</span><span class="n">str, dict</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">metadata</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
 
@@ -704,7 +853,66 @@
 
 <span class="w">        </span><span class="n">lib_metadata</span><span class="o">[</span><span class="n">&#39;undefined&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">undefined</span><span class="w"></span>
 
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">exclude</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">lib_metadata</span><span class="o">[</span><span class="n">&#39;exclude&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exclude</span><span class="w"></span>
+
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">metadata</span><span class="w"></span>
+</pre></div>
+
+
+</details>
+<h2 id="classes">Classes</h2>
+<h3 id="exclude">Exclude</h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Exclude</span><span class="p">(</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Pre-defined constants for exclusion. By default, fields are configured to
+be included.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nl">Exclude</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Pre-defined constants for exclusion. By default, fields are configured to</span>
+
+<span class="ss">    be included.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">ALWAYS</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">[T</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bool</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="nl">_</span><span class="p">:</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">NEVER</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">[T</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bool</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="nl">_</span><span class="p">:</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+</pre></div>
+
+
+</details>
+<hr />
+<h4 id="methods">Methods</h4>
+<h5 id="always">ALWAYS</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">ALWAYS</span><span class="p">(</span>
+    <span class="n">_</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="w">    </span><span class="nl">ALWAYS</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">[T</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bool</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="nl">_</span><span class="p">:</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
+</pre></div>
+
+
+</details>
+<h5 id="never">NEVER</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">NEVER</span><span class="p">(</span>
+    <span class="n">_</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="w">    </span><span class="nl">NEVER</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">[T</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bool</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="nl">_</span><span class="p">:</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
 </pre></div>
 
 

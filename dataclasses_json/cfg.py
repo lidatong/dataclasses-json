@@ -10,9 +10,9 @@ T = TypeVar("T")
 
 class Exclude:
     """
-    Whether or not the field should be excluded when encoded
+    Pre-defined constants for exclusion. By default, fields are configured to
+    be included.
     """
-
     ALWAYS: Callable[[T], bool] = lambda _: True
     NEVER: Callable[[T], bool] = lambda _: False
 

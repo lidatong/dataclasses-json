@@ -48,7 +48,7 @@ class _ExtendedEncoder(json.JSONEncoder):
 
 
 def _user_overrides_or_exts(cls):
-    confs = ['encoder', 'decoder', 'mm_field', 'letter_case']
+    confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
     FieldOverride = namedtuple('FieldOverride', confs)
 
     global_metadata = defaultdict(dict)
@@ -94,6 +94,11 @@ def _encode_overrides(kvs, overrides, encode_json=False):
     override_kvs = {}
     for k, v in kvs.items():
         if k in overrides:
+            exclude = overrides[k].exclude
+            # If the exclude predicate returns true, the key should be
+            #  excluded from encoding, so skip the rest of the loop
+            if exclude and exclude(v):
+                continue
             letter_case = overrides[k].letter_case
             original_key = k
             k = letter_case(k) if letter_case is not None else k

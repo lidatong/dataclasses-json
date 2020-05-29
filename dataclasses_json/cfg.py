@@ -23,6 +23,7 @@ class _GlobalConfig:
     def __init__(self):
         self.encoders: Dict[type, Callable] = {}
         self.decoders: Dict[type, Callable] = {}
+        self.mm_fields: Dict[type, MarshmallowField] = {}
         # self._json_module = json
 
     # TODO: #180

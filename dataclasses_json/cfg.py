@@ -1,5 +1,5 @@
 import functools
-from typing import Callable, Dict, NamedTuple, Optional, TypeVar, Union
+from typing import Callable, Dict, Optional, TypeVar, Union
 
 from marshmallow.fields import Field as MarshmallowField
 
@@ -8,16 +8,13 @@ from dataclasses_json.undefined import Undefined, UndefinedParameterError
 T = TypeVar("T")
 
 
-class _Exclude(NamedTuple):
+class Exclude:
     """
     Whether or not the field should be excluded when encoded
     """
 
     ALWAYS: Callable[[T], bool] = lambda _: True
     NEVER: Callable[[T], bool] = lambda _: False
-
-
-Exclude = _Exclude()
 
 
 # TODO: add warnings?

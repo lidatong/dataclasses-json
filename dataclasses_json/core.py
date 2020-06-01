@@ -11,7 +11,6 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from functools import lru_cache
 from typing import Any, Collection, Mapping, Union, get_type_hints
 from uuid import UUID
 
@@ -25,6 +24,9 @@ from dataclasses_json.utils import (_get_type_cons,
                                     _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
+
+confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
+FieldOverride = namedtuple('FieldOverride', confs)
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -48,11 +50,7 @@ class _ExtendedEncoder(json.JSONEncoder):
         return result
 
 
-@lru_cache(maxsize=128)
 def _user_overrides_or_exts(cls):
-    confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
-    FieldOverride = namedtuple('FieldOverride', confs)
-
     global_metadata = defaultdict(dict)
     encoders = cfg.global_config.encoders
     decoders = cfg.global_config.decoders

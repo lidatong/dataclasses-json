@@ -330,7 +330,7 @@ Personally I recommend you leverage dataclass defaults rather than using
 JSON decoding from the field's default value, this will allow you to do so.
 
 
-### Handle unknown input data?
+### Handle unknown / extraneous fields in JSON?
 
 By default, it is up to the implementation what happens when a `json_dataclass` receives input parameters that are not defined.
 (the `from_dict` method ignores them, when loading using `schema()` a ValidationError is raised.)
@@ -404,7 +404,63 @@ marshmallow uses the same 3 keywords ['include', 'exclude', 'raise'](https://mar
 5. All 3 operations work as well using `__init__`, e.g. `UnknownAPIDump(**dump_dict)` will **not** raise a `TypeError`, but write all unknown values to the field tagged as `CatchAll`.
    Classes tagged with `EXCLUDE` will also simply ignore unknown parameters. Note that classes tagged as `RAISE` still raise a `TypeError`, and **not** a `UndefinedParameterError` if supplied with unknown keywords.
 
-### Explanation
+
+### Override the default encode / decode / marshmallow field of a specific field?
+
+See [Overriding](#Overriding)
+
+### Handle recursive dataclasses?
+Object hierarchies where fields are of the type that they are declared within require a small
+type hinting trick to declare the forward reference.
+```python
+from typing import Optional
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
+
+@dataclass_json
+@dataclass
+class Tree():
+    value: str
+    left: Optional['Tree']
+    right: Optional['Tree']
+```
+
+Avoid using
+```python
+from __future__ import annotations
+```
+as it will cause problems with the way dataclasses_json accesses the type annotations.
+
+
+## Marshmallow interop
+
+Using the `dataclass_json` decorator or mixing in `DataClassJsonMixin` will
+provide you with an additional method `.schema()`.
+
+`.schema()` generates a schema exactly equivalent to manually creating a
+marshmallow schema for your dataclass. You can reference the [marshmallow API docs](https://marshmallow.readthedocs.io/en/3.0/api_reference.html#schema)
+to learn other ways you can use the schema returned by `.schema()`.
+
+You can pass in the exact same arguments to `.schema()` that you would when
+constructing a `PersonSchema` instance, e.g. `.schema(many=True)`, and they will
+get passed through to the marshmallow schema.
+
+
+```python
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
+
+@dataclass_json
+@dataclass
+class Person:
+    name: str
+
+# You don't need to do this - it's generated for you by `.schema()`!
+from marshmallow import Schema, fields
+
+class PersonSchema(Schema):
+    name = fields.Str()
+```
 
 Briefly, on what's going on under the hood in the above examples: calling 
 `.schema()` will have this library generate a
@@ -427,42 +483,6 @@ person_schema.dump(people, many=True)
 # later in the code...
 
 person_schema.dump(person)
-```
-
-
-### Override the default encode / decode / marshmallow field of a specific field?
-
-See [Overriding](#Overriding)
-
-
-
-## Marshmallow interop
-
-Using the `dataclass_json` decorator or mixing in `DataClassJsonMixin` will
-provide you with an additional method `.schema()`.
-
-`.schema()` generates a schema exactly equivalent to manually creating a
-marshmallow schema for your dataclass. You can reference the [marshmallow API docs](https://marshmallow.readthedocs.io/en/3.0/api_reference.html#schema)
-to learn other ways you can use the schema returned by `.schema()`.
-
-You can pass in the exact same arguments to `.schema()` that you would when
-constructing a `PersonSchema` instance, e.g. `.schema(many=True)`, and they will
-get passed through to the marshmallow schema.
-
-```python
-from dataclasses import dataclass
-from dataclasses_json import dataclass_json
-
-@dataclass_json
-@dataclass
-class Person:
-    name: str
-
-# You don't need to do this - it's generated for you by `.schema()`!
-from marshmallow import Schema, fields
-
-class PersonSchema(Schema):
-    name = fields.Str()
 ```
 
 ## Overriding / Extending
@@ -596,24 +616,3 @@ assert boss.to_json(indent=4) == boss_json
 assert Boss.from_json(boss_json) == boss
 ```
 
-## Self Recursion
-Object hierarchies where fields are of the type that they are declared within require a small
-type hinting trick to declare the forward reference.
-```python
-from typing import Optional
-from dataclasses import dataclass
-from dataclasses_json import dataclass_json
-
-@dataclass_json
-@dataclass
-class Tree():
-    value: str
-    left: Optional['Tree']
-    right: Optional['Tree']
-```
-
-Avoid using
-```python
-from __future__ import annotations
-```
-as it will cause problems with the way dataclasses_json accesses the type annotations.

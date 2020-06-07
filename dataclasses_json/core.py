@@ -25,6 +25,9 @@ from dataclasses_json.utils import (_get_type_cons,
 
 Json = Union[dict, list, str, int, float, bool, None]
 
+confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
+FieldOverride = namedtuple('FieldOverride', confs)
+
 
 class _ExtendedEncoder(json.JSONEncoder):
     def default(self, o) -> Json:
@@ -48,9 +51,6 @@ class _ExtendedEncoder(json.JSONEncoder):
 
 
 def _user_overrides_or_exts(cls):
-    confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
-    FieldOverride = namedtuple('FieldOverride', confs)
-
     global_metadata = defaultdict(dict)
     encoders = cfg.global_config.encoders
     decoders = cfg.global_config.decoders

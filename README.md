@@ -6,7 +6,7 @@ This library provides a simple API for encoding and decoding [dataclasses](https
 
 It's very easy to get started.
 
-[Documentation website](https://lidatong.github.io/dataclasses-json)
+[README / Documentation website](https://lidatong.github.io/dataclasses-json). Features a navigation bar and search functionality, and should mirror this README exactly -- take a look!
 
 ## Quickstart
 

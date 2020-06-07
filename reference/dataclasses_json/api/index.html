@@ -825,7 +825,7 @@
 
                 <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">encode_json</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
 
                           <span class="bp">cls</span><span class="o">=</span><span class="n">_ExtendedEncoder</span><span class="p">,</span>
 
@@ -889,9 +889,9 @@
 
         <span class="k">return</span> <span class="n">_decode_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kvs</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Json</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Json</span><span class="p">]:</span>
 
-        <span class="k">return</span> <span class="n">_asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
 
@@ -1123,7 +1123,7 @@ class Example:
 
 <span class="w">                </span><span class="o">**</span><span class="n">kw</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">encode_json</span><span class="o">=</span><span class="k">False</span><span class="p">),</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">to_dict</span><span class="p">(),</span><span class="w"></span>
 
 <span class="w">                          </span><span class="n">cls</span><span class="o">=</span><span class="n">_ExtendedEncoder</span><span class="p">,</span><span class="w"></span>
 
@@ -1187,9 +1187,9 @@ class Example:
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_decode_dataclass</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="w"> </span><span class="n">kvs</span><span class="p">,</span><span class="w"> </span><span class="n">infer_missing</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">to_dict</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">encode_json</span><span class="o">=</span><span class="k">False</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dict</span><span class="o">[</span><span class="n">str, Json</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">to_dict</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dict</span><span class="o">[</span><span class="n">str, Json</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_asdict</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_asdict</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">encode_json</span><span class="o">=</span><span class="k">False</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="nv">@classmethod</span><span class="w"></span>
 
@@ -1401,15 +1401,14 @@ class Example:
 <h4 id="methods">Methods</h4>
 <h5 id="to_dict">to_dict</h5>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">encode_json</span><span class="o">=</span><span class="kc">False</span>
+    <span class="bp">self</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]]</span>
 </pre></div>
 
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="n">def</span> <span class="n">to_dict</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="k">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">Json</span><span class="p">]:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="n">def</span> <span class="n">to_dict</span><span class="p">(</span><span class="k">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">Json</span><span class="p">]:</span>
 
-        <span class="k">return</span> <span class="n">_asdict</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_asdict</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">encode_json</span><span class="o">=</span><span class="k">False</span><span class="p">)</span>
 </pre></div>
 
 
@@ -1453,7 +1452,7 @@ class Example:
 
                 <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
 
-        <span class="k">return</span> <span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="k">self</span><span class="p">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">encode_json</span><span class="o">=</span><span class="k">False</span><span class="p">),</span>
+        <span class="k">return</span> <span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="k">self</span><span class="p">.</span><span class="n">to_dict</span><span class="p">(),</span>
 
                           <span class="n">cls</span><span class="o">=</span><span class="n">_ExtendedEncoder</span><span class="p">,</span>
 

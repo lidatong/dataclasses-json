@@ -47,7 +47,7 @@ class DataClassJsonMixin(abc.ABC):
                 default: Callable = None,
                 sort_keys: bool = False,
                 **kw) -> str:
-        return json.dumps(self.to_dict(encode_json=False),
+        return json.dumps(self.to_dict(),
                           cls=_ExtendedEncoder,
                           skipkeys=skipkeys,
                           ensure_ascii=ensure_ascii,
@@ -82,8 +82,8 @@ class DataClassJsonMixin(abc.ABC):
                   infer_missing=False) -> A:
         return _decode_dataclass(cls, kvs, infer_missing)
 
-    def to_dict(self, encode_json=False) -> Dict[str, Json]:
-        return _asdict(self, encode_json=encode_json)
+    def to_dict(self) -> Dict[str, Json]:
+        return _asdict(self, encode_json=False)
 
     @classmethod
     def schema(cls: Type[A],

@@ -616,3 +616,39 @@ assert boss.to_json(indent=4) == boss_json
 assert Boss.from_json(boss_json) == boss
 ```
 
+## Performance
+
+Take a look at [this issue](https://github.com/lidatong/dataclasses-json/issues/228)
+
+## Versioning
+
+Note this library is still pre-1.0.0 (SEMVER).
+
+The current convention is:
+- **PATCH** version upgrades for bug fixes and minor feature additions.
+- **MINOR** version upgrades for big API features and breaking changes.
+
+Once this library is 1.0.0, it will follow standard SEMVER conventions.
+
+
+## Roadmap
+
+Currently the focus is on investigating and fixing bugs in this library, working
+on performance, and finishing [this issue](https://github.com/lidatong/dataclasses-json/issues/31).
+
+That said, if you think there's a feature missing / something new needed in the
+library, please see the contributing section below.
+
+
+## Contributing
+
+First of all, thank you for being interested in contributing to this library.
+I really appreciate you taking the time to work on this project.
+
+- If you're just interested in getting into the code, a good place to start are 
+issues tagged as bugs.
+- If introducing a new feature, especially one that modifies the public API, 
+consider submitting an issue for discussion before a PR. Please also take a look 
+at existing issues / PRs to see what you're proposing has  already been covered 
+before / exists.
+- I like to follow the commit conventions documented [here](https://www.conventionalcommits.org/en/v1.0.0/#summary)

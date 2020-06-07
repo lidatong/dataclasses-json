@@ -333,15 +333,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#handle-unknown-input-data" class="md-nav__link">
-    Handle unknown input data?
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#explanation" class="md-nav__link">
-    Explanation
+  <a href="#handle-unknown-extraneous-fields-in-json" class="md-nav__link">
+    Handle unknown / extraneous fields in JSON?
   </a>
   
 </li>
@@ -349,6 +342,13 @@
           <li class="md-nav__item">
   <a href="#override-the-default-encode-decode-marshmallow-field-of-a-specific-field" class="md-nav__link">
     Override the default encode / decode / marshmallow field of a specific field?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handle-recursive-dataclasses" class="md-nav__link">
+    Handle recursive dataclasses?
   </a>
   
 </li>
@@ -407,8 +407,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#self-recursion" class="md-nav__link">
-    Self Recursion
+  <a href="#performance" class="md-nav__link">
+    Performance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    Versioning
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roadmap" class="md-nav__link">
+    Roadmap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    Contributing
   </a>
   
 </li>
@@ -661,15 +682,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#handle-unknown-input-data" class="md-nav__link">
-    Handle unknown input data?
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#explanation" class="md-nav__link">
-    Explanation
+  <a href="#handle-unknown-extraneous-fields-in-json" class="md-nav__link">
+    Handle unknown / extraneous fields in JSON?
   </a>
   
 </li>
@@ -677,6 +691,13 @@
           <li class="md-nav__item">
   <a href="#override-the-default-encode-decode-marshmallow-field-of-a-specific-field" class="md-nav__link">
     Override the default encode / decode / marshmallow field of a specific field?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handle-recursive-dataclasses" class="md-nav__link">
+    Handle recursive dataclasses?
   </a>
   
 </li>
@@ -735,8 +756,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#self-recursion" class="md-nav__link">
-    Self Recursion
+  <a href="#performance" class="md-nav__link">
+    Performance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    Versioning
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roadmap" class="md-nav__link">
+    Roadmap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    Contributing
   </a>
   
 </li>
@@ -1049,7 +1091,7 @@ necessarily want to assign a default. In that case, you can use the
 <p>Personally I recommend you leverage dataclass defaults rather than using 
 <code>infer_missing</code>, but if for some reason you need to decouple the behavior of 
 JSON decoding from the field's default value, this will allow you to do so.</p>
-<h3 id="handle-unknown-input-data">Handle unknown input data?</h3>
+<h3 id="handle-unknown-extraneous-fields-in-json">Handle unknown / extraneous fields in JSON?</h3>
 <p>By default, it is up to the implementation what happens when a <code>json_dataclass</code> receives input parameters that are not defined.
 (the <code>from_dict</code> method ignores them, when loading using <code>schema()</code> a ValidationError is raised.)
 There are three ways to customize this behavior.</p>
@@ -1120,29 +1162,30 @@ marshmallow uses the same 3 keywords <a href="https://marshmallow.readthedocs.io
    Classes tagged with <code>EXCLUDE</code> will also simply ignore unknown parameters. Note that classes tagged as <code>RAISE</code> still raise a <code>TypeError</code>, and <strong>not</strong> a <code>UndefinedParameterError</code> if supplied with unknown keywords.</p>
 </li>
 </ol>
-<h3 id="explanation">Explanation</h3>
-<p>Briefly, on what's going on under the hood in the above examples: calling 
-<code>.schema()</code> will have this library generate a
-<a href="'https://marshmallow.readthedocs.io/en/3.0/api_reference.html#schema">marshmallow schema</a>
-for you. It also fills in the corresponding object hook, so that marshmallow
-will create an instance of your Data Class on <code>load</code> (e.g.
-<code>Person.schema().load</code> returns a <code>Person</code>) rather than a <code>dict</code>, which it does
-by default in marshmallow.</p>
-<p><strong>Performance note</strong></p>
-<p><code>.schema()</code> is not cached (it generates the schema on every call), so if you
-have a nested Data Class you may want to save the result to a variable to 
-avoid re-generation of the schema on every usage.</p>
-<div class="codehilite"><pre><span></span><span class="n">person_schema</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span>
-<span class="n">person_schema</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<h3 id="override-the-default-encode-decode-marshmallow-field-of-a-specific-field">Override the default encode / decode / marshmallow field of a specific field?</h3>
+<p>See <a href="#Overriding">Overriding</a></p>
+<h3 id="handle-recursive-dataclasses">Handle recursive dataclasses?</h3>
+<p>Object hierarchies where fields are of the type that they are declared within require a small
+type hinting trick to declare the forward reference.</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
 
-<span class="c1"># later in the code...</span>
-
-<span class="n">person_schema</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Tree</span><span class="p">():</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">left</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Tree&#39;</span><span class="p">]</span>
+    <span class="n">right</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Tree&#39;</span><span class="p">]</span>
 </pre></div>
 
 
-<h3 id="override-the-default-encode-decode-marshmallow-field-of-a-specific-field">Override the default encode / decode / marshmallow field of a specific field?</h3>
-<p>See <a href="#Overriding">Overriding</a></p>
+<p>Avoid using</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+</pre></div>
+
+
+<p>as it will cause problems with the way dataclasses_json accesses the type annotations.</p>
 <h2 id="marshmallow-interop">Marshmallow interop</h2>
 <p>Using the <code>dataclass_json</code> decorator or mixing in <code>DataClassJsonMixin</code> will
 provide you with an additional method <code>.schema()</code>.</p>
@@ -1165,6 +1208,26 @@ get passed through to the marshmallow schema.</p>
 
 <span class="k">class</span> <span class="nc">PersonSchema</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Briefly, on what's going on under the hood in the above examples: calling 
+<code>.schema()</code> will have this library generate a
+<a href="'https://marshmallow.readthedocs.io/en/3.0/api_reference.html#schema">marshmallow schema</a>
+for you. It also fills in the corresponding object hook, so that marshmallow
+will create an instance of your Data Class on <code>load</code> (e.g.
+<code>Person.schema().load</code> returns a <code>Person</code>) rather than a <code>dict</code>, which it does
+by default in marshmallow.</p>
+<p><strong>Performance note</strong></p>
+<p><code>.schema()</code> is not cached (it generates the schema on every call), so if you
+have a nested Data Class you may want to save the result to a variable to 
+avoid re-generation of the schema on every usage.</p>
+<div class="codehilite"><pre><span></span><span class="n">person_schema</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span>
+<span class="n">person_schema</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># later in the code...</span>
+
+<span class="n">person_schema</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>
 </pre></div>
 
 
@@ -1286,28 +1349,31 @@ carefully consider whether the interaction of the encode/decode/mm_field is cons
 </pre></div>
 
 
-<h2 id="self-recursion">Self Recursion</h2>
-<p>Object hierarchies where fields are of the type that they are declared within require a small
-type hinting trick to declare the forward reference.</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
-
-<span class="nd">@dataclass_json</span>
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Tree</span><span class="p">():</span>
-    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">left</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Tree&#39;</span><span class="p">]</span>
-    <span class="n">right</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Tree&#39;</span><span class="p">]</span>
-</pre></div>
-
-
-<p>Avoid using</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-</pre></div>
-
-
-<p>as it will cause problems with the way dataclasses_json accesses the type annotations.</p>
+<h2 id="performance">Performance</h2>
+<p>Take a look at <a href="https://github.com/lidatong/dataclasses-json/issues/228">this issue</a></p>
+<h2 id="versioning">Versioning</h2>
+<p>Note this library is still pre-1.0.0 (SEMVER).</p>
+<p>The current convention is:
+- <strong>PATCH</strong> version upgrades for bug fixes and minor feature additions.
+- <strong>MINOR</strong> version upgrades for big API features and breaking changes.</p>
+<p>Once this library is 1.0.0, it will follow standard SEMVER conventions.</p>
+<h2 id="roadmap">Roadmap</h2>
+<p>Currently the focus is on investigating and fixing bugs in this library, working
+on performance, and finishing <a href="https://github.com/lidatong/dataclasses-json/issues/31">this issue</a>.</p>
+<p>That said, if you think there's a feature missing / something new needed in the
+library, please see the contributing section below.</p>
+<h2 id="contributing">Contributing</h2>
+<p>First of all, thank you for being interested in contributing to this library.
+I really appreciate you taking the time to work on this project.</p>
+<ul>
+<li>If you're just interested in getting into the code, a good place to start are 
+issues tagged as bugs.</li>
+<li>If introducing a new feature, especially one that modifies the public API, 
+consider submitting an issue for discussion before a PR. Please also take a look 
+at existing issues / PRs to see what you're proposing has  already been covered 
+before / exists.</li>
+<li>I like to follow the commit conventions documented <a href="https://www.conventionalcommits.org/en/v1.0.0/#summary">here</a></li>
+</ul>
                 
                   
                 

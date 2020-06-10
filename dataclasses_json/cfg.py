@@ -50,7 +50,7 @@ def config(metadata: dict = None, *,
            letter_case: Callable[[str], str] = None,
            undefined: Optional[Union[str, Undefined]] = None,
            field_name: str = None,
-           exclude: Optional[Callable[[str, T], bool]] = None,
+           exclude: Optional[Callable[[T], bool]] = None,
            ) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}

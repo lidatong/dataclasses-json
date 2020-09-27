@@ -111,7 +111,7 @@ def _encode_overrides(kvs, overrides, encode_json=False):
             if encoder is not None:
                 try:
                     v = encoder(v)
-                except:  # noqa: E722
+                except Exception:
                     raise ValueError(
                         f"Encoder encountered an error with field '{k}'"
                     )
@@ -201,7 +201,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
                     init_kwargs[field.name] = overrides[field.name].decoder(
                         field_value
                     )
-                except:  # noqa: E722
+                except Exception:
                     raise ValueError(
                         f"Decoder encountered an error with field "
                         f"'{field.name}' in '{cls.__name__}'"

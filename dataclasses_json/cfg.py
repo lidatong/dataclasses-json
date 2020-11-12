@@ -39,6 +39,7 @@ class _GlobalConfig:
 
 global_config = _GlobalConfig()
 
+
 def config(
     metadata: dict = None,
     *,

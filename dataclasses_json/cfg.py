@@ -1,8 +1,7 @@
 import functools
-from typing import Callable, Dict, Optional, TypeVar, Union
-
+from typing import Callable, Dict, Optional, TypeVar, Union, Literal
+from dataclasses_json.api import LetterCase
 from marshmallow.fields import Field as MarshmallowField
-
 from dataclasses_json.undefined import Undefined, UndefinedParameterError
 
 T = TypeVar("T")
@@ -40,31 +39,32 @@ class _GlobalConfig:
 
 global_config = _GlobalConfig()
 
-
-def config(metadata: dict = None, *,
-           # TODO: these can be typed more precisely
-           # Specifically, a Callable[A, B], where `B` is bound as a JSON type
-           encoder: Callable = None,
-           decoder: Callable = None,
-           mm_field: MarshmallowField = None,
-           letter_case: Union[Callable[[str], str], Literal[LetterCase]] = None,
-           undefined: Optional[Union[str, Undefined]] = None,
-           field_name: str = None,
-           exclude: Optional[Callable[[str, T], bool]] = None,
-           ) -> Dict[str, dict]:
+def config(
+    metadata: dict = None,
+    *,
+    # TODO: these can be typed more precisely
+    # Specifically, a Callable[A, B], where `B` is bound as a JSON type
+    encoder: Callable = None,
+    decoder: Callable = None,
+    mm_field: MarshmallowField = None,
+    letter_case: Union[Callable[[str], str], Literal[LetterCase]] = None,
+    undefined: Optional[Union[str, Undefined]] = None,
+    field_name: str = None,
+    exclude: Optional[Callable[[str, T], bool]] = None,
+) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}
 
-    lib_metadata = metadata.setdefault('dataclasses_json', {})
+    lib_metadata = metadata.setdefault("dataclasses_json", {})
 
     if encoder is not None:
-        lib_metadata['encoder'] = encoder
+        lib_metadata["encoder"] = encoder
 
     if decoder is not None:
-        lib_metadata['decoder'] = decoder
+        lib_metadata["decoder"] = decoder
 
     if mm_field is not None:
-        lib_metadata['mm_field'] = mm_field
+        lib_metadata["mm_field"] = mm_field
 
     if field_name is not None:
         if letter_case is not None:
@@ -74,10 +74,11 @@ def config(metadata: dict = None, *,
         else:
             def override(_, _field_name=field_name):
                 return _field_name
+
         letter_case = override
 
     if letter_case is not None:
-        lib_metadata['letter_case'] = letter_case
+        lib_metadata["letter_case"] = letter_case
 
     if undefined is not None:
         # Get the corresponding action for undefined parameters
@@ -86,12 +87,12 @@ def config(metadata: dict = None, *,
                 valid_actions = list(action.name for action in Undefined)
                 raise UndefinedParameterError(
                     f"Invalid undefined parameter action, "
-                    f"must be one of {valid_actions}")
+                    f"must be one of {valid_actions}"
+                )
             undefined = Undefined[undefined.upper()]
-
-        lib_metadata['undefined'] = undefined
+        lib_metadata["undefined"] = undefined
 
     if exclude is not None:
-        lib_metadata['exclude'] = exclude
+        lib_metadata["exclude"] = exclude
 
     return metadata

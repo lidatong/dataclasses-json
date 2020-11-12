@@ -1,6 +1,5 @@
 import functools
 from typing import Callable, Dict, Optional, TypeVar, Union, Literal
-from dataclasses_json.api import LetterCase
 from marshmallow.fields import Field as MarshmallowField
 from dataclasses_json.undefined import Undefined, UndefinedParameterError
 
@@ -48,7 +47,7 @@ def config(
     encoder: Callable = None,
     decoder: Callable = None,
     mm_field: MarshmallowField = None,
-    letter_case: Union[Callable[[str], str], Literal[LetterCase]] = None,
+    letter_case: Union[Callable[[str], str], 'LetterCase'] = None,
     undefined: Optional[Union[str, Undefined]] = None,
     field_name: str = None,
     exclude: Optional[Callable[[str, T], bool]] = None,

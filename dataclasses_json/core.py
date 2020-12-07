@@ -3,11 +3,8 @@ import json
 import warnings
 from collections import defaultdict, namedtuple
 # noinspection PyProtectedMember
-from dataclasses import (MISSING,
-                         _is_dataclass_instance,
-                         fields,
-                         is_dataclass  # type: ignore
-                         )
+from dataclasses import is_dataclass  # type: ignore
+from dataclasses import MISSING, _is_dataclass_instance, fields
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
@@ -277,6 +274,21 @@ def _decode_generic(type_, value, infer_missing):
                 res = _support_extended_types(type_arg, value)
         else:  # Union (already decoded or unsupported 'from_json' used)
             res = value
+            from .api import DataClassJsonMixin
+            for cls in (
+                DataClassJsonMixin._dclsj_registry  # decorated
+                + DataClassJsonMixin.__subclasses__()  # inherited
+            ):
+                try:
+                    res = cls.from_dict(value)
+                    break
+                except:
+                    try:
+                        res = cls.from_json(value)
+                        break
+                    except:
+                        pass
+            
     return res
 
 

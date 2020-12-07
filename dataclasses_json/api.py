@@ -4,13 +4,13 @@ from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
-from stringcase import (camelcase, pascalcase, snakecase,
-                        spinalcase)  # type: ignore
+from stringcase import spinalcase  # type: ignore
+from stringcase import camelcase, pascalcase, snakecase
 
 from dataclasses_json.cfg import config
-from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
-                                   _decode_dataclass)
-from dataclasses_json.mm import (JsonData, SchemaType, build_schema)
+from dataclasses_json.core import (Json, _asdict, _decode_dataclass,
+                                   _ExtendedEncoder)
+from dataclasses_json.mm import JsonData, SchemaType, build_schema
 from dataclasses_json.undefined import Undefined
 from dataclasses_json.utils import (_handle_undefined_parameters_safe,
                                     _undefined_parameter_action_safe)
@@ -35,6 +35,7 @@ class DataClassJsonMixin(abc.ABC):
     As with other ABCs, it should not be instantiated directly.
     """
     dataclass_json_config = None
+    _dclsj_registry: List["DataClassJsonMixin"] = []
 
     def to_json(self,
                 *,
@@ -151,5 +152,6 @@ def _process_class(cls, letter_case, undefined):
 
     cls.__init__ = _handle_undefined_parameters_safe(cls, kvs=(), usage="init")
     # register cls as a virtual subclass of DataClassJsonMixin
-    DataClassJsonMixin.register(cls)
+    DataClassJsonMixin.register(cls)  
+    DataClassJsonMixin._dclsj_registry.append(cls)
     return cls

@@ -123,6 +123,7 @@ TYPES = {
     typing.Any: fields.Raw,
     dict: fields.Dict,
     list: fields.List,
+    tuple: fields.Tuple,
     str: fields.Str,
     int: fields.Int,
     float: fields.Float,

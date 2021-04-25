@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 hypothesis = "*"
 mypy = "*"
-pytest = "*"
+pytest = "6.2.3"
 
 [packages]
 marshmallow = "*"

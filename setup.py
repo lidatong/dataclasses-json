@@ -26,7 +26,7 @@ setup(
     python_requires='>=3.6',
     extras_require={
         'dev': [
-            'pytest',
+            'pytest>=6.2.3',
             'ipython',
             'mypy>=0.710',
             'hypothesis',

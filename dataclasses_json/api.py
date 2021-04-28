@@ -4,9 +4,8 @@ from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
-from stringcase import (camelcase, pascalcase, snakecase,
-                        spinalcase)  # type: ignore
-
+from dataclasses_json.stringcase import (camelcase, pascalcase, snakecase,
+                                         spinalcase)  # type: ignore
 from dataclasses_json.cfg import config
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass)

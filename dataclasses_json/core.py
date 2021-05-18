@@ -17,7 +17,7 @@ from uuid import UUID
 from typing_inspect import is_union_type  # type: ignore
 
 from dataclasses_json import cfg
-from dataclasses_json.utils import (_get_type_cons,
+from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _handle_undefined_parameters_safe,
                                     _is_collection, _is_mapping, _is_new_type,
                                     _is_optional, _isinstance_safe,
@@ -285,11 +285,20 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     Because JSON object keys must be strs, we need the extra step of decoding
     them back into the user's chosen python type
     """
+    decode_function = key_type
     # handle NoneType keys... it's weird to type a Dict as NoneType keys
     # but it's valid...
-    key_type = ((lambda x: x) if key_type is None or key_type == Any
-                else key_type)  # noqa: E721
-    return map(key_type, _decode_items(key_type, xs, infer_missing))
+    if key_type is None or key_type == Any:
+        decode_function = key_type = (lambda x: x)
+    # handle a nested python dict that has tuples for keys. E.g. for
+    # Dict[Tuple[int], int], key_type would be typing.Tuple[int], but
+    # decode_function would be tuple, so map() doesn't break
+    # the key_type would be typing.Tuple[int]
+    elif _get_type_origin(key_type) == tuple:
+        decode_function = tuple
+        key_type = key_type
+
+    return map(decode_function, _decode_items(key_type, xs, infer_missing))
 
 
 def _decode_items(type_arg, xs, infer_missing):

@@ -11,7 +11,7 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Mapping, Union, get_type_hints
+from typing import Any, Collection, Mapping, Union, get_type_hints, Tuple
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -291,10 +291,12 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     if key_type is None or key_type == Any:
         decode_function = key_type = (lambda x: x)
     # handle a nested python dict that has tuples for keys. E.g. for
-    # Dict[Tuple[int], int], key_type would be typing.Tuple[int], but
-    # decode_function would be tuple, so map() doesn't break
-    # the key_type would be typing.Tuple[int]
-    elif _get_type_origin(key_type) == tuple:
+    # Dict[Tuple[int], int], key_type will be typing.Tuple[int], but
+    # decode_function should be tuple, so map() doesn't break.
+    #
+    # Note: _get_type_origin() will return typing.Tuple for python
+    # 3.6 and tuple for 3.7 and higher.
+    elif _get_type_origin(key_type) in {tuple, Tuple}:
         decode_function = tuple
         key_type = key_type
 

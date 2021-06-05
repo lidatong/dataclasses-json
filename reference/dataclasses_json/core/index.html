@@ -609,7 +609,7 @@
 
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_type_hints</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_type_hints</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 
@@ -617,7 +617,7 @@
 
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">cfg</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_json.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_type_cons</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_type_cons</span><span class="p">,</span> <span class="n">_get_type_origin</span><span class="p">,</span>
 
                                     <span class="n">_handle_undefined_parameters_safe</span><span class="p">,</span>
 
@@ -1085,15 +1085,35 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">decode_function</span> <span class="o">=</span> <span class="n">key_type</span>
+
     <span class="c1"># handle NoneType keys... it&#39;s weird to type a Dict as NoneType keys</span>
 
     <span class="c1"># but it&#39;s valid...</span>
 
-    <span class="n">key_type</span> <span class="o">=</span> <span class="p">((</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">key_type</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">key_type</span> <span class="o">==</span> <span class="n">Any</span>
+    <span class="k">if</span> <span class="n">key_type</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">key_type</span> <span class="o">==</span> <span class="n">Any</span><span class="p">:</span>
 
-                <span class="k">else</span> <span class="n">key_type</span><span class="p">)</span>  <span class="c1"># noqa: E721</span>
+        <span class="n">decode_function</span> <span class="o">=</span> <span class="n">key_type</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">key_type</span><span class="p">,</span> <span class="n">_decode_items</span><span class="p">(</span><span class="n">key_type</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">))</span>
+    <span class="c1"># handle a nested python dict that has tuples for keys. E.g. for</span>
+
+    <span class="c1"># Dict[Tuple[int], int], key_type will be typing.Tuple[int], but</span>
+
+    <span class="c1"># decode_function should be tuple, so map() doesn&#39;t break.</span>
+
+    <span class="c1">#</span>
+
+    <span class="c1"># Note: _get_type_origin() will return typing.Tuple for python</span>
+
+    <span class="c1"># 3.6 and tuple for 3.7 and higher.</span>
+
+    <span class="k">elif</span> <span class="n">_get_type_origin</span><span class="p">(</span><span class="n">key_type</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">}:</span>
+
+        <span class="n">decode_function</span> <span class="o">=</span> <span class="nb">tuple</span>
+
+        <span class="n">key_type</span> <span class="o">=</span> <span class="n">key_type</span>
+
+    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">decode_function</span><span class="p">,</span> <span class="n">_decode_items</span><span class="p">(</span><span class="n">key_type</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">_decode_items</span><span class="p">(</span><span class="n">type_arg</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">):</span>
 

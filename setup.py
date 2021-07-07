@@ -32,6 +32,7 @@ setup(
             'hypothesis',
             'portray',
             'flake8',
+            'types-dataclasses;python_version=="3.6"',
             'simplejson'
         ]
     },

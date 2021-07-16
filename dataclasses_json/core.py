@@ -267,7 +267,7 @@ def _decode_generic(type_, value, infer_missing):
         if not hasattr(type_, "__args__"):
             # Any, just accept
             res = value
-        elif _is_optional(type_) and len(type_.__args__) == 2:  # Optional
+        elif _is_optional(type_) and len(type_.__args__) == 2 and type_.__args__[1] != type(None):
             type_arg = type_.__args__[0]
             if is_dataclass(type_arg) or is_dataclass(value):
                 res = _decode_dataclass(type_arg, value, infer_missing)

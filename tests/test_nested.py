@@ -1,5 +1,6 @@
 from tests.entities import (DataClassWithDataClass,
                             DataClassWithList,
+                            DataClassWithNestedDictWithTupleKeys,
                             DataClassX,
                             DataClassXs)
 
@@ -23,3 +24,10 @@ class TestDecoder:
     def test_nested_list_of_dataclasses(self):
         assert (DataClassXs.from_json('{"xs": [{"x": 0}, {"x": 1}]}') ==
                 DataClassXs([DataClassX(0), DataClassX(1)]))
+
+
+class TestNested:
+    def test_tuple_dict_key(self):
+        assert (DataClassWithNestedDictWithTupleKeys.from_dict({'a': {(0,): 2}}) ==
+                DataClassWithNestedDictWithTupleKeys(a={(0,): 2}))
+

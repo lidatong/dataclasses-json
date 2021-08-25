@@ -267,3 +267,9 @@ class DataClassWithNestedOptionalAny:
 @dataclass
 class DataClassWithNestedOptional:
     a: Dict[str, Optional[int]]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithNestedDictWithTupleKeys:
+    a: Dict[Tuple[int], int]

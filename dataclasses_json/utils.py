@@ -49,6 +49,11 @@ def _hasargs(type_, *args):
         res = all(arg in type_.__args__ for arg in args)
     except AttributeError:
         return False
+    except TypeError:
+        if (type_.__args__ is None):
+            return False
+        else:
+            raise
     else:
         return res
 

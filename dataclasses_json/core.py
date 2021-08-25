@@ -128,7 +128,7 @@ def _decode_letter_case_overrides(field_names, overrides):
 
 
 def _decode_dataclass(cls, kvs, infer_missing):
-    if isinstance(kvs, cls):
+    if _isinstance_safe(kvs, cls):
         return kvs
     overrides = _user_overrides_or_exts(cls)
     kvs = {} if kvs is None and infer_missing else kvs

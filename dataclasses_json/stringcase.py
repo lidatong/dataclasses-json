@@ -9,8 +9,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -75,9 +75,9 @@ def camelcase(string):
     if not string:
         return string
     return uplowcase(string[0], 'low') \
-        + re.sub(r"[\-_\.\s]([a-z])",
-                 lambda matched: uplowcase(matched.group(1), 'up'),
-                 string[1:])
+           + re.sub(r"[\-_\.\s]([a-z])",
+                    lambda matched: uplowcase(matched.group(1), 'up'),
+                    string[1:])
 
 
 def snakecase(string):
@@ -96,9 +96,9 @@ def snakecase(string):
     if not string:
         return string
     return uplowcase(string[0], 'low') \
-        + re.sub(r"[A-Z]",
-                 lambda matched: '_' + uplowcase(matched.group(0), 'low'),
-                 string[1:])
+           + re.sub(r"[A-Z]",
+                    lambda matched: '_' + uplowcase(matched.group(0), 'low'),
+                    string[1:])
 
 
 def spinalcase(string):

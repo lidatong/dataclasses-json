@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf8') as f:
 
 setup(
     name='dataclasses-json',
-    version='0.5.4',
+    version='0.5.5',
     packages=find_packages(exclude=('tests*',)),
     package_data={"dataclasses_json": ["py.typed"]},
     author='lidatong',
@@ -20,8 +20,7 @@ setup(
         'dataclasses;python_version=="3.6"',
         'marshmallow>=3.3.0,<4.0.0',
         'marshmallow-enum>=1.5.1,<2.0.0',
-        'typing-inspect>=0.4.0',
-        'stringcase==1.2.0,<2.0.0'
+        'typing-inspect>=0.4.0'
     ],
     python_requires='>=3.6',
     extras_require={
@@ -32,25 +31,11 @@ setup(
             'hypothesis',
             'portray',
             'flake8',
+            'types-dataclasses;python_version=="3.6"',
             'simplejson'
         ]
     },
     include_package_data=True,
     scripts=['publish.py']
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

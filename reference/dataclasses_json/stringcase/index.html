@@ -1,0 +1,1061 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+    
+    
+      
+        <title>Stringcase - dataclasses-json</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.1b62728e.css">
+      
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#4caf50">
+      
+    
+    
+      <script src="../../../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="green" data-md-color-accent="lightgreen">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#module-dataclasses_jsonstringcase" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../.." title="dataclasses-json" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              dataclasses-json
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Stringcase
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/lidatong/dataclasses-json/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    dataclasses-json
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../.." title="dataclasses-json" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    dataclasses-json
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/lidatong/dataclasses-json/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    dataclasses-json
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-1" type="checkbox" id="nav-2-1" checked>
+    
+    <label class="md-nav__link" for="nav-2-1">
+      Dataclasses Json
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-1">
+        Dataclasses Json
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cfg/" title="Cfg" class="md-nav__link">
+      Cfg
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../core/" title="Core" class="md-nav__link">
+      Core
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mm/" title="Mm" class="md-nav__link">
+      Mm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Stringcase
+      </label>
+    
+    <a href="./" title="Stringcase" class="md-nav__link md-nav__link--active">
+      Stringcase
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#camelcase" class="md-nav__link">
+    camelcase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capitalcase" class="md-nav__link">
+    capitalcase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pascalcase" class="md-nav__link">
+    pascalcase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snakecase" class="md-nav__link">
+    snakecase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spinalcase" class="md-nav__link">
+    spinalcase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uplowcase" class="md-nav__link">
+    uplowcase
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../undefined/" title="Undefined" class="md-nav__link">
+      Undefined
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#camelcase" class="md-nav__link">
+    camelcase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capitalcase" class="md-nav__link">
+    capitalcase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pascalcase" class="md-nav__link">
+    pascalcase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snakecase" class="md-nav__link">
+    snakecase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spinalcase" class="md-nav__link">
+    spinalcase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uplowcase" class="md-nav__link">
+    uplowcase
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/lidatong/dataclasses-json/edit/master/reference/dataclasses_json/stringcase.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="module-dataclasses_jsonstringcase">Module dataclasses_json.stringcase</h1>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="err">#</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">MIT</span><span class="w"> </span><span class="n">License</span><span class="w"> </span><span class="p">(</span><span class="n">MIT</span><span class="p">)</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">Copyright</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="mi">2015</span><span class="w"> </span><span class="n">Taka</span><span class="w"> </span><span class="n">Okunishi</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">Permission</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">hereby</span><span class="w"> </span><span class="n">granted</span><span class="p">,</span><span class="w"> </span><span class="k">free</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">charge</span><span class="p">,</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="n">obtaining</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">copy</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">software</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">associated</span><span class="w"> </span><span class="n">documentation</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="p">(</span><span class="n">the</span><span class="w"> </span><span class="ss">&quot;Software&quot;</span><span class="p">),</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">deal</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Software</span><span class="w"> </span><span class="k">without</span><span class="w"> </span><span class="n">restriction</span><span class="p">,</span><span class="w"> </span><span class="n">including</span><span class="w"> </span><span class="k">without</span><span class="w"> </span><span class="n">limitation</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">rights</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">use</span><span class="p">,</span><span class="w"> </span><span class="n">copy</span><span class="p">,</span><span class="w"> </span><span class="k">modify</span><span class="p">,</span><span class="w"> </span><span class="k">merge</span><span class="p">,</span><span class="w"> </span><span class="n">publish</span><span class="p">,</span><span class="w"> </span><span class="n">distribute</span><span class="p">,</span><span class="w"> </span><span class="n">sublicense</span><span class="p">,</span><span class="w"> </span><span class="ow">and</span><span class="o">/</span><span class="ow">or</span><span class="w"> </span><span class="n">sell</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">copies</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Software</span><span class="p">,</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">permit</span><span class="w"> </span><span class="n">persons</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">whom</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Software</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">furnished</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="n">so</span><span class="p">,</span><span class="w"> </span><span class="n">subject</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">following</span><span class="w"> </span><span class="nl">conditions</span><span class="p">:</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">above</span><span class="w"> </span><span class="n">copyright</span><span class="w"> </span><span class="n">notice</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">permission</span><span class="w"> </span><span class="n">notice</span><span class="w"> </span><span class="n">shall</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">included</span><span class="w"> </span><span class="ow">in</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">copies</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">substantial</span><span class="w"> </span><span class="n">portions</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Software</span><span class="p">.</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="n">SOFTWARE</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="n">PROVIDED</span><span class="w"> </span><span class="ss">&quot;AS IS&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">WITHOUT</span><span class="w"> </span><span class="n">WARRANTY</span><span class="w"> </span><span class="k">OF</span><span class="w"> </span><span class="ow">ANY</span><span class="w"> </span><span class="n">KIND</span><span class="p">,</span><span class="w"> </span><span class="n">EXPRESS</span><span class="w"> </span><span class="ow">OR</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">IMPLIED</span><span class="p">,</span><span class="w"> </span><span class="n">INCLUDING</span><span class="w"> </span><span class="n">BUT</span><span class="w"> </span><span class="ow">NOT</span><span class="w"> </span><span class="n">LIMITED</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="n">WARRANTIES</span><span class="w"> </span><span class="k">OF</span><span class="w"> </span><span class="n">MERCHANTABILITY</span><span class="p">,</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">FITNESS</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">PARTICULAR</span><span class="w"> </span><span class="n">PURPOSE</span><span class="w"> </span><span class="ow">AND</span><span class="w"> </span><span class="n">NONINFRINGEMENT</span><span class="p">.</span><span class="w"> </span><span class="ow">IN</span><span class="w"> </span><span class="k">NO</span><span class="w"> </span><span class="n">EVENT</span><span class="w"> </span><span class="n">SHALL</span><span class="w"> </span><span class="n">THE</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">AUTHORS</span><span class="w"> </span><span class="ow">OR</span><span class="w"> </span><span class="n">COPYRIGHT</span><span class="w"> </span><span class="n">HOLDERS</span><span class="w"> </span><span class="n">BE</span><span class="w"> </span><span class="n">LIABLE</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="ow">ANY</span><span class="w"> </span><span class="n">CLAIM</span><span class="p">,</span><span class="w"> </span><span class="n">DAMAGES</span><span class="w"> </span><span class="ow">OR</span><span class="w"> </span><span class="n">OTHER</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">LIABILITY</span><span class="p">,</span><span class="w"> </span><span class="n">WHETHER</span><span class="w"> </span><span class="ow">IN</span><span class="w"> </span><span class="n">AN</span><span class="w"> </span><span class="k">ACTION</span><span class="w"> </span><span class="k">OF</span><span class="w"> </span><span class="n">CONTRACT</span><span class="p">,</span><span class="w"> </span><span class="n">TORT</span><span class="w"> </span><span class="ow">OR</span><span class="w"> </span><span class="n">OTHERWISE</span><span class="p">,</span><span class="w"> </span><span class="n">ARISING</span><span class="w"> </span><span class="k">FROM</span><span class="p">,</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="k">OUT</span><span class="w"> </span><span class="k">OF</span><span class="w"> </span><span class="ow">OR</span><span class="w"> </span><span class="ow">IN</span><span class="w"> </span><span class="k">CONNECTION</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="n">SOFTWARE</span><span class="w"> </span><span class="ow">OR</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="k">USE</span><span class="w"> </span><span class="ow">OR</span><span class="w"> </span><span class="n">OTHER</span><span class="w"> </span><span class="n">DEALINGS</span><span class="w"> </span><span class="ow">IN</span><span class="w"> </span><span class="n">THE</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">SOFTWARE</span><span class="p">.</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">Copyright</span><span class="w"> </span><span class="err">©</span><span class="w"> </span><span class="mi">2015</span><span class="o">-</span><span class="mi">2018</span><span class="w"> </span><span class="n">Taka</span><span class="w"> </span><span class="n">Okunishi</span><span class="w"> </span><span class="o">&lt;</span><span class="n">okunishinishi</span><span class="nv">@gmail</span><span class="p">.</span><span class="n">com</span><span class="o">&gt;</span><span class="p">.</span><span class="w"></span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">Copyright</span><span class="w"> </span><span class="err">©</span><span class="w"> </span><span class="mi">2020</span><span class="w"> </span><span class="n">Louis</span><span class="o">-</span><span class="n">Philippe</span><span class="w"> </span><span class="n">Véronneau</span><span class="w"> </span><span class="o">&lt;</span><span class="n">pollo</span><span class="nv">@debian</span><span class="p">.</span><span class="n">org</span><span class="o">&gt;</span><span class="w"></span>
+
+<span class="n">import</span><span class="w"> </span><span class="n">re</span><span class="w"></span>
+
+<span class="n">def</span><span class="w"> </span><span class="n">uplowcase</span><span class="p">(</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="k">case</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Convert string into upper or lower case.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Uppercase or lowercase case string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;up&#39;</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">string</span><span class="p">).</span><span class="nf">upper</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">elif</span><span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;low&#39;</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">string</span><span class="p">).</span><span class="nf">lower</span><span class="p">()</span><span class="w"></span>
+
+<span class="n">def</span><span class="w"> </span><span class="n">capitalcase</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Convert string into capital case.</span>
+
+<span class="ss">    First letters will be uppercase.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Capital case string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">string</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">string</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">uplowcase</span><span class="p">(</span><span class="n">string</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;up&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">string</span><span class="o">[</span><span class="n">1:</span><span class="o">]</span><span class="w"></span>
+
+<span class="n">def</span><span class="w"> </span><span class="n">camelcase</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot; Convert string into camel case.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Camel case string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;^[\-_\.]&quot;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">string</span><span class="p">))</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">string</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">string</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">uplowcase</span><span class="p">(</span><span class="n">string</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;low&#39;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;[\-_\.\s]([a-z])&quot;</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">                     </span><span class="n">lambda</span><span class="w"> </span><span class="nl">matched</span><span class="p">:</span><span class="w"> </span><span class="n">uplowcase</span><span class="p">(</span><span class="n">matched</span><span class="p">.</span><span class="k">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="s1">&#39;up&#39;</span><span class="p">),</span><span class="w"></span>
+
+<span class="w">                     </span><span class="n">string</span><span class="o">[</span><span class="n">1:</span><span class="o">]</span><span class="p">))</span><span class="w"></span>
+
+<span class="n">def</span><span class="w"> </span><span class="n">snakecase</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Convert string into snake case.</span>
+
+<span class="ss">    Join punctuation with underscore</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Snake cased string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;[\-\.\s]&quot;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">string</span><span class="p">))</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">string</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">string</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">uplowcase</span><span class="p">(</span><span class="n">string</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;low&#39;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;[A-Z]&quot;</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">                     </span><span class="n">lambda</span><span class="w"> </span><span class="nl">matched</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">uplowcase</span><span class="p">(</span><span class="n">matched</span><span class="p">.</span><span class="k">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="s1">&#39;low&#39;</span><span class="p">),</span><span class="w"></span>
+
+<span class="w">                     </span><span class="n">string</span><span class="o">[</span><span class="n">1:</span><span class="o">]</span><span class="p">))</span><span class="w"></span>
+
+<span class="n">def</span><span class="w"> </span><span class="n">spinalcase</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Convert string into spinal case.</span>
+
+<span class="ss">    Join punctuation with hyphen.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Spinal cased string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;_&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;-&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">snakecase</span><span class="p">(</span><span class="n">string</span><span class="p">))</span><span class="w"></span>
+
+<span class="n">def</span><span class="w"> </span><span class="n">pascalcase</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Convert string into pascal case.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Pascal case string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">capitalcase</span><span class="p">(</span><span class="n">camelcase</span><span class="p">(</span><span class="n">string</span><span class="p">))</span><span class="w"></span>
+</pre></div>
+
+
+</details>
+<h2 id="functions">Functions</h2>
+<h3 id="camelcase">camelcase</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">camelcase</span><span class="p">(</span>
+    <span class="n">string</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Convert string into camel case.</p>
+<p>Args:
+    string: String to convert.</p>
+<p>Returns:
+    string: Camel case string.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="n">def</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+
+    <span class="ss">&quot;&quot;&quot; Convert string into camel case.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Camel case string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+    <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;^[\-_\.]&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">str</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="k">not</span> <span class="n">string</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">string</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">uplowcase</span><span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;low&#39;</span><span class="p">)</span>
+
+            <span class="o">+</span> <span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;[\-_\.\s]([a-z])&quot;</span><span class="p">,</span>
+
+                     <span class="n">lambda</span> <span class="n">matched</span><span class="p">:</span> <span class="n">uplowcase</span><span class="p">(</span><span class="n">matched</span><span class="p">.</span><span class="k">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;up&#39;</span><span class="p">),</span>
+
+                     <span class="n">string</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+</pre></div>
+
+
+</details>
+<h3 id="capitalcase">capitalcase</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">capitalcase</span><span class="p">(</span>
+    <span class="n">string</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Convert string into capital case.
+First letters will be uppercase.</p>
+<p>Args:
+    string: String to convert.</p>
+<p>Returns:
+    string: Capital case string.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="n">def</span> <span class="n">capitalcase</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+
+    <span class="ss">&quot;&quot;&quot;Convert string into capital case.</span>
+
+<span class="ss">    First letters will be uppercase.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Capital case string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+    <span class="n">string</span> <span class="o">=</span> <span class="n">str</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="k">not</span> <span class="n">string</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">string</span>
+
+    <span class="k">return</span> <span class="n">uplowcase</span><span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;up&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+</pre></div>
+
+
+</details>
+<h3 id="pascalcase">pascalcase</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pascalcase</span><span class="p">(</span>
+    <span class="n">string</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Convert string into pascal case.</p>
+<p>Args:
+    string: String to convert.</p>
+<p>Returns:
+    string: Pascal case string.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="n">def</span> <span class="n">pascalcase</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+
+    <span class="ss">&quot;&quot;&quot;Convert string into pascal case.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Pascal case string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">capitalcase</span><span class="p">(</span><span class="n">camelcase</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+</pre></div>
+
+
+</details>
+<h3 id="snakecase">snakecase</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">snakecase</span><span class="p">(</span>
+    <span class="n">string</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Convert string into snake case.
+Join punctuation with underscore</p>
+<p>Args:
+    string: String to convert.</p>
+<p>Returns:
+    string: Snake cased string.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="n">def</span> <span class="n">snakecase</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+
+    <span class="ss">&quot;&quot;&quot;Convert string into snake case.</span>
+
+<span class="ss">    Join punctuation with underscore</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Snake cased string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+    <span class="n">string</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;[\-\.\s]&quot;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">str</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="k">not</span> <span class="n">string</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">string</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">uplowcase</span><span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;low&#39;</span><span class="p">)</span>
+
+            <span class="o">+</span> <span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;[A-Z]&quot;</span><span class="p">,</span>
+
+                     <span class="n">lambda</span> <span class="n">matched</span><span class="p">:</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">uplowcase</span><span class="p">(</span><span class="n">matched</span><span class="p">.</span><span class="k">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+
+                     <span class="n">string</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+</pre></div>
+
+
+</details>
+<h3 id="spinalcase">spinalcase</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">spinalcase</span><span class="p">(</span>
+    <span class="n">string</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Convert string into spinal case.
+Join punctuation with hyphen.</p>
+<p>Args:
+    string: String to convert.</p>
+<p>Returns:
+    string: Spinal cased string.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="n">def</span> <span class="n">spinalcase</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+
+    <span class="ss">&quot;&quot;&quot;Convert string into spinal case.</span>
+
+<span class="ss">    Join punctuation with hyphen.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Spinal cased string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="n">r</span><span class="ss">&quot;_&quot;</span><span class="p">,</span> <span class="ss">&quot;-&quot;</span><span class="p">,</span> <span class="n">snakecase</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+</pre></div>
+
+
+</details>
+<h3 id="uplowcase">uplowcase</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">uplowcase</span><span class="p">(</span>
+    <span class="n">string</span><span class="p">,</span>
+    <span class="n">case</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Convert string into upper or lower case.</p>
+<p>Args:
+    string: String to convert.</p>
+<p>Returns:
+    string: Uppercase or lowercase case string.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="n">def</span> <span class="n">uplowcase</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="k">case</span><span class="p">):</span>
+
+    <span class="ss">&quot;&quot;&quot;Convert string into upper or lower case.</span>
+
+<span class="ss">    Args:</span>
+
+<span class="ss">        string: String to convert.</span>
+
+<span class="ss">    Returns:</span>
+
+<span class="ss">        string: Uppercase or lowercase case string.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="k">case</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">str</span><span class="p">(</span><span class="n">string</span><span class="p">).</span><span class="k">upper</span><span class="p">()</span>
+
+    <span class="n">elif</span> <span class="k">case</span> <span class="o">==</span> <span class="s1">&#39;low&#39;</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">str</span><span class="p">(</span><span class="n">string</span><span class="p">).</span><span class="k">lower</span><span class="p">()</span>
+</pre></div>
+
+
+</details>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../mm/" title="Mm" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Mm
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../undefined/" title="Undefined" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Undefined
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Powered by
+        <a href="http://timothycrosley.github.io/portray">portray.</a>
+        You too can
+        <a href="http://timothycrosley.github.io/portray">
+          portray</a>
+        your Python project well using automatic documentation.
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/application.808e90bb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
+      
+    
+  </body>
+</html>

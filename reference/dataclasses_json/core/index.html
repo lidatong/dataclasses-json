@@ -441,6 +441,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../stringcase/" title="Stringcase" class="md-nav__link">
+      Stringcase
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../undefined/" title="Undefined" class="md-nav__link">
       Undefined
     </a>
@@ -805,7 +817,7 @@
 
 <span class="k">def</span> <span class="nf">_decode_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kvs</span><span class="p">,</span> <span class="n">infer_missing</span><span class="p">):</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kvs</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">_isinstance_safe</span><span class="p">(</span><span class="n">kvs</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="n">kvs</span>
 

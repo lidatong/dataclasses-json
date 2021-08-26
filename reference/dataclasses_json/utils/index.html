@@ -336,6 +336,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../stringcase/" title="Stringcase" class="md-nav__link">
+      Stringcase
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../undefined/" title="Undefined" class="md-nav__link">
       Undefined
     </a>
@@ -538,6 +550,16 @@
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
 
         <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">type_</span><span class="o">.</span><span class="n">__args__</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">raise</span>
 
     <span class="k">else</span><span class="p">:</span>
 

@@ -97,11 +97,6 @@ def _encode_overrides(kvs, overrides, encode_json=False):
     override_kvs = {}
     for k, v in kvs.items():
         if k in overrides:
-            exclude = overrides[k].exclude
-            # If the exclude predicate returns true, the key should be
-            #  excluded from encoding, so skip the rest of the loop
-            if exclude and exclude(v):
-                continue
             letter_case = overrides[k].letter_case
             original_key = k
             k = letter_case(k) if letter_case is not None else k
@@ -329,14 +324,22 @@ def _asdict(obj, encode_json=False):
     source) to support arbitrary Collection and Mapping types.
     """
     if _is_dataclass_instance(obj):
+        overrides = _user_overrides_or_exts(obj)
         result = []
         for field in fields(obj):
-            value = _asdict(getattr(obj, field.name), encode_json=encode_json)
+            value = getattr(obj, field.name)
+            exclude = overrides[field.name].exclude
+            # If the exclude predicate returns true, the key should be
+            #  excluded from encoding, so skip the rest of the loop
+            if exclude and exclude(value):
+                continue
+
+            value = _asdict(value, encode_json=encode_json)
             result.append((field.name, value))
 
         result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result),
                                                    usage="to")
-        return _encode_overrides(dict(result), _user_overrides_or_exts(obj),
+        return _encode_overrides(dict(result), overrides,
                                  encode_json=encode_json)
     elif isinstance(obj, Mapping):
         return dict((_asdict(k, encode_json=encode_json),

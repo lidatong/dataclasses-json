@@ -74,10 +74,10 @@ def camelcase(string):
     string = re.sub(r"^[\-_\.]", '', str(string))
     if not string:
         return string
-    return uplowcase(string[0], 'low') \
-           + re.sub(r"[\-_\.\s]([a-z])",
-                    lambda matched: uplowcase(matched.group(1), 'up'),
-                    string[1:])
+    return (uplowcase(string[0], 'low')
+            + re.sub(r"[\-_\.\s]([a-z])",
+                     lambda matched: uplowcase(matched.group(1), 'up'),
+                     string[1:]))
 
 
 def snakecase(string):
@@ -95,10 +95,10 @@ def snakecase(string):
     string = re.sub(r"[\-\.\s]", '_', str(string))
     if not string:
         return string
-    return uplowcase(string[0], 'low') \
-           + re.sub(r"[A-Z]",
-                    lambda matched: '_' + uplowcase(matched.group(0), 'low'),
-                    string[1:])
+    return (uplowcase(string[0], 'low')
+            + re.sub(r"[A-Z]",
+                     lambda matched: '_' + uplowcase(matched.group(0), 'low'),
+                     string[1:]))
 
 
 def spinalcase(string):

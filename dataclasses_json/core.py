@@ -335,7 +335,10 @@ def _asdict(obj, encode_json=False):
             if overrides[field.name].encoder:
                 value = getattr(obj, field.name)
             else:
-                value = _asdict(getattr(obj, field.name), encode_json=encode_json)
+                value = _asdict(
+                    getattr(obj, field.name),
+                    encode_json=encode_json
+                )
             result.append((field.name, value))
 
         result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result),

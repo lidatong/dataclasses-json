@@ -23,8 +23,8 @@ from dataclasses_json.cfg import config
 from dataclasses_json import (DataClassJsonMixin, LetterCase, dataclass_json)
 
 A = TypeVar('A')
-Id = NewType('Id', UUID)
-ProductId = NewType('ProductId', Id)
+UUIDWrapper = NewType('UUIDWrapper', UUID)
+UUIDWrapperWrapper = NewType('UUIDWrapperWrapper', UUIDWrapper)
 
 
 @dataclass(frozen=True)
@@ -34,12 +34,12 @@ class DataClassWithDecimal(DataClassJsonMixin):
 
 @dataclass(frozen=True)
 class DataClassWithNewType(DataClassJsonMixin):
-    id: Id
+    id: UUIDWrapper
 
 
 @dataclass(frozen=True)
 class DataClassWithNestedNewType(DataClassJsonMixin):
-    id: ProductId
+    id: UUIDWrapperWrapper
 
 
 @dataclass(frozen=True)

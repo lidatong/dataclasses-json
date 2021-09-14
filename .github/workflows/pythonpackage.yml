@@ -12,14 +12,15 @@ jobs:
   test_and_publish:
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 3
+      max-parallel: 5
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        # # https://github.com/actions/python-versions/blob/main/versions-manifest.json
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10.0-alpha.5]
 
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies

@@ -1175,9 +1175,23 @@
 
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
 
+        <span class="n">overrides</span> <span class="o">=</span> <span class="n">_user_overrides_or_exts</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 
-            <span class="n">value</span> <span class="o">=</span> <span class="n">_asdict</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">overrides</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">encoder</span><span class="p">:</span>
+
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">value</span> <span class="o">=</span> <span class="n">_asdict</span><span class="p">(</span>
+
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+
+                    <span class="n">encode_json</span><span class="o">=</span><span class="n">encode_json</span>
+
+                <span class="p">)</span>
 
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
 

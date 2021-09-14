@@ -330,8 +330,15 @@ def _asdict(obj, encode_json=False):
     """
     if _is_dataclass_instance(obj):
         result = []
+        overrides = _user_overrides_or_exts(obj)
         for field in fields(obj):
-            value = _asdict(getattr(obj, field.name), encode_json=encode_json)
+            if overrides[field.name].encoder:
+                value = getattr(obj, field.name)
+            else:
+                value = _asdict(
+                    getattr(obj, field.name),
+                    encode_json=encode_json
+                )
             result.append((field.name, value))
 
         result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result),

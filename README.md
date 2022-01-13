@@ -16,24 +16,25 @@ It's very easy to get started.
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 
+
 @dataclass_json
 @dataclass
-class SimpleExample:
-    int_field: int
+class Person:
+    name: str
 
-simple_example = SimpleExample(1)
 
-# Encoding to JSON. Note the output is a string, not a dictionary.
-simple_example.to_json()  # {"int_field": 1}
+person = Person(name='lidatong')
+person.to_json()  # '{"name": "lidatong"}' <- this is a string
+person.to_dict()  # {'name': 'lidatong'} <- this is a dict
+Person.from_json('{"name": "lidatong"}')  # Person(1)
+Person.from_dict({'name': 'lidatong'})  # Person(1)
 
-# Encoding to a (JSON) dict
-simple_example.to_dict()  # {'int_field': 1}
+# You can also apply _schema validation_ using an alternative API
+# This can be useful for "typed" Python code
 
-# Decoding from JSON. Note the input is a string, not a dictionary.
-SimpleExample.from_json('{"int_field": 1}')  # SimpleExample(1)
-
-# Decoding from a (JSON) dict
-SimpleExample.from_dict({'int_field': 1})  # SimpleExample(1)
+Person.from_json('{"name": 42}')  # This is ok. 42 is not a `str`, but
+                                  # dataclass creation does not validate types
+Person.schema().loads('{"name": 42}')  # Error! Raises `ValidationError`
 ```
 
 **What if you want to work with camelCase JSON?**

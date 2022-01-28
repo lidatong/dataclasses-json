@@ -332,6 +332,12 @@ def _asdict(obj, encode_json=False):
         result = []
         overrides = _user_overrides_or_exts(obj)
         for field in fields(obj):
+
+            # The field should be skipped as
+            # it not intended to be represented
+            if not field.repr:
+                continue
+
             if overrides[field.name].encoder:
                 value = getattr(obj, field.name)
             else:

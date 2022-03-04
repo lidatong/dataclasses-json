@@ -78,11 +78,11 @@ def config(metadata: dict = None, *,
 
     if field_name is not None:
         if letter_case is not None:
-            @functools.wraps(letter_case)
+            @functools.wraps(letter_case)  # type:ignore
             def override(_, _letter_case=letter_case, _field_name=field_name):
                 return _letter_case(_field_name)
         else:
-            def override(_, _field_name=field_name):
+            def override(_, _field_name=field_name):  # type:ignore
                 return _field_name
         letter_case = override
 

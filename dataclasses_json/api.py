@@ -3,7 +3,7 @@ import json
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
-from dataclasses_json.cfg import config, LetterCase
+from dataclasses_json.cfg import config, LetterCase  # noqa: F401
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass)
 from dataclasses_json.mm import (JsonData, SchemaType, build_schema)
@@ -15,7 +15,6 @@ A = TypeVar('A', bound="DataClassJsonMixin")
 B = TypeVar('B')
 C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
-
 
 
 class DataClassJsonMixin(abc.ABC):

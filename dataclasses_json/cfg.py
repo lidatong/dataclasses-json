@@ -43,6 +43,7 @@ class _GlobalConfig:
 
 global_config = _GlobalConfig()
 
+
 class LetterCase(Enum):
     CAMEL = camelcase
     KEBAB = spinalcase

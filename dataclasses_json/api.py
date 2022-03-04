@@ -1,12 +1,9 @@
 import abc
 import json
-from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
-from dataclasses_json.stringcase import (camelcase, pascalcase, snakecase,
-                                         spinalcase)  # type: ignore
-from dataclasses_json.cfg import config
+from dataclasses_json.cfg import config, LetterCase
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass)
 from dataclasses_json.mm import (JsonData, SchemaType, build_schema)
@@ -19,12 +16,6 @@ B = TypeVar('B')
 C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
 
-
-class LetterCase(Enum):
-    CAMEL = camelcase
-    KEBAB = spinalcase
-    SNAKE = snakecase
-    PASCAL = pascalcase
 
 
 class DataClassJsonMixin(abc.ABC):

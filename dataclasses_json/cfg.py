@@ -1,8 +1,11 @@
 import functools
+from enum import Enum
 from typing import Callable, Dict, Optional, TypeVar, Union
 
 from marshmallow.fields import Field as MarshmallowField
 
+from dataclasses_json.stringcase import (camelcase, pascalcase, snakecase,
+                                         spinalcase)  # type: ignore
 from dataclasses_json.undefined import Undefined, UndefinedParameterError
 
 T = TypeVar("T")
@@ -40,6 +43,12 @@ class _GlobalConfig:
 
 global_config = _GlobalConfig()
 
+class LetterCase(Enum):
+    CAMEL = camelcase
+    KEBAB = spinalcase
+    SNAKE = snakecase
+    PASCAL = pascalcase
+
 
 def config(metadata: dict = None, *,
            # TODO: these can be typed more precisely
@@ -47,7 +56,7 @@ def config(metadata: dict = None, *,
            encoder: Callable = None,
            decoder: Callable = None,
            mm_field: MarshmallowField = None,
-           letter_case: Callable[[str], str] = None,
+           letter_case: Union[Callable[[str], str], LetterCase] = None,
            undefined: Optional[Union[str, Undefined]] = None,
            field_name: str = None,
            exclude: Optional[Callable[[str, T], bool]] = None,

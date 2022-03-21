@@ -389,6 +389,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lettercase" class="md-nav__link">
+    LetterCase
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -582,6 +609,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lettercase" class="md-nav__link">
+    LetterCase
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -609,9 +663,15 @@
                 <h1 id="module-dataclasses_jsoncfg">Module dataclasses_json.cfg</h1>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
 
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">marshmallow.fields</span> <span class="kn">import</span> <span class="n">Field</span> <span class="k">as</span> <span class="n">MarshmallowField</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_json.stringcase</span> <span class="kn">import</span> <span class="p">(</span><span class="n">camelcase</span><span class="p">,</span> <span class="n">pascalcase</span><span class="p">,</span> <span class="n">snakecase</span><span class="p">,</span>
+
+                                         <span class="n">spinalcase</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_json.undefined</span> <span class="kn">import</span> <span class="n">Undefined</span><span class="p">,</span> <span class="n">UndefinedParameterError</span>
 
@@ -667,6 +727,16 @@
 
 <span class="n">global_config</span> <span class="o">=</span> <span class="n">_GlobalConfig</span><span class="p">()</span>
 
+<span class="k">class</span> <span class="nc">LetterCase</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+
+    <span class="n">CAMEL</span> <span class="o">=</span> <span class="n">camelcase</span>
+
+    <span class="n">KEBAB</span> <span class="o">=</span> <span class="n">spinalcase</span>
+
+    <span class="n">SNAKE</span> <span class="o">=</span> <span class="n">snakecase</span>
+
+    <span class="n">PASCAL</span> <span class="o">=</span> <span class="n">pascalcase</span>
+
 <span class="k">def</span> <span class="nf">config</span><span class="p">(</span><span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
 
            <span class="c1"># TODO: these can be typed more precisely</span>
@@ -679,13 +749,13 @@
 
            <span class="n">mm_field</span><span class="p">:</span> <span class="n">MarshmallowField</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
 
-           <span class="n">letter_case</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+           <span class="n">letter_case</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">LetterCase</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
 
            <span class="n">undefined</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Undefined</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
 
            <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
 
-           <span class="n">exclude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+           <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">Exclude</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
 
            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 
@@ -711,7 +781,7 @@
 
         <span class="k">if</span> <span class="n">letter_case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
 
-            <span class="nd">@functools.wraps</span><span class="p">(</span><span class="n">letter_case</span><span class="p">)</span>
+            <span class="nd">@functools.wraps</span><span class="p">(</span><span class="n">letter_case</span><span class="p">)</span>  <span class="c1"># type:ignore</span>
 
             <span class="k">def</span> <span class="nf">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_letter_case</span><span class="o">=</span><span class="n">letter_case</span><span class="p">,</span> <span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">):</span>
 
@@ -719,7 +789,7 @@
 
         <span class="k">else</span><span class="p">:</span>
 
-            <span class="k">def</span> <span class="nf">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">):</span>  <span class="c1"># type:ignore</span>
 
                 <span class="k">return</span> <span class="n">_field_name</span>
 
@@ -775,10 +845,10 @@
     <span class="n">encoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">decoder</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">mm_field</span><span class="p">:</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Field</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">letter_case</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">letter_case</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">dataclasses_json</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">LetterCase</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">undefined</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">dataclasses_json</span><span class="o">.</span><span class="n">undefined</span><span class="o">.</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="o">~</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="o">~</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">dataclasses_json</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">Exclude</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span>
 </pre></div>
 
@@ -795,13 +865,13 @@
 
 <span class="w">           </span><span class="nl">mm_field</span><span class="p">:</span><span class="w"> </span><span class="n">MarshmallowField</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">           </span><span class="nl">letter_case</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">[str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nf">str</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+<span class="w">           </span><span class="nl">letter_case</span><span class="p">:</span><span class="w"> </span><span class="ow">Union</span><span class="o">[</span><span class="n">Callable[[str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nf">str</span><span class="err">]</span><span class="p">,</span><span class="w"> </span><span class="n">LetterCase</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
 
 <span class="w">           </span><span class="nl">undefined</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Union[str, Undefined</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
 
 <span class="w">           </span><span class="nl">field_name</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">           </span><span class="nl">exclude</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Callable[[str, T</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bool</span><span class="err">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+<span class="w">           </span><span class="nl">exclude</span><span class="p">:</span><span class="w"> </span><span class="ow">Union</span><span class="o">[</span><span class="n">Callable[[str, T</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bool</span><span class="err">]</span><span class="p">,</span><span class="w"> </span><span class="n">Exclude</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
 
 <span class="w">           </span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dict</span><span class="o">[</span><span class="n">str, dict</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
@@ -827,7 +897,7 @@
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">letter_case</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="nv">@functools</span><span class="p">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">letter_case</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="nv">@functools</span><span class="p">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">letter_case</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="k">ignore</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">def</span><span class="w"> </span><span class="n">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_letter_case</span><span class="o">=</span><span class="n">letter_case</span><span class="p">,</span><span class="w"> </span><span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
@@ -835,7 +905,7 @@
 
 <span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">def</span><span class="w"> </span><span class="n">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">            </span><span class="n">def</span><span class="w"> </span><span class="n">override</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_field_name</span><span class="o">=</span><span class="n">field_name</span><span class="p">)</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="k">ignore</span><span class="w"></span>
 
 <span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">_field_name</span><span class="w"></span>
 
@@ -929,6 +999,57 @@ be included.</p>
 
 
 </details>
+<h3 id="lettercase">LetterCase</h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">LetterCase</span><span class="p">(</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>An enumeration.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="k">class</span> <span class="n">LetterCase</span>(<span class="n">Enum</span>):
+
+    <span class="n">CAMEL</span> = <span class="n">camelcase</span>
+
+    <span class="n">KEBAB</span> = <span class="n">spinalcase</span>
+
+    <span class="n">SNAKE</span> = <span class="n">snakecase</span>
+
+    <span class="n">PASCAL</span> = <span class="n">pascalcase</span>
+</pre></div>
+
+
+</details>
+<hr />
+<h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
+<ul>
+<li>enum.Enum</li>
+</ul>
+<h4 id="class-variables">Class variables</h4>
+<div class="codehilite"><pre><span></span><span class="n">CAMEL</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">KEBAB</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">PASCAL</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">SNAKE</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">name</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">value</span>
+</pre></div>
                 
                   
                 

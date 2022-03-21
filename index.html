@@ -824,24 +824,25 @@
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
 
+
 <span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">SimpleExample</span><span class="p">:</span>
-    <span class="n">int_field</span><span class="p">:</span> <span class="nb">int</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
-<span class="n">simple_example</span> <span class="o">=</span> <span class="n">SimpleExample</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="c1"># Encoding to JSON. Note the output is a string, not a dictionary.</span>
-<span class="n">simple_example</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># {&quot;int_field&quot;: 1}</span>
+<span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;lidatong&#39;</span><span class="p">)</span>
+<span class="n">person</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>  <span class="c1"># &#39;{&quot;name&quot;: &quot;lidatong&quot;}&#39; &lt;- this is a string</span>
+<span class="n">person</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>  <span class="c1"># {&#39;name&#39;: &#39;lidatong&#39;} &lt;- this is a dict</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;name&quot;: &quot;lidatong&quot;}&#39;</span><span class="p">)</span>  <span class="c1"># Person(1)</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;lidatong&#39;</span><span class="p">})</span>  <span class="c1"># Person(1)</span>
 
-<span class="c1"># Encoding to a (JSON) dict</span>
-<span class="n">simple_example</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>  <span class="c1"># {&#39;int_field&#39;: 1}</span>
+<span class="c1"># You can also apply _schema validation_ using an alternative API</span>
+<span class="c1"># This can be useful for &quot;typed&quot; Python code</span>
 
-<span class="c1"># Decoding from JSON. Note the input is a string, not a dictionary.</span>
-<span class="n">SimpleExample</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;int_field&quot;: 1}&#39;</span><span class="p">)</span>  <span class="c1"># SimpleExample(1)</span>
-
-<span class="c1"># Decoding from a (JSON) dict</span>
-<span class="n">SimpleExample</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s1">&#39;int_field&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>  <span class="c1"># SimpleExample(1)</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;{&quot;name&quot;: 42}&#39;</span><span class="p">)</span>  <span class="c1"># This is ok. 42 is not a `str`, but</span>
+                                  <span class="c1"># dataclass creation does not validate types</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="s1">&#39;{&quot;name&quot;: 42}&#39;</span><span class="p">)</span>  <span class="c1"># Error! Raises `ValidationError`</span>
 </pre></div>
 
 

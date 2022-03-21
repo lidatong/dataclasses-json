@@ -105,7 +105,7 @@ class TestAnnotations:
         try:
             # mypy.main uses sys.stdout for printing
             # We override it to catch error messages
-            mypy_main(None, text_io, text_io, [__file__])
+            mypy_main(None, text_io, text_io, [__file__], clean_exit=True)
         except SystemExit:
             # mypy.main could return errors found inside other files.
             # filter_errors() will filter out all errors outside this file.

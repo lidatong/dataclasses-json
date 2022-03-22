@@ -4,21 +4,21 @@ from tests.entities import (DataClassIntImmutableDefault,
                             DataClassMutableDefaultDict,
                             DataClassMutableDefaultList, DataClassWithDeque,
                             DataClassWithDict, DataClassWithDictInt,
-                            DataClassWithDictGeneric,
+                            DataClassWithDictUnbound,
                             DataClassWithFrozenSet, DataClassWithList,
-                            DataClassWithListGeneric, DataClassWithListStr, DataClassWithMyCollection,
+                            DataClassWithListUnbound, DataClassWithListStr, DataClassWithMyCollection,
                             DataClassWithOptional, DataClassWithOptionalStr,
-                            DataClassWithSet, DataClassWithSetGeneric,
-                            DataClassWithOptionalGeneric,
+                            DataClassWithSet, DataClassWithSetUnbound,
+                            DataClassWithOptionalUnbound,
                             DataClassWithSetBuiltin,
                             DataClassWithDictBuiltin,
                             DataClassWithListBuiltin,
                             DataClassWithTupleBuiltin,
                             DataClassWithFrozenSetBuiltin,
-                            DataClassWithDequeGeneric,
-                            DataClassWithFrozenSetGeneric,
+                            DataClassWithDequeUnbound,
+                            DataClassWithFrozenSetUnbound,
                             DataClassWithDequeCollections,
-                            DataClassWithTuple, DataClassWithTupleGeneric,
+                            DataClassWithTuple, DataClassWithTupleUnbound,
                             DataClassWithUnionIntNone, MyCollection)
 
 
@@ -26,8 +26,8 @@ class TestEncoder:
     def test_list(self):
         assert DataClassWithList([1]).to_json() == '{"xs": [1]}'
 
-    def test_list_generic(self):
-        assert DataClassWithListGeneric([1]).to_json() == '{"xs": [1]}'
+    def test_list_unbound(self):
+        assert DataClassWithListUnbound([1]).to_json() == '{"xs": [1]}'
 
     def test_list_builtin(self):
         assert DataClassWithListBuiltin([1]).to_json() == '{"xs": [1]}'
@@ -38,8 +38,8 @@ class TestEncoder:
     def test_dict(self):
         assert DataClassWithDict({'1': 'a'}).to_json() == '{"kvs": {"1": "a"}}'
 
-    def test_dict_generic(self):
-        assert DataClassWithDictGeneric({'1': 'a'}).to_json() == '{"kvs": {"1": "a"}}'
+    def test_dict_unbound(self):
+        assert DataClassWithDictUnbound({'1': 'a'}).to_json() == '{"kvs": {"1": "a"}}'
 
     def test_dict_builtin(self):
         assert DataClassWithDictBuiltin({'1': 'a'}).to_json() == '{"kvs": {"1": "a"}}'
@@ -50,8 +50,8 @@ class TestEncoder:
     def test_set(self):
         assert DataClassWithSet({1}).to_json() == '{"xs": [1]}'
 
-    def test_set_generic(self):
-        assert DataClassWithSetGeneric({1}).to_json() == '{"xs": [1]}'
+    def test_set_unbound(self):
+        assert DataClassWithSetUnbound({1}).to_json() == '{"xs": [1]}'
 
     def test_set_builtin(self):
         assert DataClassWithSetBuiltin({1}).to_json() == '{"xs": [1]}'
@@ -59,8 +59,8 @@ class TestEncoder:
     def test_tuple(self):
         assert DataClassWithTuple((1,)).to_json() == '{"xs": [1]}'
 
-    def test_tuple_generic(self):
-        assert DataClassWithTupleGeneric((1,)).to_json() == '{"xs": [1]}'
+    def test_tuple_unbound(self):
+        assert DataClassWithTupleUnbound((1,)).to_json() == '{"xs": [1]}'
 
     def test_tuple_builtin(self):
         assert DataClassWithTupleBuiltin((1,)).to_json() == '{"xs": [1]}'
@@ -68,8 +68,8 @@ class TestEncoder:
     def test_frozenset(self):
         assert DataClassWithFrozenSet(frozenset([1])).to_json() == '{"xs": [1]}'
 
-    def test_frozenset_generic(self):
-        assert DataClassWithFrozenSetGeneric(frozenset([1])).to_json() == '{"xs": [1]}'
+    def test_frozenset_unbound(self):
+        assert DataClassWithFrozenSetUnbound(frozenset([1])).to_json() == '{"xs": [1]}'
 
     def test_frozenset_builtin(self):
         assert DataClassWithFrozenSetBuiltin(frozenset([1])).to_json() == '{"xs": [1]}'
@@ -77,8 +77,8 @@ class TestEncoder:
     def test_deque(self):
         assert DataClassWithDeque(deque([1])).to_json() == '{"xs": [1]}'
 
-    def test_deque_generic(self):
-        assert DataClassWithDequeGeneric(deque([1])).to_json() == '{"xs": [1]}'
+    def test_deque_unbound(self):
+        assert DataClassWithDequeUnbound(deque([1])).to_json() == '{"xs": [1]}'
 
     def test_deque_builtin(self):
         assert DataClassWithDequeCollections(deque([1])).to_json() == '{"xs": [1]}'
@@ -87,8 +87,8 @@ class TestEncoder:
         assert DataClassWithOptional(1).to_json() == '{"x": 1}'
         assert DataClassWithOptional(None).to_json() == '{"x": null}'
 
-    def test_optional_generic(self):
-        assert DataClassWithOptionalGeneric(1).to_json() == '{"x": 1}'
+    def test_optional_unbound(self):
+        assert DataClassWithOptionalUnbound(1).to_json() == '{"x": 1}'
 
     def test_optional_str(self):
         assert DataClassWithOptionalStr('1').to_json() == '{"x": "1"}'
@@ -118,9 +118,9 @@ class TestDecoder:
         assert (DataClassWithList.from_json('{"xs": [1]}') ==
                 DataClassWithList([1]))
 
-    def test_list_generic(self):
-        assert (DataClassWithListGeneric.from_json('{"xs": [1]}') ==
-                DataClassWithListGeneric([1]))
+    def test_list_unbound(self):
+        assert (DataClassWithListUnbound.from_json('{"xs": [1]}') ==
+                DataClassWithListUnbound([1]))
 
     def test_list_builtin(self):
         assert (DataClassWithListBuiltin.from_json('{"xs": [1]}') ==
@@ -134,9 +134,9 @@ class TestDecoder:
         assert (DataClassWithDict.from_json('{"kvs": {"1": "a"}}') ==
                 DataClassWithDict({'1': 'a'}))
 
-    def test_dict_generic(self):
-        assert (DataClassWithDictGeneric.from_json('{"kvs": {"1": "a"}}') ==
-                DataClassWithDictGeneric({'1': 'a'}))
+    def test_dict_unbound(self):
+        assert (DataClassWithDictUnbound.from_json('{"kvs": {"1": "a"}}') ==
+                DataClassWithDictUnbound({'1': 'a'}))
 
     def test_dict_builtin(self):
         assert (DataClassWithDictBuiltin.from_json('{"kvs": {"1": "a"}}') ==
@@ -150,9 +150,9 @@ class TestDecoder:
         assert (DataClassWithSet.from_json('{"xs": [1]}') ==
                 DataClassWithSet({1}))
 
-    def test_set_generic(self):
-        assert (DataClassWithSetGeneric.from_json('{"xs": [1]}') ==
-                DataClassWithSetGeneric({1}))
+    def test_set_unbound(self):
+        assert (DataClassWithSetUnbound.from_json('{"xs": [1]}') ==
+                DataClassWithSetUnbound({1}))
 
     def test_set_builtin(self):
         assert (DataClassWithSetBuiltin.from_json('{"xs": [1]}') ==
@@ -162,9 +162,9 @@ class TestDecoder:
         assert (DataClassWithTuple.from_json('{"xs": [1]}') ==
                 DataClassWithTuple((1,)))
 
-    def test_tuple_generic(self):
-        assert (DataClassWithTupleGeneric.from_json('{"xs": [1]}') ==
-                DataClassWithTupleGeneric((1,)))
+    def test_tuple_unbound(self):
+        assert (DataClassWithTupleUnbound.from_json('{"xs": [1]}') ==
+                DataClassWithTupleUnbound((1,)))
 
     def test_tuple_builtin(self):
         assert (DataClassWithTupleBuiltin.from_json('{"xs": [1]}') ==
@@ -174,9 +174,9 @@ class TestDecoder:
         assert (DataClassWithFrozenSet.from_json('{"xs": [1]}') ==
                 DataClassWithFrozenSet(frozenset([1])))
 
-    def test_frozenset_generic(self):
-        assert (DataClassWithFrozenSetGeneric.from_json('{"xs": [1]}') ==
-                DataClassWithFrozenSetGeneric(frozenset([1])))
+    def test_frozenset_unbound(self):
+        assert (DataClassWithFrozenSetUnbound.from_json('{"xs": [1]}') ==
+                DataClassWithFrozenSetUnbound(frozenset([1])))
 
     def test_frozenset_builtin(self):
         assert (DataClassWithFrozenSetBuiltin.from_json('{"xs": [1]}') ==
@@ -186,9 +186,9 @@ class TestDecoder:
         assert (DataClassWithDeque.from_json('{"xs": [1]}') ==
                 DataClassWithDeque(deque([1])))
 
-    def test_deque_generic(self):
-        assert (DataClassWithDequeGeneric.from_json('{"xs": [1]}') ==
-                DataClassWithDequeGeneric(deque([1])))
+    def test_deque_unbound(self):
+        assert (DataClassWithDequeUnbound.from_json('{"xs": [1]}') ==
+                DataClassWithDequeUnbound(deque([1])))
 
     def test_deque_collections(self):
         assert (DataClassWithDequeCollections.from_json('{"xs": [1]}') ==
@@ -200,11 +200,11 @@ class TestDecoder:
         assert (DataClassWithOptional.from_json('{"x": null}') ==
                 DataClassWithOptional(None))
 
-    def test_optional_generic(self):
-        assert (DataClassWithOptionalGeneric.from_json('{"x": 1}') ==
-                DataClassWithOptionalGeneric(1))
-        assert (DataClassWithOptionalGeneric.from_json('{"x": null}') ==
-                DataClassWithOptionalGeneric(None))
+    def test_optional_unbound(self):
+        assert (DataClassWithOptionalUnbound.from_json('{"x": 1}') ==
+                DataClassWithOptionalUnbound(1))
+        assert (DataClassWithOptionalUnbound.from_json('{"x": null}') ==
+                DataClassWithOptionalUnbound(None))
 
     def test_optional_str(self):
         assert (DataClassWithOptionalStr.from_json('{"x": "1"}') ==

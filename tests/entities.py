@@ -52,7 +52,7 @@ class DataClassWithListBuiltin(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassWithListGeneric(DataClassJsonMixin):
+class DataClassWithListUnbound(DataClassJsonMixin):
     xs: List
 
 
@@ -77,7 +77,7 @@ class DataClassWithDictBuiltin(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassWithDictGeneric(DataClassJsonMixin):
+class DataClassWithDictUnbound(DataClassJsonMixin):
     kvs: Dict
 
 
@@ -102,7 +102,7 @@ class DataClassWithSetBuiltin(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassWithSetGeneric(DataClassJsonMixin):
+class DataClassWithSetUnbound(DataClassJsonMixin):
     xs: Set
 
 
@@ -117,7 +117,7 @@ class DataClassWithTupleBuiltin(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassWithTupleGeneric(DataClassJsonMixin):
+class DataClassWithTupleUnbound(DataClassJsonMixin):
     xs: Tuple
 
 
@@ -132,7 +132,7 @@ class DataClassWithFrozenSetBuiltin(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassWithFrozenSetGeneric(DataClassJsonMixin):
+class DataClassWithFrozenSetUnbound(DataClassJsonMixin):
     xs: FrozenSet
 
 
@@ -147,7 +147,7 @@ class DataClassWithDequeCollections(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassWithDequeGeneric(DataClassJsonMixin):
+class DataClassWithDequeUnbound(DataClassJsonMixin):
     xs: Deque[int]
 
 
@@ -157,7 +157,7 @@ class DataClassWithOptional(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
-class DataClassWithOptionalGeneric(DataClassJsonMixin):
+class DataClassWithOptionalUnbound(DataClassJsonMixin):
     x: Optional
 
 

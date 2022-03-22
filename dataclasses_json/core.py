@@ -108,9 +108,9 @@ _NO_ARGS = _NoArgs()
 def _extract_args(tp: Type, default: Tuple[Type, ...] = _NO_ARGS) -> \
         Union[Tuple[Type, ...], _NoArgs]:
     if hasattr(tp, '__args__'):
-        return tp.__args__
-    else:
-        return default
+        if tp.__args__ is not None:
+            return tp.__args__
+    return default
 
 
 def _extract_type_parameter(tp: Type, index: int) -> Union[Type, _NoArgs]:

@@ -329,8 +329,10 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     decode_function = key_type
     # handle NoneType keys... it's weird to type a Dict as NoneType keys
     # but it's valid...
-    # Issue #341 and MR #346: This is a special case for Python 3.7 and Python 3.8.
-    # By some reason, "unbound" dicts are counted as having key type parameter to be TypeVar('KT')
+    # Issue #341 and PR #346:
+    #   This is a special case for Python 3.7 and Python 3.8.
+    #   By some reason, "unbound" dicts are counted
+    #   as having key type parameter to be TypeVar('KT')
     if key_type is None or key_type == Any or isinstance(key_type, TypeVar):
         decode_function = key_type = (lambda x: x)
     # handle a nested python dict that has tuples for keys. E.g. for

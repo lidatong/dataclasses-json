@@ -11,7 +11,7 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Mapping, Union, get_type_hints, Tuple
+from typing import Any, Collection, Mapping, Union, get_type_hints, Tuple, Type
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -85,6 +85,42 @@ def _user_overrides_or_exts(cls):
         field_config.update(field.metadata.get('dataclasses_json', {}))
         overrides[field.name] = FieldOverride(*map(field_config.get, confs))
     return overrides
+
+
+class _NoArgs(object):
+    def __bool__(self):
+        return False
+
+    def __len__(self):
+        return 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        raise StopIteration
+
+
+_NO_ARGS = _NoArgs()
+
+
+def _extract_args(tp: Type, default: Tuple[Type, ...] = _NO_ARGS) -> \
+        Union[Tuple[Type, ...], _NoArgs]:
+    if hasattr(tp, '__args__'):
+        return tp.__args__
+    else:
+        return default
+
+
+def _extract_type_parameter(tp: Type, index: int) -> Union[Type, _NoArgs]:
+    _args = _extract_args(tp)
+    if _args is not _NO_ARGS:
+        try:
+            return _args[index]
+        except (TypeError, IndexError, NotImplementedError):
+            pass
+
+    return _NO_ARGS
 
 
 def _encode_json_type(value, default=_ExtendedEncoder().default):
@@ -232,6 +268,8 @@ def _support_extended_types(field_type, field_value):
 
 
 def _is_supported_generic(type_):
+    if type_ is _NO_ARGS:
+        return False
     not_str = not _issubclass_safe(type_, str)
     is_enum = _issubclass_safe(type_, Enum)
     return (not_str and _is_collection(type_)) or _is_optional(
@@ -248,14 +286,15 @@ def _decode_generic(type_, value, infer_missing):
     # FIXME this is a hack to fix a deeper underlying issue. A refactor is due.
     elif _is_collection(type_):
         if _is_mapping(type_):
-            k_type, v_type = getattr(type_, "__args__", (Any, Any))
+            k_type, v_type = _extract_args(type_, (Any, Any))
             # a mapping type has `.keys()` and `.values()`
             # (see collections.abc)
             ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
             vs = _decode_items(v_type, value.values(), infer_missing)
             xs = zip(ks, vs)
         else:
-            xs = _decode_items(type_.__args__[0], value, infer_missing)
+            xs = _decode_items(_extract_type_parameter(type_, 0),
+                               value, infer_missing)
 
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on constructing using type_ itself
@@ -264,11 +303,12 @@ def _decode_generic(type_, value, infer_missing):
         except (TypeError, AttributeError):
             res = type_(xs)
     else:  # Optional or Union
-        if not hasattr(type_, "__args__"):
+        _args = _extract_args(type_)
+        if _args is _NO_ARGS:
             # Any, just accept
             res = value
-        elif _is_optional(type_) and len(type_.__args__) == 2:  # Optional
-            type_arg = type_.__args__[0]
+        elif _is_optional(type_) and len(_args) == 2:  # Optional
+            type_arg = _extract_type_parameter(type_, 0)
             if is_dataclass(type_arg) or is_dataclass(value):
                 res = _decode_dataclass(type_arg, value, infer_missing)
             elif _is_supported_generic(type_arg):

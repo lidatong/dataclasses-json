@@ -1,7 +1,8 @@
 import inspect
 import sys
 from datetime import datetime, timezone
-from typing import Collection, Mapping, Optional, TypeVar, Any
+from typing import (Collection, Mapping, Optional, TypeVar, Any, Type, Tuple,
+                    Union)
 
 
 def _get_type_cons(type_):
@@ -63,6 +64,42 @@ def _hasargs(type_, *args):
             raise
     else:
         return res
+
+
+class _NoArgs(object):
+    def __bool__(self):
+        return False
+
+    def __len__(self):
+        return 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        raise StopIteration
+
+
+_NO_ARGS = _NoArgs()
+
+
+def _get_type_args(tp: Type, default: Tuple[Type, ...] = _NO_ARGS) -> \
+        Union[Tuple[Type, ...], _NoArgs]:
+    if hasattr(tp, '__args__'):
+        if tp.__args__ is not None:
+            return tp.__args__
+    return default
+
+
+def _get_type_arg_param(tp: Type, index: int) -> Union[Type, _NoArgs]:
+    _args = _get_type_args(tp)
+    if _args is not _NO_ARGS:
+        try:
+            return _args[index]
+        except (TypeError, IndexError, NotImplementedError):
+            pass
+
+    return _NO_ARGS
 
 
 def _isinstance_safe(o, t):

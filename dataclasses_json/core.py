@@ -11,7 +11,8 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Mapping, Union, get_type_hints, Tuple, Type
+from typing import (Any, Collection, Mapping, Union, get_type_hints,
+                    Tuple, Type, TypeVar)
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -328,7 +329,7 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     decode_function = key_type
     # handle NoneType keys... it's weird to type a Dict as NoneType keys
     # but it's valid...
-    if key_type is None or key_type == Any:
+    if key_type is None or key_type == Any or isinstance(key_type, TypeVar):
         decode_function = key_type = (lambda x: x)
     # handle a nested python dict that has tuples for keys. E.g. for
     # Dict[Tuple[int], int], key_type will be typing.Tuple[int], but

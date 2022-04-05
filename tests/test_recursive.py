@@ -79,9 +79,3 @@ class TestRecursive:
 
     def test_tree_decode(self):
         assert Tree.from_json(family_tree_json) == family_tree
-
-    def test_tree_schema_round_trip(self):
-        tree_dict = Tree.schema().dump(family_tree)
-        tree_obj = Tree.schema().load(tree_dict)
-        assert tree_obj == family_tree
-

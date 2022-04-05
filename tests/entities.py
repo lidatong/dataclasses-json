@@ -177,15 +177,6 @@ class DataClassJsonDecorator:
 
 @dataclass_json
 @dataclass
-class DataClassWithConfigManual:
-    id: float = field(
-        metadata={'dataclasses_json': {
-            'mm_field': fields.Integer()
-        }})
-
-
-@dataclass_json
-@dataclass
 class DataClassWithConfigHelper:
     id: float = field(metadata=config(encoder=str))
 

@@ -54,38 +54,3 @@ class TestDecoder:
     def test_dataclass_with_python_dict(self):
         d_from_dict = DataWithPythonDict.from_dict(d_ex_as_dict)
         assert d_ex_3 == d_from_dict, f'Actual: {d_from_dict}, Expected: {d_ex_3}'
-
-
-class TestValidator:
-    @pytest.mark.parametrize('metadata_dict, is_valid', [
-        ({}, True),
-        (example_metadata_dict, True),
-        ({"is_boolean": True}, True),
-        (None, False)
-    ])
-    def test_dataclass_with_dict(self, metadata_dict, is_valid):
-        schema = DataWithDict.schema()
-        res = schema.validate({"metadata": metadata_dict})
-        assert not res == is_valid
-
-    @pytest.mark.parametrize('metadata_dict, is_valid', [
-        ({}, True),
-        (example_metadata_dict, True),
-        ({"is_boolean": True}, False),
-        ({5: "a number"}, False)
-    ])
-    def test_dataclass_with_typed_dict(self, metadata_dict, is_valid):
-        schema = DataWithTypedDict.schema()
-        res = schema.validate({"metadata": metadata_dict})
-        assert not res == is_valid
-
-    @pytest.mark.parametrize('metadata_dict, is_valid', [
-        ({}, True),
-        (example_metadata_dict, True),
-        ({"is_boolean": True}, True),
-        (None, False)
-    ])
-    def test_dataclass_with_python_dict(self, metadata_dict, is_valid):
-        schema = DataWithPythonDict.schema()
-        res = schema.validate({"metadata": metadata_dict})
-        assert not res == is_valid

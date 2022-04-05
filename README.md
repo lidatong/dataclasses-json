@@ -507,7 +507,6 @@ class DataClassWithIsoDatetime:
         metadata=config(
             encoder=datetime.isoformat,
             decoder=datetime.fromisoformat,
-            mm_field=fields.DateTime(format='iso')
         )
     )
 ```
@@ -529,7 +528,6 @@ class DataClassWithIsoDatetime:
         metadata=config(
             encoder= date.isoformat,
             decoder= date.fromisoformat,
-            mm_field= fields.DateTime(format='iso')
         ))
 ```
 
@@ -556,7 +554,6 @@ metadata = {'other_dataclass_package': 'some metadata...'}  # pre-existing metad
 dataclass_json_config = config(
             encoder=datetime.isoformat,
             decoder=datetime.fromisoformat,
-            mm_field=fields.DateTime(format='iso')
         )
 metadata.update(dataclass_json_config)
 
@@ -576,7 +573,6 @@ class DataClassWithIsoDatetime:
         metadata={'dataclasses_json': {
             'encoder': date.isoformat,
             'decoder': date.fromisoformat,
-            'mm_field': fields.DateTime(format='iso')
         }}
     )
 ```

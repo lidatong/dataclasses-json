@@ -51,14 +51,6 @@ class TestEncoder:
     def test_course(self):
         assert c.to_json() == '{"id": 1, "name": "course", "professor": {"id": 1, "name": "professor"}, "students": [{"id": 1, "name": "student"}]}'
 
-    def test_students_missing(self):
-        s1_anon = Student(1, '')
-        s2_anon = Student(2, '')
-        one = [s1_anon, s2_anon]
-        two = [s2_anon, s1_anon]
-        actual = Student.schema().loads('[{"id": 1}, {"id": 2}]', many=True)
-        assert actual == one or actual == two
-
 
 class TestDecoder:
     def test_tutor(self):

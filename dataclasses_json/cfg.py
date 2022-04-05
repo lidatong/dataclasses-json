@@ -26,7 +26,6 @@ class _GlobalConfig:
     def __init__(self):
         self.encoders: Dict[type, Callable] = {}
         self.decoders: Dict[type, Callable] = {}
-        self.mm_fields: Dict[type, MarshmallowField] = {}
         # self._json_module = json
 
     # TODO: #180
@@ -56,7 +55,6 @@ def config(metadata: dict = None, *,
            # Specifically, a Callable[A, B], where `B` is bound as a JSON type
            encoder: Callable = None,
            decoder: Callable = None,
-           mm_field: MarshmallowField = None,
            letter_case: Union[Callable[[str], str], LetterCase, None] = None,
            undefined: Optional[Union[str, Undefined]] = None,
            field_name: str = None,
@@ -72,9 +70,6 @@ def config(metadata: dict = None, *,
 
     if decoder is not None:
         lib_metadata['decoder'] = decoder
-
-    if mm_field is not None:
-        lib_metadata['mm_field'] = mm_field
 
     if field_name is not None:
         if letter_case is not None:

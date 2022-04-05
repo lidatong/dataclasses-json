@@ -6,7 +6,6 @@ from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
 from dataclasses_json.cfg import config, LetterCase  # noqa: F401
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass)
-from dataclasses_json.mm import (JsonData, SchemaType, build_schema)
 from dataclasses_json.undefined import Undefined
 from dataclasses_json.utils import (_handle_undefined_parameters_safe,
                                     _undefined_parameter_action_safe)
@@ -50,7 +49,7 @@ class DataClassJsonMixin(abc.ABC):
 
     @classmethod
     def from_json(cls: Type[A],
-                  s: JsonData,
+                  s: Any,
                   *,
                   parse_float=None,
                   parse_int=None,
@@ -73,36 +72,6 @@ class DataClassJsonMixin(abc.ABC):
 
     def to_dict(self, encode_json=False) -> Dict[str, Json]:
         return _asdict(self, encode_json=encode_json)
-
-    @classmethod
-    def schema(cls: Type[A],
-               *,
-               infer_missing: bool = False,
-               only=None,
-               exclude=(),
-               many: bool = False,
-               context=None,
-               load_only=(),
-               dump_only=(),
-               partial: bool = False,
-               unknown=None) -> SchemaType:
-        Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
-
-        if unknown is None:
-            undefined_parameter_action = _undefined_parameter_action_safe(cls)
-            if undefined_parameter_action is not None:
-                # We can just make use of the same-named mm keywords
-                unknown = undefined_parameter_action.name.lower()
-
-        return Schema(only=only,
-                      exclude=exclude,
-                      many=many,
-                      context=context,
-                      load_only=load_only,
-                      dump_only=dump_only,
-                      partial=partial,
-                      unknown=unknown)
-
 
 def dataclass_json(_cls=None, *, letter_case=None,
                    undefined: Optional[Union[str, Undefined]] = None):
@@ -136,7 +105,6 @@ def _process_class(cls, letter_case, undefined):
     cls.from_json = classmethod(DataClassJsonMixin.from_json.__func__)
     cls.to_dict = DataClassJsonMixin.to_dict
     cls.from_dict = classmethod(DataClassJsonMixin.from_dict.__func__)
-    cls.schema = classmethod(DataClassJsonMixin.schema.__func__)
 
     cls.__init__ = _handle_undefined_parameters_safe(cls, kvs=(), usage="init")
     # register cls as a virtual subclass of DataClassJsonMixin

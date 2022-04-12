@@ -16,6 +16,12 @@ from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
 
+try:
+    import numpy as np
+    np_available = True
+except ImportError:
+    np_available = False
+
 from dataclasses_json import cfg
 from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _handle_undefined_parameters_safe,
@@ -45,6 +51,10 @@ class _ExtendedEncoder(json.JSONEncoder):
             result = o.value
         elif _isinstance_safe(o, Decimal):
             result = str(o)
+        elif np_available and isinstance(o, np.integer):
+            result = int(o)
+        elif np_available and isinstance(o, np.floating):
+            result = float(o)
         else:
             result = json.JSONEncoder.default(self, o)
         return result

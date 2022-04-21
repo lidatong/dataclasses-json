@@ -337,11 +337,17 @@ def build_schema(cls: typing.Type[A],
     def dumps(self, *args, **kwargs):
         if 'cls' not in kwargs:
             kwargs['cls'] = _ExtendedEncoder
-
+        if "ignore_custom_naming" in kwargs and kwargs["ignore_custom_naming"]:
+            for attr_name, field_obj in self.dump_fields.items():
+                field_obj.data_key = None
+        if "ignore_custom_naming" in kwargs: kwargs.pop("ignore_custom_naming")
         return Schema.dumps(self, *args, **kwargs)
 
-    def dump(self, obj, *, many=None):
+    def dump(self, obj, *, many=None, ignore_custom_naming=False):
         many = self.many if many is None else bool(many)
+        if ignore_custom_naming:
+            for attr_name, field_obj in self.dump_fields.items():
+                field_obj.data_key = None
         dumped = Schema.dump(self, obj, many=many)
         # TODO This is hacky, but the other option I can think of is to generate a different schema
         #  depending on dump and load, which is even more hacky

@@ -93,10 +93,10 @@ def _encode_json_type(value, default=_ExtendedEncoder().default):
     return default(value)
 
 
-def _encode_overrides(kvs, overrides, encode_json=False):
+def _encode_overrides(kvs, overrides, encode_json=False, ignore_custom_naming=False):
     override_kvs = {}
     for k, v in kvs.items():
-        if k in overrides:
+        if k in overrides and ignore_custom_naming == False:
             exclude = overrides[k].exclude
             # If the exclude predicate returns true, the key should be
             #  excluded from encoding, so skip the rest of the loop
@@ -323,7 +323,7 @@ def _decode_items(type_arg, xs, infer_missing):
     return items
 
 
-def _asdict(obj, encode_json=False):
+def _asdict(obj, encode_json=False, ignore_custom_naming=False):
     """
     A re-implementation of `asdict` (based on the original in the `dataclasses`
     source) to support arbitrary Collection and Mapping types.
@@ -344,7 +344,7 @@ def _asdict(obj, encode_json=False):
         result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result),
                                                    usage="to")
         return _encode_overrides(dict(result), _user_overrides_or_exts(obj),
-                                 encode_json=encode_json)
+                                 encode_json=encode_json, ignore_custom_naming=ignore_custom_naming)
     elif isinstance(obj, Mapping):
         return dict((_asdict(k, encode_json=encode_json),
                      _asdict(v, encode_json=encode_json)) for k, v in

@@ -881,7 +881,7 @@ corresponding to a <code>datetime</code> field in your dataclass are decoded
 into a datetime-aware object, with <code>tzinfo</code> set to your system local timezone.
 Thus, if you encode a datetime-naive object, you will decode into a 
 datetime-aware object. This is important, because encoding and decoding won't 
-strictly be inverses. See <a href="#Overriding">this section</a> if you want to override this default
+strictly be inverses. See <a href="#overriding">this section</a> if you want to override this default
 behavior (for example, if you want to use ISO).</p>
 </li>
 <li>
@@ -1184,7 +1184,7 @@ marshmallow uses the same 3 keywords <a href="https://marshmallow.readthedocs.io
 </li>
 </ol>
 <h3 id="override-the-default-encode-decode-marshmallow-field-of-a-specific-field">Override the default encode / decode / marshmallow field of a specific field?</h3>
-<p>See <a href="#Overriding">Overriding</a></p>
+<p>See <a href="#overriding">Overriding</a></p>
 <h3 id="handle-recursive-dataclasses">Handle recursive dataclasses?</h3>
 <p>Object hierarchies where fields are of the type that they are declared within require a small
 type hinting trick to declare the forward reference.</p>

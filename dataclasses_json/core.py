@@ -11,7 +11,8 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Mapping, Union, get_type_hints, Tuple
+from typing import (Any, Collection, Counter, Mapping,
+                    Union, get_type_hints, Tuple)
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -19,9 +20,9 @@ from typing_inspect import is_union_type  # type: ignore
 from dataclasses_json import cfg
 from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _handle_undefined_parameters_safe,
-                                    _is_collection, _is_mapping, _is_new_type,
-                                    _is_optional, _isinstance_safe,
-                                    _issubclass_safe)
+                                    _is_collection, _is_counter, _is_mapping, 
+                                    _is_new_type, _is_optional, 
+                                    _isinstance_safe, _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
 
@@ -247,7 +248,7 @@ def _decode_generic(type_, value, infer_missing):
         res = type_(value)
     # FIXME this is a hack to fix a deeper underlying issue. A refactor is due.
     elif _is_collection(type_):
-        if _is_mapping(type_):
+        if _is_mapping(type_) and not _is_counter(type_):
             k_type, v_type = getattr(type_, "__args__", (Any, Any))
             # a mapping type has `.keys()` and `.values()`
             # (see collections.abc)

@@ -51,9 +51,9 @@ class _ExtendedEncoder(json.JSONEncoder):
             result = o.value
         elif _isinstance_safe(o, Decimal):
             result = str(o)
-        elif np_available and isinstance(o, np.integer):
+        elif np_available and _isinstance_safe(o, np.integer):
             result = int(o)
-        elif np_available and isinstance(o, np.floating):
+        elif np_available and _isinstance_safe(o, np.floating):
             result = float(o)
         else:
             result = json.JSONEncoder.default(self, o)

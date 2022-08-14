@@ -11,7 +11,8 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Mapping, Union, get_type_hints, Tuple
+from typing import (Any, Collection, Mapping, Union, get_type_hints,
+                    Tuple, TypeVar)
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -21,6 +22,9 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _handle_undefined_parameters_safe,
                                     _is_collection, _is_mapping, _is_new_type,
                                     _is_optional, _isinstance_safe,
+                                    _get_type_arg_param,
+                                    _get_type_args,
+                                    _NO_ARGS,
                                     _issubclass_safe)
 
 Json = Union[dict, list, str, int, float, bool, None]
@@ -232,6 +236,8 @@ def _support_extended_types(field_type, field_value):
 
 
 def _is_supported_generic(type_):
+    if type_ is _NO_ARGS:
+        return False
     not_str = not _issubclass_safe(type_, str)
     is_enum = _issubclass_safe(type_, Enum)
     return (not_str and _is_collection(type_)) or _is_optional(
@@ -248,14 +254,15 @@ def _decode_generic(type_, value, infer_missing):
     # FIXME this is a hack to fix a deeper underlying issue. A refactor is due.
     elif _is_collection(type_):
         if _is_mapping(type_):
-            k_type, v_type = getattr(type_, "__args__", (Any, Any))
+            k_type, v_type = _get_type_args(type_, (Any, Any))
             # a mapping type has `.keys()` and `.values()`
             # (see collections.abc)
             ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
             vs = _decode_items(v_type, value.values(), infer_missing)
             xs = zip(ks, vs)
         else:
-            xs = _decode_items(type_.__args__[0], value, infer_missing)
+            xs = _decode_items(_get_type_arg_param(type_, 0),
+                               value, infer_missing)
 
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on constructing using type_ itself
@@ -264,11 +271,12 @@ def _decode_generic(type_, value, infer_missing):
         except (TypeError, AttributeError):
             res = type_(xs)
     else:  # Optional or Union
-        if not hasattr(type_, "__args__"):
+        _args = _get_type_args(type_)
+        if _args is _NO_ARGS:
             # Any, just accept
             res = value
-        elif _is_optional(type_) and len(type_.__args__) == 2:  # Optional
-            type_arg = type_.__args__[0]
+        elif _is_optional(type_) and len(_args) == 2:  # Optional
+            type_arg = _get_type_arg_param(type_, 0)
             if is_dataclass(type_arg) or is_dataclass(value):
                 res = _decode_dataclass(type_arg, value, infer_missing)
             elif _is_supported_generic(type_arg):
@@ -288,7 +296,11 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     decode_function = key_type
     # handle NoneType keys... it's weird to type a Dict as NoneType keys
     # but it's valid...
-    if key_type is None or key_type == Any:
+    # Issue #341 and PR #346:
+    #   This is a special case for Python 3.7 and Python 3.8.
+    #   By some reason, "unbound" dicts are counted
+    #   as having key type parameter to be TypeVar('KT')
+    if key_type is None or key_type == Any or isinstance(key_type, TypeVar):
         decode_function = key_type = (lambda x: x)
     # handle a nested python dict that has tuples for keys. E.g. for
     # Dict[Tuple[int], int], key_type will be typing.Tuple[int], but

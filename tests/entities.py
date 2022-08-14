@@ -1,4 +1,6 @@
+from collections import deque
 from dataclasses import dataclass, field
+from datetime import datetime
 from decimal import Decimal
 from typing import (Collection,
                     Deque,
@@ -16,11 +18,8 @@ from uuid import UUID
 
 from marshmallow import fields
 
-import dataclasses_json
-from datetime import datetime
-
-from dataclasses_json.cfg import config
 from dataclasses_json import (DataClassJsonMixin, LetterCase, dataclass_json)
+from dataclasses_json.cfg import config
 
 A = TypeVar('A')
 UUIDWrapper = NewType('UUIDWrapper', UUID)
@@ -48,6 +47,16 @@ class DataClassWithList(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithListBuiltin(DataClassJsonMixin):
+    xs: list
+
+
+@dataclass(frozen=True)
+class DataClassWithListUnbound(DataClassJsonMixin):
+    xs: List
+
+
+@dataclass(frozen=True)
 class DataClassWithListDefaultFactory(DataClassJsonMixin):
     xs: List[int] = field(default_factory=list)
 
@@ -60,6 +69,16 @@ class DataClassWithListStr(DataClassJsonMixin):
 @dataclass(frozen=True)
 class DataClassWithDict(DataClassJsonMixin):
     kvs: Dict[str, str]
+
+
+@dataclass(frozen=True)
+class DataClassWithDictBuiltin(DataClassJsonMixin):
+    kvs: Dict
+
+
+@dataclass(frozen=True)
+class DataClassWithDictUnbound(DataClassJsonMixin):
+    kvs: Dict
 
 
 @dataclass(frozen=True)
@@ -78,8 +97,28 @@ class DataClassWithSet(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithSetBuiltin(DataClassJsonMixin):
+    xs: set
+
+
+@dataclass(frozen=True)
+class DataClassWithSetUnbound(DataClassJsonMixin):
+    xs: Set
+
+
+@dataclass(frozen=True)
 class DataClassWithTuple(DataClassJsonMixin):
     xs: Tuple[int]
+
+
+@dataclass(frozen=True)
+class DataClassWithTupleBuiltin(DataClassJsonMixin):
+    xs: tuple
+
+
+@dataclass(frozen=True)
+class DataClassWithTupleUnbound(DataClassJsonMixin):
+    xs: Tuple
 
 
 @dataclass(frozen=True)
@@ -88,13 +127,38 @@ class DataClassWithFrozenSet(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithFrozenSetBuiltin(DataClassJsonMixin):
+    xs: frozenset
+
+
+@dataclass(frozen=True)
+class DataClassWithFrozenSetUnbound(DataClassJsonMixin):
+    xs: FrozenSet
+
+
+@dataclass(frozen=True)
 class DataClassWithDeque(DataClassJsonMixin):
+    xs: Deque[int]
+
+
+@dataclass(frozen=True)
+class DataClassWithDequeCollections(DataClassJsonMixin):
+    xs: deque
+
+
+@dataclass(frozen=True)
+class DataClassWithDequeUnbound(DataClassJsonMixin):
     xs: Deque[int]
 
 
 @dataclass(frozen=True)
 class DataClassWithOptional(DataClassJsonMixin):
     x: Optional[int]
+
+
+@dataclass(frozen=True)
+class DataClassWithOptionalUnbound(DataClassJsonMixin):
+    x: Optional
 
 
 @dataclass

@@ -1,14 +1,13 @@
 import functools
 from enum import Enum
-from typing import Callable, Dict, Optional, TypeVar, Union
+from typing import Callable, Dict, Optional, Union
 
 from marshmallow.fields import Field as MarshmallowField
 
+from dataclasses_json.core import Json
 from dataclasses_json.stringcase import (camelcase, pascalcase, snakecase,
                                          spinalcase)  # type: ignore
 from dataclasses_json.undefined import Undefined, UndefinedParameterError
-
-T = TypeVar("T")
 
 
 class Exclude:
@@ -16,8 +15,8 @@ class Exclude:
     Pre-defined constants for exclusion. By default, fields are configured to
     be included.
     """
-    ALWAYS: Callable[[T], bool] = lambda _: True
-    NEVER: Callable[[T], bool] = lambda _: False
+    ALWAYS: Callable[[Json], bool] = lambda _: True
+    NEVER: Callable[[Json], bool] = lambda _: False
 
 
 # TODO: add warnings?
@@ -51,16 +50,16 @@ class LetterCase(Enum):
     PASCAL = pascalcase
 
 
-def config(metadata: dict = None, *,
+def config(metadata: Optional[dict] = None, *,
            # TODO: these can be typed more precisely
            # Specifically, a Callable[A, B], where `B` is bound as a JSON type
-           encoder: Callable = None,
-           decoder: Callable = None,
-           mm_field: MarshmallowField = None,
+           encoder: Optional[Callable] = None,
+           decoder: Optional[Callable] = None,
+           mm_field: Optional[MarshmallowField] = None,
            letter_case: Union[Callable[[str], str], LetterCase, None] = None,
-           undefined: Optional[Union[str, Undefined]] = None,
-           field_name: str = None,
-           exclude: Union[Callable[[str, T], bool], Exclude, None] = None,
+           undefined: Union[str, Undefined, None] = None,
+           field_name: Optional[str] = None,
+           exclude: Union[Callable[[Json], bool], Exclude, None] = None,
            ) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}

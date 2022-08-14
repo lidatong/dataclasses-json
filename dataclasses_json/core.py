@@ -11,7 +11,7 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Collection, Mapping, Union, get_type_hints, Tuple
+from typing import Any, Collection, Dict, List, Mapping, Union, get_type_hints, Tuple
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -23,7 +23,7 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _is_optional, _isinstance_safe,
                                     _issubclass_safe)
 
-Json = Union[dict, list, str, int, float, bool, None]
+Json = Union[Dict[str, 'Json'], List['Json'], str, int, float, bool, None]
 
 confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
 FieldOverride = namedtuple('FieldOverride', confs)

@@ -9,8 +9,7 @@ mypy = "*"
 pytest = "6.2.3"
 
 [packages]
-marshmallow = "*"
-marshmallow-enum = "*"
+marshmallow = ">=3.18.0"
 stringcase = "*"
 typing-inspect = "*"
 

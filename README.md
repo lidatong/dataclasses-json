@@ -434,6 +434,28 @@ from __future__ import annotations
 as it will cause problems with the way dataclasses_json accesses the type annotations.
 
 
+### What if I want to use LetterCase with the inherit class method?
+
+the `DataClassJsonMixin` class doesn't receive any parameters, but sometimes we still want to use it with the config features that the `dataclass_json` decorator has.
+e.g. when mypy or other linting/static analysis tools require the use of the `DataClassJsonMixin` class
+
+We can create another class, that inherits DataClassJsonMixin and uses the decorator as follows:
+
+```python
+@dataclass_json(letter_case=LetterCase.CAMEL)
+class DataClassCamelCaseJsonMixin(DataClassJsonMixin):
+    pass
+
+```
+
+and now we can just inherit the new class we created:
+```python
+class CamelCasePerson(DataClassCamelCaseJsonMixin):
+    given_name: str
+
+```
+
+
 ## Marshmallow interop
 
 Using the `dataclass_json` decorator or mixing in `DataClassJsonMixin` will

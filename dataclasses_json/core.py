@@ -261,8 +261,14 @@ def _decode_generic(type_, value, infer_missing):
             vs = _decode_items(v_type, value.values(), infer_missing)
             xs = zip(ks, vs)
         else:
-            xs = _decode_items(_get_type_arg_param(type_, 0),
-                               value, infer_missing)
+            # Fixed a bug when generic type `list`
+            #   => AttributeError: type object 'list' has no attribute `__args__`
+            # Detect if type hasattr `__args__`.
+            # if not => just return `xs` as a deepcopy of `value`
+            if hasattr(type, "__args__"):
+                xs = _decode_items(type_.__args__[0], value, infer_missing)
+            else:
+                xs = copy.deepcopy(value)
 
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on constructing using type_ itself

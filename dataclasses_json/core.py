@@ -114,7 +114,12 @@ def _encode_overrides(kvs, overrides, encode_json=False):
             v = encoder(v) if encoder is not None else v
 
         if encode_json:
-            v = _encode_json_type(v)
+            if isinstance(v, list):
+                v = [_encode_json_type(i) for i in v]
+            elif isinstance(v, dict):
+                v = {k: _encode_json_type(v) for k, v in v.items()}
+            else:
+                v = _encode_json_type(v)
         override_kvs[k] = v
     return override_kvs
 

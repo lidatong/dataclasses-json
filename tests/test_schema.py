@@ -1,3 +1,6 @@
+import marshmallow
+import pytest
+
 from .entities import (DataClassDefaultListStr, DataClassDefaultOptionalList, DataClassList, DataClassOptional,
                        DataClassWithNestedOptional, DataClassWithNestedOptionalAny, DataClassWithNestedAny)
 from .test_letter_case import CamelCasePerson, KebabCasePerson, SnakeCasePerson, FieldNamePerson
@@ -23,6 +26,10 @@ class TestSchema:
     def test_optional(self):
         DataClassOptional.schema().loads('{"a": 4, "b": null}')
         assert True
+
+    def test_not_providing_required_field(self):
+        with pytest.raises(marshmallow.ValidationError):
+            DataClassOptional.schema.loads('{"b": null}')
 
     def test_letter_case(self):
         for cls in (CamelCasePerson, KebabCasePerson, SnakeCasePerson, FieldNamePerson):

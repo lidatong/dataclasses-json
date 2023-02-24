@@ -93,7 +93,12 @@ def _user_overrides_or_exts(cls):
 
 def _encode_json_type(value, default=_ExtendedEncoder().default):
     if isinstance(value, Json.__args__):  # type: ignore
-        return value
+        if isinstance(value, list):
+            return [_encode_json_type(i) for i in value]
+        elif isinstance(value, dict):
+            return {k: _encode_json_type(v) for k, v in value.items()}
+        else:
+            return value
     return default(value)
 
 
@@ -114,12 +119,7 @@ def _encode_overrides(kvs, overrides, encode_json=False):
             v = encoder(v) if encoder is not None else v
 
         if encode_json:
-            if isinstance(v, list):
-                v = [_encode_json_type(i) for i in v]
-            elif isinstance(v, dict):
-                v = {k: _encode_json_type(v) for k, v in v.items()}
-            else:
-                v = _encode_json_type(v)
+            v = _encode_json_type(v)
         override_kvs[k] = v
     return override_kvs
 

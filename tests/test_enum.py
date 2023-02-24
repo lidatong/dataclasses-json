@@ -1,6 +1,6 @@
 import json
 from enum import Enum
-from typing import Dict, List
+from typing import Dict, List, Optional
 import pytest
 
 from dataclasses import dataclass, field
@@ -28,6 +28,7 @@ class DataWithEnum:
     name: str
     my_enum: MyEnum = MyEnum.STR3
     enum_list: List[MyEnum] = field(default_factory=list)
+    nested: Optional[Dict[str, List[MyEnum]]] = field(default_factory=dict)
 
 
 d1 = DataWithEnum('name1', MyEnum.STR1)
@@ -43,8 +44,8 @@ d3_int_json = '{"name": "name1", "my_enum": 1, "enum_list": []}'
 d4_float = DataWithEnum('name1', MyEnum.FLOAT1)
 d4_float_json = '{"name": "name1", "my_enum": 1.23, "enum_list": []}'
 
-d5_list = DataWithEnum('name1', MyEnum.STR1, [MyEnum.STR2, MyEnum.STR3])
-d5_list_json = '{"name": "name1", "my_enum": "str1", "enum_list": ["str2", "str3"]}'
+d5_list = DataWithEnum('name1', MyEnum.STR1, [MyEnum.STR2, MyEnum.STR3], nested={'enum_val': [MyEnum.STR1]})
+d5_list_json = '{"name": "name1", "my_enum": "str1", "enum_list": ["str2", "str3"], "nested": {"enum_val": ["str1"]}}'
 
 
 @dataclass_json

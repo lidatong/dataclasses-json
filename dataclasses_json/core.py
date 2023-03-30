@@ -160,7 +160,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
         if not field.init:
             continue
 
-        field_value = kvs[field.name]
+        field_value = kvs.get(field.name)
         field_type = types[field.name]
         if field_value is None and not _is_optional(field_type):
             warning = (f"value of non-optional type {field.name} detected "

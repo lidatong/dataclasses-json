@@ -173,7 +173,12 @@ def _decode_dataclass(cls, kvs, infer_missing):
                     f"behavior.", RuntimeWarning)
             else:
                 warnings.warn(f"`NoneType` object {warning}.", RuntimeWarning)
-            init_kwargs[field.name] = field_value
+            if hasattr(field, "default"):
+                init_kwargs[field.name] = field.default
+            elif hasattr(field, "default"):
+                init_kwargs[field.name] = field.default_factory()
+            else:
+                init_kwargs[field.name] = field_value
             continue
 
         while True:

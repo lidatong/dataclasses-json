@@ -1,0 +1,40 @@
+name: Bug report
+description: Create a bug report to help us to improve
+title: "[BUG] ..."
+labels: bug
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: |
+        Briefly describe the problem you are having in a few paragraphs.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Code snippet that reproduces the issue
+      description: |
+        Write a runnable code example that reproduces unexpected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the results you expected
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Python version you are using
+    validations:
+      required: true
+      value: python --version
+
+  - type: textarea
+    attributes:
+      label: Environment description
+    validations:
+      required: true
+      value: python -m pip freeze

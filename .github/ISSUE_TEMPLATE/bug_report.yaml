@@ -28,13 +28,13 @@ body:
   - type: input
     attributes:
       label: Python version you are using
+      placeholder: python --version
     validations:
       required: true
-      value: python --version
 
   - type: textarea
     attributes:
       label: Environment description
+      placeholder: python -m pip freeze
     validations:
       required: true
-      value: python -m pip freeze

@@ -36,9 +36,9 @@ def uplowcase(string, case):
         string: Uppercase or lowercase case string.
 
     """
-    if case == 'up':
+    if case == "up":
         return str(string).upper()
-    elif case == 'low':
+    elif case == "low":
         return str(string).lower()
 
 
@@ -57,11 +57,11 @@ def capitalcase(string):
     string = str(string)
     if not string:
         return string
-    return uplowcase(string[0], 'up') + string[1:]
+    return uplowcase(string[0], "up") + string[1:]
 
 
 def camelcase(string):
-    """ Convert string into camel case.
+    """Convert string into camel case.
 
     Args:
         string: String to convert.
@@ -71,13 +71,12 @@ def camelcase(string):
 
     """
 
-    string = re.sub(r"^[\-_\.]", '', str(string))
+    string = re.sub(r"^[\-_\.]", "", str(string))
     if not string:
         return string
-    return (uplowcase(string[0], 'low')
-            + re.sub(r"[\-_\.\s]([a-z])",
-                     lambda matched: uplowcase(matched.group(1), 'up'),
-                     string[1:]))
+    return uplowcase(string[0], "low") + re.sub(
+        r"[\-_\.\s]([a-z])", lambda matched: uplowcase(matched.group(1), "up"), string[1:]
+    )
 
 
 def snakecase(string):
@@ -92,13 +91,12 @@ def snakecase(string):
 
     """
 
-    string = re.sub(r"[\-\.\s]", '_', str(string))
+    string = re.sub(r"[\-\.\s]", "_", str(string))
     if not string:
         return string
-    return (uplowcase(string[0], 'low')
-            + re.sub(r"[A-Z]",
-                     lambda matched: '_' + uplowcase(matched.group(0), 'low'),
-                     string[1:]))
+    return uplowcase(string[0], "low") + re.sub(
+        r"[A-Z]", lambda matched: "_" + uplowcase(matched.group(0), "low"), string[1:]
+    )
 
 
 def spinalcase(string):

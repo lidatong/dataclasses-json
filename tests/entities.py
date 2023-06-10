@@ -2,28 +2,17 @@ from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
-from typing import (Collection,
-                    Deque,
-                    Dict,
-                    FrozenSet,
-                    List,
-                    NewType,
-                    Optional,
-                    Set,
-                    Tuple,
-                    TypeVar,
-                    Union,
-                    Any)
+from typing import Collection, Deque, Dict, FrozenSet, List, NewType, Optional, Set, Tuple, TypeVar, Union, Any
 from uuid import UUID
 
 from marshmallow import fields
 
-from dataclasses_json import (DataClassJsonMixin, LetterCase, dataclass_json)
+from dataclasses_json import DataClassJsonMixin, LetterCase, dataclass_json
 from dataclasses_json.cfg import config
 
-A = TypeVar('A')
-UUIDWrapper = NewType('UUIDWrapper', UUID)
-UUIDWrapperWrapper = NewType('UUIDWrapperWrapper', UUIDWrapper)
+A = TypeVar("A")
+UUIDWrapper = NewType("UUIDWrapper", UUID)
+UUIDWrapperWrapper = NewType("UUIDWrapperWrapper", UUIDWrapper)
 
 
 @dataclass(frozen=True)
@@ -242,10 +231,7 @@ class DataClassJsonDecorator:
 @dataclass_json
 @dataclass
 class DataClassWithConfigManual:
-    id: float = field(
-        metadata={'dataclasses_json': {
-            'mm_field': fields.Integer()
-        }})
+    id: float = field(metadata={"dataclasses_json": {"mm_field": fields.Integer()}})
 
 
 @dataclass_json

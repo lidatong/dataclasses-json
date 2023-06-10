@@ -1,5 +1,12 @@
-from .entities import (DataClassDefaultListStr, DataClassDefaultOptionalList, DataClassList, DataClassOptional,
-                       DataClassWithNestedOptional, DataClassWithNestedOptionalAny, DataClassWithNestedAny)
+from .entities import (
+    DataClassDefaultListStr,
+    DataClassDefaultOptionalList,
+    DataClassList,
+    DataClassOptional,
+    DataClassWithNestedOptional,
+    DataClassWithNestedOptionalAny,
+    DataClassWithNestedAny,
+)
 from .test_letter_case import CamelCasePerson, KebabCasePerson, SnakeCasePerson, FieldNamePerson
 
 test_do_list = """[{}, {"children": [{"name": "a"}, {"name": "b"}]}]"""
@@ -26,7 +33,7 @@ class TestSchema:
 
     def test_letter_case(self):
         for cls in (CamelCasePerson, KebabCasePerson, SnakeCasePerson, FieldNamePerson):
-            p = cls('Alice')
+            p = cls("Alice")
             assert p.to_dict() == cls.schema().dump(p)
 
     def test_nested_optional(self):

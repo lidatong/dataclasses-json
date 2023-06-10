@@ -7,8 +7,8 @@ from dataclasses_json import DataClassJsonMixin
 @dataclass(frozen=True)
 class Tree(DataClassJsonMixin):
     value: str
-    left: Optional['Tree']
-    right: Optional['Tree']
+    left: Optional["Tree"]
+    right: Optional["Tree"]
 
 
 family_tree_json = """
@@ -45,31 +45,8 @@ family_tree_json = """
 
 family_tree = Tree(
     "Boy",
-    Tree(
-        "Ma",
-        Tree(
-            "Maternal Grandma",
-            None,
-            None
-        ),
-        Tree(
-            "Maternal Grandpa",
-            None,
-            None
-        )
-    ),
-    Tree("Pa",
-         Tree(
-             "Paternal Grandma",
-             None,
-             None
-         ),
-         Tree(
-             "Paternal Grandpa",
-             None,
-             None
-         )
-         )
+    Tree("Ma", Tree("Maternal Grandma", None, None), Tree("Maternal Grandpa", None, None)),
+    Tree("Pa", Tree("Paternal Grandma", None, None), Tree("Paternal Grandpa", None, None)),
 )
 
 
@@ -84,4 +61,3 @@ class TestRecursive:
         tree_dict = Tree.schema().dump(family_tree)
         tree_obj = Tree.schema().load(tree_dict)
         assert tree_obj == family_tree
-

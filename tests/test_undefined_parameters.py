@@ -219,7 +219,7 @@ def test_undefined_parameters_catch_all_schema_dump(boss_json):
 
     boss = Boss.schema().loads(boss_json)
     assert json.loads(boss_json) == Boss.schema().dump(boss)
-    assert "".join(boss_json.replace('\n', '').split()) == "".join(Boss.schema().dumps(boss).replace('\n', '').split())
+    assert "".join(boss_json.replace("\n", "").split()) == "".join(Boss.schema().dumps(boss).replace("\n", "").split())
 
 
 def test_undefined_parameters_catch_all_schema_roundtrip(boss_json):
@@ -273,6 +273,7 @@ def test_it_works_from_string(invalid_response):
 
 def test_string_only_accepts_valid_actions():
     with pytest.raises(UndefinedParameterError):
+
         @dataclass_json(undefined="not sure what this is supposed to do")
         @dataclass()
         class WontWork:
@@ -334,15 +335,16 @@ def test_undefined_parameters_catch_all_init_args():
     dump = UnknownAPIDump("some-endpoint", {"some-data": "foo"}, "unknown1", "unknown2", undefined="123")
     assert dump.endpoint == "some-endpoint"
     assert dump.data == {"some-data": "foo"}
-    assert dump.catch_all == {'_UNKNOWN0': 'unknown1', '_UNKNOWN1': 'unknown2', "undefined": "123"}
+    assert dump.catch_all == {"_UNKNOWN0": "unknown1", "_UNKNOWN1": "unknown2", "undefined": "123"}
 
 
 def test_undefined_parameters_catch_all_init_args_kwargs_mixed():
-    dump = UnknownAPIDump("some-endpoint", {"some-data": "foo"}, "unknown1", "unknown2", catch_all={"bar": "example"},
-                          undefined="123")
+    dump = UnknownAPIDump(
+        "some-endpoint", {"some-data": "foo"}, "unknown1", "unknown2", catch_all={"bar": "example"}, undefined="123"
+    )
     assert dump.endpoint == "some-endpoint"
     assert dump.data == {"some-data": "foo"}
-    assert dump.catch_all == {'_UNKNOWN0': 'unknown1', '_UNKNOWN1': 'unknown2', "bar": "example", "undefined": "123"}
+    assert dump.catch_all == {"_UNKNOWN0": "unknown1", "_UNKNOWN1": "unknown2", "bar": "example", "undefined": "123"}
 
 
 def test_undefined_parameters_ignore_init_args():

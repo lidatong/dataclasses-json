@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+
 # noinspection PyCompatibility
 from dataclasses import dataclass
 from io import StringIO
@@ -19,20 +20,19 @@ class User(DataClassJsonMixin):
     ca: CatchAll = None
 
 
-Filename = NewType('Filename', str)
-LineNumber = NewType('LineNumber', int)
-ErrorLevel = NewType('ErrorLevel', str)
-ErrorMessage = NewType('ErrorMessage', str)
+Filename = NewType("Filename", str)
+LineNumber = NewType("LineNumber", int)
+ErrorLevel = NewType("ErrorLevel", str)
+ErrorMessage = NewType("ErrorMessage", str)
 
 
 class TestAnnotations:
-    u: User = User('ax9ssFxH')
+    u: User = User("ax9ssFxH")
     j: str = u.to_json()
     u2: User = User.from_json(j)
     u2a: User = User.from_json(j.encode())
 
-    jMany = [{"id": "115412", "name": "Peter"},
-             {"id": "atxXxGhg", "name": "Parker"}]
+    jMany = [{"id": "115412", "name": "Peter"}, {"id": "atxXxGhg", "name": "Parker"}]
     sch = User.schema()
     users1: List[User] = sch.loads(json.dumps(jMany), many=True)
     n: str = users1[1].name
@@ -53,39 +53,39 @@ class TestAnnotations:
 
         for line in errors:
             line = line.strip()
-            if (not line):
+            if not line:
                 continue
 
             fn, lno, lvl, msg = self.parse_trace_line(line)
-            if (fn is not None):
+            if fn is not None:
                 _path = os.path.split(fn)
-                if (_path[-1] != current_path[-1]):
+                if _path[-1] != current_path[-1]:
                     continue
 
             real_errors.append(line)
 
         return real_errors
 
-    def parse_trace_line(self, line: str) -> \
-            Tuple[Optional[Filename], Optional[LineNumber], Optional[
-                ErrorLevel], ErrorMessage]:
+    def parse_trace_line(
+        self, line: str
+    ) -> Tuple[Optional[Filename], Optional[LineNumber], Optional[ErrorLevel], ErrorMessage]:
         # Define variables
         file_name: Union[str, Filename, None]
         line_no: Union[str, LineNumber, None]
         level: Union[str, ErrorLevel, None]
         msg: Union[str, ErrorMessage, None]
 
-        where, sep, msg = line.partition(': ')
-        if (sep):
-            file_name, sep, line_no = where.rpartition(':')
+        where, sep, msg = line.partition(": ")
+        if sep:
+            file_name, sep, line_no = where.rpartition(":")
             file_name = Filename(file_name)
-            if (sep):
+            if sep:
                 line_no = LineNumber(int(line_no))
             else:
                 line_no = None
 
-            level, sep, msg = msg.partition(': ')
-            if (sep):
+            level, sep, msg = msg.partition(": ")
+            if sep:
                 level = ErrorLevel(level)
             else:
                 msg = level
@@ -103,7 +103,7 @@ class TestAnnotations:
 
     @pytest.mark.skip(reason="mypy_main signature changed")
     def test_type_hints(self):
-        text_io = StringIO('')
+        text_io = StringIO("")
         try:
             # mypy.main uses sys.stdout for printing
             # We override it to catch error messages
@@ -117,6 +117,6 @@ class TestAnnotations:
             errors = None
 
         # To prevent large errors raise error out of try/except
-        if (errors):
-            logging.error('\n'.join(errors))
+        if errors:
+            logging.error("\n".join(errors))
             raise AssertionError("Type annotations check failed")

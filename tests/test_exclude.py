@@ -19,9 +19,7 @@ class EncodeInclude(DataClassJsonMixin):
 @dataclass
 class EncodeCustom(DataClassJsonMixin):
     public_field: str
-    sensitive_field: str = field(
-        metadata=config(exclude=lambda v: v.startswith("secret"))
-    )
+    sensitive_field: str = field(metadata=config(exclude=lambda v: v.startswith("secret")))
 
 
 def test_exclude():

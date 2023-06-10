@@ -27,6 +27,8 @@ class TestGlobalConfig:
 
     def test_encoder_extension(self):
         dataclasses_json.cfg.global_config.encoders[date] = date.isoformat
-        assert PersonWithBirthday("Kobe Bryant", date(1978, 8, 23)).to_json() \
-               == '{"name": "Kobe Bryant", "birthday": "1978-08-23"}'
+        assert (
+            PersonWithBirthday("Kobe Bryant", date(1978, 8, 23)).to_json()
+            == '{"name": "Kobe Bryant", "birthday": "1978-08-23"}'
+        )
         dataclasses_json.cfg.global_config.encoders = {}

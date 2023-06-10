@@ -3,8 +3,7 @@ from collections import deque
 from hypothesis.strategies import lists, none, one_of
 
 
-def deques(elements=None, min_size=0, max_size=None,
-           unique_by=None, unique=False):
+def deques(elements=None, min_size=0, max_size=None, unique_by=None, unique=False):
     return lists(**locals()).map(deque)
 
 

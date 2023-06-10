@@ -73,6 +73,30 @@ class C9:
     f1: List[Union[Aux1, Aux2]]
 
 
+@dataclass_json
+@dataclass
+class C10:
+    """
+     Use py3.10+ pipe notation for optionals
+     Check if passing None as the first type option doesn't break type resolution
+
+     Instantiate with None default so NoneType is returned for runtime field value type.
+    """
+    f1: None | str = None
+
+
+@dataclass_json
+@dataclass
+class C11:
+    """
+         Use py3.10+ pipe notation for optionals
+         Check if passing None as the second type option doesn't break type resolution
+
+         Instantiate with None default so NoneType is returned for runtime field value type.
+        """
+    f1: str | None = None
+
+
 params = [
     (C1(f1=12), {"f1": 12}, '{"f1": 12}'),
     (C1(f1="str1"), {"f1": "str1"}, '{"f1": "str1"}'),
@@ -106,7 +130,12 @@ params = [
 
     (C9([Aux1(12), Aux2("str3")]),
      {"f1": [{"f1": 12, "__type": "Aux1"}, {"f1": "str3", "__type": "Aux2"}]},
-     '{"f1": [{"f1": 12, "__type": "Aux1"}, {"f1": "str3", "__type": "Aux2"}]}')
+     '{"f1": [{"f1": 12, "__type": "Aux1"}, {"f1": "str3", "__type": "Aux2"}]}'),
+
+    (C10(f1=None), {"f1": None}, '{"f1": null}'),
+    (C10(f1='str1'), {"f1": 'str1'}, '{"f1": "str1"}'),
+
+    (C11(f1=None), {"f1": None}, '{"f1": null}')
 ]
 
 

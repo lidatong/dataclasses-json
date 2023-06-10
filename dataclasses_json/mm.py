@@ -303,7 +303,7 @@ def schema(cls, mixin, infer_missing):
                 options['allow_none'] = True
                 if len(type_.__args__) == 2:
                     # Union[str, int, None] is optional too, but it has more than 1 typed field.
-                    type_ = type_.__args__[0]
+                    type_ = [tp for tp in type_.__args__ if tp is not type(None)][0]
 
             if metadata.letter_case is not None:
                 options['data_key'] = metadata.letter_case(field.name)

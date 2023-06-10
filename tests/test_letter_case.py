@@ -56,6 +56,16 @@ class CamelCasePersonWithOverride:
     years_on_earth: str = field(metadata=config(field_name='age'))
 
 
+@dataclass_json
+@dataclass
+class CamelCaseProtectedNamePerson:
+    _given_name_2: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.CAMEL
+        }}
+    )
+
+
 class TestLetterCase:
     def test_camel_encode(self):
         assert CamelCasePerson('Alice').to_json() == '{"givenName": "Alice"}'
@@ -107,3 +117,9 @@ class TestLetterCase:
 
     def test_to_dict(self):
         assert {'givenName': 'Alice'} == CamelCasePerson('Alice').to_dict()
+
+    def test_protected_encode(self):
+        assert CamelCaseProtectedNamePerson('Alice').to_json() == '{"givenName2": "Alice"}'
+
+    def test_protected_decode(self):
+        assert CamelCaseProtectedNamePerson.from_json('{"givenName2": "Alice"}') == CamelCaseProtectedNamePerson('Alice')

@@ -25,7 +25,7 @@ setup(
     python_requires='>=3.6',
     extras_require={
         'dev': [
-            'pytest>=6.2.3',
+            'pytest>=7.2.0',
             'ipython',
             'mypy>=0.710',
             'hypothesis',
@@ -38,6 +38,3 @@ setup(
     include_package_data=True,
     scripts=['publish.py']
 )
-
-
-

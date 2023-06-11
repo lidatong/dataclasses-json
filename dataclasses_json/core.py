@@ -51,10 +51,10 @@ class _ExtendedEncoder(json.JSONEncoder):
             result = o.value
         elif _isinstance_safe(o, Decimal):
             result = str(o)
-        elif np_available and _isinstance_safe(o, np.integer):
-            result = int(o)
-        elif np_available and _isinstance_safe(o, np.floating):
-            result = float(o)
+        elif np_available and np.isscalar(o):
+            result = o.item()
+        elif np_available and _isinstance_safe(o, np.ndarray):
+            result = o.tolist()
         else:
             result = json.JSONEncoder.default(self, o)
         return result

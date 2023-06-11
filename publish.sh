@@ -8,5 +8,5 @@ git tag "$1"
 git push --tags
 gh release create "$1"
 portray on_github_pages
-python setup.py sdist bdist_wheel
-twine upload dist/*
+# python setup.py sdist bdist_wheel
+# twine upload dist/*

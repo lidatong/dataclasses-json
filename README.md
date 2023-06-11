@@ -522,15 +522,15 @@ from dataclasses_json import dataclass_json, config
 from datetime import date
 from marshmallow import fields
 
+dataclasses_json.cfg.global_config.encoders[date] = date.isoformat
+dataclasses_json.cfg.global_config.decoders[date] = date.fromisoformat
+
 @dataclass_json
 @dataclass
 class DataClassWithIsoDatetime:
-    created_at: date = field(
-        metadata=config(
-            encoder= date.isoformat,
-            decoder= date.fromisoformat,
-            mm_field= fields.DateTime(format='iso')
-        ))
+    created_at: date
+    modified_at: date
+    accessed_at: date
 ```
 
 As you can see, you can **override** or **extend** the default codecs by providing a "hook" via a 

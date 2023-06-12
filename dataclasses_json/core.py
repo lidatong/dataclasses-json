@@ -169,16 +169,21 @@ def _decode_dataclass(cls, kvs, infer_missing):
         field_type = types[field.name]
         if field_value is None:
             if not _is_optional(field_type):
-                warning = (f"value of non-optional type {field.name} detected "
-                        f"when decoding {cls.__name__}")
+                warning = (
+                    f"value of non-optional type {field.name} detected "
+                    f"when decoding {cls.__name__}"
+                )
                 if infer_missing:
                     warnings.warn(
                         f"Missing {warning} and was defaulted to None by "
                         f"infer_missing=True. "
-                        f"Set infer_missing=False (the default) to prevent this "
-                        f"behavior.", RuntimeWarning)
+                        f"Set infer_missing=False (the default) to prevent "
+                        f"this behavior.", RuntimeWarning
+                    )
                 else:
-                    warnings.warn(f"`NoneType` object {warning}.", RuntimeWarning)
+                    warnings.warn(
+                        f"`NoneType` object {warning}.", RuntimeWarning
+                    )
             init_kwargs[field.name] = field_value
             continue
 

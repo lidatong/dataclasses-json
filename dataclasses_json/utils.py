@@ -1,7 +1,8 @@
 import inspect
 import sys
 from datetime import datetime, timezone
-from typing import Collection, Mapping, Optional, TypeVar, Any
+from typing import (Collection, Mapping, Optional, TypeVar, Any, Type, Tuple,
+                    Union)
 
 
 def _get_type_cons(type_):
@@ -26,21 +27,28 @@ def _get_type_cons(type_):
     return cons
 
 
+_NO_TYPE_ORIGIN = object()
+
+
 def _get_type_origin(type_):
     """Some spaghetti logic to accommodate differences between 3.6 and 3.7 in
     the typing api"""
     try:
         origin = type_.__origin__
     except AttributeError:
-        if sys.version_info.minor == 6:
-            try:
-                origin = type_.__extra__
-            except AttributeError:
-                origin = type_
-            else:
-                origin = type_ if origin is None else origin
-        else:
+        # Issue #341 and PR #346:
+        # For some cases, the type_.__origin__ exists but is set to None
+        origin = _NO_TYPE_ORIGIN
+
+    if sys.version_info.minor == 6:
+        try:
+            origin = type_.__extra__
+        except AttributeError:
             origin = type_
+        else:
+            origin = type_ if origin in (None, _NO_TYPE_ORIGIN) else origin
+    elif origin is _NO_TYPE_ORIGIN:
+        origin = type_
     return origin
 
 
@@ -56,6 +64,42 @@ def _hasargs(type_, *args):
             raise
     else:
         return res
+
+
+class _NoArgs(object):
+    def __bool__(self):
+        return False
+
+    def __len__(self):
+        return 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        raise StopIteration
+
+
+_NO_ARGS = _NoArgs()
+
+
+def _get_type_args(tp: Type, default: Tuple[Type, ...] = _NO_ARGS) -> \
+        Union[Tuple[Type, ...], _NoArgs]:
+    if hasattr(tp, '__args__'):
+        if tp.__args__ is not None:
+            return tp.__args__
+    return default
+
+
+def _get_type_arg_param(tp: Type, index: int) -> Union[Type, _NoArgs]:
+    _args = _get_type_args(tp)
+    if _args is not _NO_ARGS:
+        try:
+            return _args[index]
+        except (TypeError, IndexError, NotImplementedError):
+            pass
+
+    return _NO_ARGS
 
 
 def _isinstance_safe(o, t):

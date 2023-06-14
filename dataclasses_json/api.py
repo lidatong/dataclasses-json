@@ -83,7 +83,7 @@ class DataClassJsonMixin(abc.ABC):
                load_only=(),
                dump_only=(),
                partial: bool = False,
-               unknown=None) -> SchemaType:
+               unknown=None) -> "SchemaType[A]":
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
 
         if unknown is None:
@@ -122,7 +122,7 @@ def dataclass_json(_cls=None, *, letter_case=None,
     return wrap(_cls)
 
 
-def _process_class(cls, letter_case, undefined):
+def _process_class(cls, letter_case, undefined) -> Type[DataClassJsonMixin]:
     if letter_case is not None or undefined is not None:
         cls.dataclass_json_config = config(letter_case=letter_case,
                                            undefined=undefined)[

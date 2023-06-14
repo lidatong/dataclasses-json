@@ -1,5 +1,6 @@
 import datetime
 from dataclasses import dataclass, field
+from typing import Optional
 
 import pytest
 from marshmallow import fields, ValidationError
@@ -23,10 +24,21 @@ class StringDate(DataClassJsonMixin):
             'decoder': str,
             'mm_field': fields.String(required=False)}
         })
+    
+@dataclass
+class OptionalStringDate(DataClassJsonMixin):
+    string_date: Optional[datetime.datetime] = field(
+        default=None,
+        metadata={'dataclasses_json': {
+            'encoder': str,
+            'decoder': str,
+            'mm_field': fields.String(required=False)}
+        })
 
 
 car_schema = Car.schema()
 string_date_schema = StringDate.schema()
+opt_string_date_schema = OptionalStringDate.schema()
 
 
 class TestMetadata:
@@ -39,3 +51,12 @@ class TestMetadata:
         obj = string_date_schema.load({'string_date': 'yesterday'})
         assert isinstance(obj, StringDate)
         assert obj.string_date == 'yesterday'
+
+    def test_optional_field_only_decoded_when_present(self):
+        obj = opt_string_date_schema.load({})
+        assert isinstance(obj, OptionalStringDate)
+        assert obj.string_date == None
+        
+        another_obj = opt_string_date_schema.load({'string_date': 'today'})
+        assert isinstance(another_obj, OptionalStringDate)
+        assert another_obj.string_date == 'today'

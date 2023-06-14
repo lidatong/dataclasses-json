@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import TypeVar, Generic
+
 from dataclasses_json import DataClassJsonMixin
 
 
@@ -9,11 +10,11 @@ class ContainerCls(Generic[T]):
     required: bool
 
 @dataclass
-class DataClassWithUnsupscriptedGeneric(DataClassJsonMixin):
+class DataClassWithUnsubscriptedGeneric(DataClassJsonMixin):
     a: ContainerCls
 
 @dataclass
-class DataClassWithSupscriptedGeneric(DataClassJsonMixin):
+class DataClassWithSubscriptedGeneric(DataClassJsonMixin):
     a: ContainerCls[int]
 
 @dataclass
@@ -22,22 +23,22 @@ class DataClassWithParameterizedGeneric(DataClassJsonMixin, Generic[T]):
 
 
 class TestUnsupportedGenerics:
-    def test_unsupscripted(self):
+    def test_unsubscripted(self):
         j = '{ "a": { "value": "test", "required": true } }'
-        dc = DataClassWithUnsupscriptedGeneric.from_json(j)
+        dc = DataClassWithUnsubscriptedGeneric.from_json(j)
         assert dc.a == dict(value='test', required=True)
     
-    def test_supscripted(self):
+    def test_subscripted(self):
         j = '{ "a": { "value": 5, "required": false } }'
-        dc = DataClassWithSupscriptedGeneric.from_json(j)
+        dc = DataClassWithSubscriptedGeneric.from_json(j)
         assert dc.a == dict(value=5, required=False)
     
-    def test_parameterized_unsupscripted(self):
+    def test_parameterized_unsubscripted(self):
         j = '{ "a": { "value": "test", "required": true } }'
         dc = DataClassWithParameterizedGeneric.from_json(j)
         assert dc.a == dict(value='test', required=True)
     
-    def test_parameterized_supscripted(self):
+    def test_parameterized_subscripted(self):
         j = '{ "a": { "value": "test", "required": true } }'
         dc = DataClassWithParameterizedGeneric[str].from_json(j)
         assert dc.a == dict(value='test', required=True)

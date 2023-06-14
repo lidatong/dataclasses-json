@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf8') as f:
 
 setup(
     name='dataclasses-json',
-    version='0.5.7',
+    version='0.5.8',
     packages=find_packages(exclude=('tests*',)),
     package_data={"dataclasses_json": ["py.typed"]},
     author='lidatong',
@@ -25,7 +25,7 @@ setup(
     python_requires='>=3.6',
     extras_require={
         'dev': [
-            'pytest>=6.2.3',
+            'pytest>=7.2.0',
             'ipython',
             'mypy>=0.710',
             'hypothesis',
@@ -38,6 +38,4 @@ setup(
     include_package_data=True,
     scripts=['publish.py']
 )
-
-
 

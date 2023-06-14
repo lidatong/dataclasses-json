@@ -140,7 +140,7 @@ TEncoded = typing.Dict[str, typing.Any]
 TOneOrMulti = typing.Union[typing.List[A], A]
 TOneOrMultiEncoded = typing.Union[typing.List[TEncoded], TEncoded]
 
-if sys.version_info >= (3, 7):
+if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
     class SchemaF(Schema, typing.Generic[A]):
         """Lift Schema into a type constructor"""
 
@@ -303,7 +303,7 @@ def schema(cls, mixin, infer_missing):
                 options['allow_none'] = True
                 if len(type_.__args__) == 2:
                     # Union[str, int, None] is optional too, but it has more than 1 typed field.
-                    type_ = type_.__args__[0]
+                    type_ = [tp for tp in type_.__args__ if tp is not type(None)][0]
 
             if metadata.letter_case is not None:
                 options['data_key'] = metadata.letter_case(field.name)
@@ -319,7 +319,7 @@ def schema(cls, mixin, infer_missing):
 def build_schema(cls: typing.Type[A],
                  mixin,
                  infer_missing,
-                 partial) -> typing.Type[SchemaType]:
+                 partial) -> typing.Type["SchemaType[A]"]:
     Meta = type('Meta',
                 (),
                 {'fields': tuple(field.name for field in dc_fields(cls)
@@ -359,7 +359,7 @@ def build_schema(cls: typing.Type[A],
         return dumped
 
     schema_ = schema(cls, mixin, infer_missing)
-    DataClassSchema: typing.Type[SchemaType] = type(
+    DataClassSchema: typing.Type["SchemaType[A]"] = type(
         f'{cls.__name__.capitalize()}Schema',
         (Schema,),
         {'Meta': Meta,

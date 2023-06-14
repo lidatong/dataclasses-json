@@ -241,6 +241,10 @@ def _support_extended_types(field_type, field_value):
         res = (field_value
                if isinstance(field_value, UUID)
                else UUID(field_value))
+    elif _issubclass_safe(field_type, (int, float, str, bool)):
+        res = (field_value
+               if isinstance(field_value, field_type)
+               else field_type(field_value))
     else:
         res = field_value
     return res

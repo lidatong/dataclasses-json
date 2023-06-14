@@ -2,7 +2,7 @@
 
 . venv/bin/activate
 git add .
-git commit -m "Release $1"
+git commit -m "chore: release $1"
 git push
 git tag "$1"
 git push --tags

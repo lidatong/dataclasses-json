@@ -12,8 +12,6 @@ from dataclasses_json.utils import (_handle_undefined_parameters_safe,
                                     _undefined_parameter_action_safe)
 
 A = TypeVar('A', bound="DataClassJsonMixin")
-B = TypeVar('B')
-C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
 
 
@@ -124,7 +122,7 @@ def dataclass_json(_cls=None, *, letter_case=None,
     return wrap(_cls)
 
 
-def _process_class(cls, letter_case, undefined):
+def _process_class(cls, letter_case, undefined) -> Type[DataClassJsonMixin]:
     if letter_case is not None or undefined is not None:
         cls.dataclass_json_config = config(letter_case=letter_case,
                                            undefined=undefined)[

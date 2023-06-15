@@ -53,7 +53,7 @@ class FieldNamePerson:
 @dataclass
 class CamelCasePersonWithOverride:
     given_name: str
-    years_on_earth: str = field(metadata=config(field_name='age'))
+    years_on_earth: int = field(metadata=config(field_name='age'))
 
 
 class TestLetterCase:

@@ -15,7 +15,7 @@ dcconss_strategies_conss = [(DataClassWithList, lists, list),
                             (DataClassWithTuple, tuples, tuple),
                             (DataClassWithFrozenSet, frozensets, frozenset),
                             (DataClassWithDeque, deques, deque),
-                            (DataClassWithOptional, optionals, lambda x: x)]
+                            (DataClassWithOptional, optionals, lambda x: x[0])]
 example_input = [1]
 
 

@@ -1,9 +1,9 @@
 import json
 from enum import Enum
-from typing import Dict, List
+from typing import Dict, List, Optional
 import pytest
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from dataclasses_json import dataclass_json
 
@@ -27,19 +27,25 @@ class MyStrEnum(str, Enum):
 class DataWithEnum:
     name: str
     my_enum: MyEnum = MyEnum.STR3
+    enum_list: List[MyEnum] = field(default_factory=list)
+    nested: Dict[str, List[MyEnum]] = field(default_factory=dict)
 
 
 d1 = DataWithEnum('name1', MyEnum.STR1)
-d1_json = '{"name": "name1", "my_enum": "str1"}'
+d1_json = '{"name": "name1", "my_enum": "str1", "enum_list": [], "nested": {}}'
 
 # Make sure the enum is set to the default value defined by MyEnum
 d2_using_default_value = DataWithEnum('name2')
-d2_json = '{"name": "name2", "my_enum": "str3"}'
+d2_json = '{"name": "name2", "my_enum": "str3", "enum_list": [], "nested": {}}'
 
 d3_int = DataWithEnum('name1', MyEnum.INT1)
-d3_int_json = '{"name": "name1", "my_enum": 1}'
+d3_int_json = '{"name": "name1", "my_enum": 1, "enum_list": [], "nested": {}}'
+
 d4_float = DataWithEnum('name1', MyEnum.FLOAT1)
-d4_float_json = '{"name": "name1", "my_enum": 1.23}'
+d4_float_json = '{"name": "name1", "my_enum": 1.23, "enum_list": [], "nested": {}}'
+
+d5_list = DataWithEnum('name1', MyEnum.STR1, [MyEnum.STR2, MyEnum.STR3], nested={'enum_val': [MyEnum.STR1]})
+d5_list_json = '{"name": "name1", "my_enum": "str1", "enum_list": ["str2", "str3"], "nested": {"enum_val": ["str1"]}}'
 
 
 @dataclass_json
@@ -81,6 +87,10 @@ class TestEncoder:
 
     def test_collection_with_enum(self):
         assert container.to_json() == container_json
+
+    def test_enum_with_list(self):
+        assert d5_list.to_json() == d5_list_json, f'Actual: {d5_list.to_json()}, Expected: {d5_list_json}'
+        assert d5_list.to_dict(encode_json=True) == json.loads(d5_list_json), f'Actual: {d5_list.to_dict()}, Expected: {json.loads(d5_list_json)}'
 
 
 class TestDecoder:

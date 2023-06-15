@@ -287,7 +287,7 @@ def schema(cls, mixin, infer_missing):
             schema[field.name] = metadata.mm_field
         else:
             type_ = field.type
-            options: typing.Dict[str, any] = {}
+            options: typing.Dict[str, typing.Any] = {}
             missing_key = 'missing' if infer_missing else 'default'
             if field.default is not MISSING:
                 options[missing_key] = field.default

@@ -29,7 +29,7 @@ class TestSchema:
 
     def test_not_providing_required_field(self):
         with pytest.raises(marshmallow.ValidationError):
-            DataClassOptional.schema.loads('{"b": null}')
+            DataClassOptional.schema().loads('{"b": null}')
 
     def test_letter_case(self):
         for cls in (CamelCasePerson, KebabCasePerson, SnakeCasePerson, FieldNamePerson):

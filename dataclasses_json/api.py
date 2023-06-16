@@ -1,13 +1,9 @@
 import abc
 import json
-from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
-from stringcase import (camelcase, pascalcase, snakecase,
-                        spinalcase)  # type: ignore
-
-from dataclasses_json.cfg import config
+from dataclasses_json.cfg import config, LetterCase  # noqa: F401
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass)
 from dataclasses_json.mm import (JsonData, SchemaType, build_schema)
@@ -16,16 +12,7 @@ from dataclasses_json.utils import (_handle_undefined_parameters_safe,
                                     _undefined_parameter_action_safe)
 
 A = TypeVar('A', bound="DataClassJsonMixin")
-B = TypeVar('B')
-C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
-
-
-class LetterCase(Enum):
-    CAMEL = camelcase
-    KEBAB = spinalcase
-    SNAKE = snakecase
-    PASCAL = pascalcase
 
 
 class DataClassJsonMixin(abc.ABC):
@@ -96,7 +83,7 @@ class DataClassJsonMixin(abc.ABC):
                load_only=(),
                dump_only=(),
                partial: bool = False,
-               unknown=None) -> SchemaType:
+               unknown=None) -> "SchemaType[A]":
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
 
         if unknown is None:
@@ -135,7 +122,7 @@ def dataclass_json(_cls=None, *, letter_case=None,
     return wrap(_cls)
 
 
-def _process_class(cls, letter_case, undefined):
+def _process_class(cls, letter_case, undefined) -> Type[DataClassJsonMixin]:
     if letter_case is not None or undefined is not None:
         cls.dataclass_json_config = config(letter_case=letter_case,
                                            undefined=undefined)[

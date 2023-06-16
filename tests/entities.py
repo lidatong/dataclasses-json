@@ -254,6 +254,19 @@ class DataClassWithConfigHelper:
     id: float = field(metadata=config(encoder=str))
 
 
+@dataclass_json
+@dataclass
+class DataClassWithErroneousDecode:
+    # Accepts no arguments, so passing in a single argument will result in a TypeError.
+    id: float = field(metadata=config(decoder=lambda: None))
+
+
+@dataclass_json
+@dataclass
+class DataClassMappingBadDecode:
+    map: Dict[str, DataClassWithErroneousDecode]
+
+
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class DataClassWithConfigDecorator:

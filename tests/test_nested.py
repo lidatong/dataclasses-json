@@ -1,4 +1,5 @@
-from tests.entities import (DataClassWithDataClass,
+from tests.entities import (DataClassMappingBadDecode,
+                            DataClassWithDataClass,
                             DataClassWithList,
                             DataClassWithNestedDictWithTupleKeys,
                             DataClassX,
@@ -24,6 +25,16 @@ class TestDecoder:
     def test_nested_list_of_dataclasses(self):
         assert (DataClassXs.from_json('{"xs": [{"x": 0}, {"x": 1}]}') ==
                 DataClassXs([DataClassX(0), DataClassX(1)]))
+
+    def test_nested_mapping_of_dataclasses(self):
+        err = None
+        try:
+            DataClassMappingBadDecode.from_dict(dict(map=dict(test=dict(id="irrelevant"))))
+        except TypeError as e:
+            if "positional arguments" not in e.args[0]:
+                raise
+            err = e
+        assert isinstance(err, TypeError)
 
 
 class TestNested:

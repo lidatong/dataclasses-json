@@ -40,3 +40,4 @@ jobs:
           reporter: github-pr-review
           level: error
           mypy_flags: '--strict --strict-equality'
+          workdir: dataclasses_json

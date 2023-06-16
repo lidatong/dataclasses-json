@@ -39,5 +39,5 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
           level: error
-          mypy_flags: '--strict --strict-equality'
+          mypy_flags: '--strict --strict-equality --disallow-untyped-defs'
           workdir: dataclasses_json

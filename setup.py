@@ -35,7 +35,8 @@ setup(
             'simplejson',
             'setuptools',
             'wheel',
-            'twine'
+            'twine',
+            'mypy'
         ]
     },
     include_package_data=True,

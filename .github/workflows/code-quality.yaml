@@ -1,4 +1,4 @@
-name: Code Quality
+name: code-quality
 
 on:
   push:
@@ -39,5 +39,5 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
           level: error
-          mypy_flags: '--strict --disallow-untyped-defs --check-untyped-defs'
+          mypy_flags: '--strict --disallow-untyped-defs --check-untyped-defs --disallow-any-expr'
           workdir: dataclasses_json

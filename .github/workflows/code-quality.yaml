@@ -34,5 +34,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[dev]"
 
+      - uses: reviewdog/action-setup@v1
+
       - name: run mypy
         run: mypy dataclasses_json

@@ -26,7 +26,7 @@
 import re
 
 
-def uplowcase(string, case: int):
+def uplowcase(string, case):
     """Convert string into upper or lower case.
 
     Args:

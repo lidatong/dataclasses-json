@@ -292,7 +292,7 @@ def schema(cls, mixin, infer_missing):
             if field.default is not MISSING:
                 options[missing_key] = field.default
             elif field.default_factory is not MISSING:
-                options[missing_key] = field.default_factory
+                options[missing_key] = field.default_factory()
             else:
                 options['required'] = True
 

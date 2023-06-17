@@ -282,18 +282,19 @@ def schema(cls, mixin, infer_missing):
     # TODO check the undefined parameters and add the proper schema action
     #  https://marshmallow.readthedocs.io/en/stable/quickstart.html
     for field in dc_fields(cls):
-        metadata = (field.metadata or {}).get('dataclasses_json', {})
         metadata = overrides[field.name]
         if metadata.mm_field is not None:
             schema[field.name] = metadata.mm_field
         else:
             type_ = field.type
-            options = {}
+            options: typing.Dict[str, typing.Any] = {}
             missing_key = 'missing' if infer_missing else 'default'
             if field.default is not MISSING:
                 options[missing_key] = field.default
             elif field.default_factory is not MISSING:
                 options[missing_key] = field.default_factory()
+            else:
+                options['required'] = True
 
             if options.get(missing_key, ...) is None:
                 options['allow_none'] = True
@@ -346,7 +347,7 @@ def build_schema(cls: typing.Type[A],
         # TODO This is hacky, but the other option I can think of is to generate a different schema
         #  depending on dump and load, which is even more hacky
 
-        # The only problem is the catch all field, we can't statically create a schema for it
+        # The only problem is the catch-all field, we can't statically create a schema for it,
         # so we just update the dumped dict
         if many:
             for i, _obj in enumerate(obj):
@@ -369,5 +370,3 @@ def build_schema(cls: typing.Type[A],
          **schema_})
 
     return DataClassSchema
-
-

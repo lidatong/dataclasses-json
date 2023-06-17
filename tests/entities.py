@@ -157,6 +157,11 @@ class DataClassWithOptional(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithOptionalWithDefault(DataClassJsonMixin):
+    x: Optional[int] = None
+
+
+@dataclass(frozen=True)
 class DataClassWithOptionalUnbound(DataClassJsonMixin):
     x: Optional
 
@@ -169,6 +174,11 @@ class DataClassWithOptionalStr(DataClassJsonMixin):
 @dataclass(frozen=True)
 class DataClassWithOptionalNested(DataClassJsonMixin):
     x: Optional[DataClassWithOptional]
+
+
+@dataclass(frozen=True)
+class DataClassWithOptionalNestedWithDefault(DataClassJsonMixin):
+    x: Optional[DataClassWithOptional] = None
 
 
 @dataclass(frozen=True)

@@ -140,7 +140,7 @@ TEncoded = typing.Dict[str, typing.Any]
 TOneOrMulti = typing.Union[typing.List[A], A]
 TOneOrMultiEncoded = typing.Union[typing.List[TEncoded], TEncoded]
 
-if sys.version_info >= (3, 7):
+if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
     class SchemaF(Schema, typing.Generic[A]):
         """Lift Schema into a type constructor"""
 
@@ -282,18 +282,19 @@ def schema(cls, mixin, infer_missing):
     # TODO check the undefined parameters and add the proper schema action
     #  https://marshmallow.readthedocs.io/en/stable/quickstart.html
     for field in dc_fields(cls):
-        metadata = (field.metadata or {}).get('dataclasses_json', {})
         metadata = overrides[field.name]
         if metadata.mm_field is not None:
             schema[field.name] = metadata.mm_field
         else:
             type_ = field.type
-            options = {}
+            options: typing.Dict[str, typing.Any] = {}
             missing_key = 'missing' if infer_missing else 'default'
             if field.default is not MISSING:
                 options[missing_key] = field.default
             elif field.default_factory is not MISSING:
-                options[missing_key] = field.default_factory
+                options[missing_key] = field.default_factory()
+            else:
+                options['required'] = True
 
             if options.get(missing_key, ...) is None:
                 options['allow_none'] = True
@@ -303,7 +304,7 @@ def schema(cls, mixin, infer_missing):
                 options['allow_none'] = True
                 if len(type_.__args__) == 2:
                     # Union[str, int, None] is optional too, but it has more than 1 typed field.
-                    type_ = type_.__args__[0]
+                    type_ = [tp for tp in type_.__args__ if tp is not type(None)][0]
 
             if metadata.letter_case is not None:
                 options['data_key'] = metadata.letter_case(field.name)
@@ -319,7 +320,7 @@ def schema(cls, mixin, infer_missing):
 def build_schema(cls: typing.Type[A],
                  mixin,
                  infer_missing,
-                 partial) -> typing.Type[SchemaType]:
+                 partial) -> typing.Type["SchemaType[A]"]:
     Meta = type('Meta',
                 (),
                 {'fields': tuple(field.name for field in dc_fields(cls)
@@ -346,7 +347,7 @@ def build_schema(cls: typing.Type[A],
         # TODO This is hacky, but the other option I can think of is to generate a different schema
         #  depending on dump and load, which is even more hacky
 
-        # The only problem is the catch all field, we can't statically create a schema for it
+        # The only problem is the catch-all field, we can't statically create a schema for it,
         # so we just update the dumped dict
         if many:
             for i, _obj in enumerate(obj):
@@ -359,7 +360,7 @@ def build_schema(cls: typing.Type[A],
         return dumped
 
     schema_ = schema(cls, mixin, infer_missing)
-    DataClassSchema: typing.Type[SchemaType] = type(
+    DataClassSchema: typing.Type["SchemaType[A]"] = type(
         f'{cls.__name__.capitalize()}Schema',
         (Schema,),
         {'Meta': Meta,
@@ -369,5 +370,3 @@ def build_schema(cls: typing.Type[A],
          **schema_})
 
     return DataClassSchema
-
-

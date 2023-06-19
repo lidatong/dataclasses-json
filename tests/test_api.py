@@ -18,7 +18,9 @@ from tests.entities import (DataClassBoolImmutableDefault,
                             DataClassWithOptionalDecimal,
                             DataClassWithOptionalNested,
                             DataClassWithOptionalUuid, DataClassWithUuid, UUIDWrapper,
-                            UUIDWrapperWrapper)
+                            UUIDWrapperWrapper,
+                            DataClassWithOptionalWithDefault,
+                            DataClassWithOptionalNestedWithDefault)
 
 
 class TestTypes:
@@ -218,15 +220,15 @@ class TestSchema:
             d_new_type) == f'{{"id": "{raw_value}"}}'
 
     def test_loads_infer_missing(self):
-        assert (DataClassWithOptional
+        assert (DataClassWithOptionalWithDefault
                 .schema(infer_missing=True)
-                .loads('[{}]', many=True) == [DataClassWithOptional(None)])
+                .loads('[{}]', many=True) == [DataClassWithOptionalWithDefault(None)])
 
     def test_loads_infer_missing_nested(self):
-        assert (DataClassWithOptionalNested
+        assert (DataClassWithOptionalNestedWithDefault
                 .schema(infer_missing=True)
                 .loads('[{}]', many=True) == [
-                    DataClassWithOptionalNested(None)])
+                    DataClassWithOptionalNestedWithDefault(None)])
 
 
 class TestOverride:

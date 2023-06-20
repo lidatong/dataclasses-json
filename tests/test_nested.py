@@ -1,3 +1,4 @@
+import pytest
 from tests.entities import (DataClassMappingBadDecode,
                             DataClassWithDataClass,
                             DataClassWithList,

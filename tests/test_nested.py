@@ -27,14 +27,8 @@ class TestDecoder:
                 DataClassXs([DataClassX(0), DataClassX(1)]))
 
     def test_nested_mapping_of_dataclasses(self):
-        err = None
-        try:
+        with pytest.raises(TypeError, match="positional arguments"):
             DataClassMappingBadDecode.from_dict(dict(map=dict(test=dict(id="irrelevant"))))
-        except TypeError as e:
-            if "positional arguments" not in e.args[0]:
-                raise
-            err = e
-        assert isinstance(err, TypeError)
 
 
 class TestNested:

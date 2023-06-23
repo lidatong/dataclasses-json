@@ -281,10 +281,12 @@ def _decode_generic(type_, value, infer_missing):
 
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on constructing using type_ itself
+        materialize_type = type_
         try:
-            res = _get_type_cons(type_)(xs)
+            materialize_type = _get_type_cons(type_)
         except (TypeError, AttributeError):
-            res = type_(xs)
+            pass
+        res = materialize_type(xs)
     else:  # Optional or Union
         _args = _get_type_args(type_)
         if _args is _NO_ARGS:

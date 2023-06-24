@@ -115,7 +115,10 @@ def _encode_overrides(kvs, overrides, encode_json=False):
             original_key = k
             k = letter_case(k) if letter_case is not None else k
             if k in override_kvs:
-                raise ValueError(f"Multiple fields map to the same JSON key after letter case encoding: {k}")
+                raise ValueError(
+                    f"Multiple fields map to the same JSON "
+                    f"key after letter case encoding: {k}"
+                )
 
             encoder = overrides[original_key].encoder
             v = encoder(v) if encoder is not None else v

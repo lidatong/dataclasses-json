@@ -66,6 +66,16 @@ class CamelCaseProtectedNamePerson:
     )
 
 
+@dataclass_json
+@dataclass
+class CamelCaseProtectedNamePerson:
+    _given_name_2: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.CAMEL
+        }}
+    )
+
+
 class TestLetterCase:
     def test_camel_encode(self):
         assert CamelCasePerson('Alice').to_json() == '{"givenName": "Alice"}'

@@ -29,7 +29,7 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
 
 Json = Union[dict, list, str, int, float, bool, None]
 
-confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
+confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude', 'field_class_name']
 FieldOverride = namedtuple('FieldOverride', confs)
 
 
@@ -83,6 +83,8 @@ def _user_overrides_or_exts(cls):
             field_config['decoder'] = field_metadata['decoder']
         if 'mm_field' in field_metadata:
             field_config['mm_field'] = field_metadata['mm_field']
+        if 'field_class_name' in field_metadata:
+            field_config['field_class_name'] = field_metadata['field_class_name']
         # then apply class-level overrides or extensions
         field_config.update(cls_config)
         # last apply field-level overrides or extensions
@@ -368,6 +370,8 @@ def _asdict(obj, encode_json=False):
                     getattr(obj, field.name),
                     encode_json=encode_json
                 )
+            if overrides[field.name].field_class_name:
+                field.name = type(getattr(obj, field.name)).__name__
             result.append((field.name, value))
 
         result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result),

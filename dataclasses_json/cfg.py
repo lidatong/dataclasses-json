@@ -60,6 +60,7 @@ def config(metadata: dict = None, *,
            letter_case: Union[Callable[[str], str], LetterCase, None] = None,
            undefined: Optional[Union[str, Undefined]] = None,
            field_name: str = None,
+           field_class_name: bool = False,
            exclude: Union[Callable[[str, T], bool], Exclude, None] = None,
            ) -> Dict[str, dict]:
     if metadata is None:
@@ -85,6 +86,9 @@ def config(metadata: dict = None, *,
             def override(_, _field_name=field_name):  # type:ignore
                 return _field_name
         letter_case = override
+
+    if field_class_name is not None:
+        lib_metadata['field_class_name'] = field_class_name
 
     if letter_case is not None:
         lib_metadata['letter_case'] = letter_case

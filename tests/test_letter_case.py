@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+import pytest
+
 from dataclasses_json import LetterCase, dataclass_json, config
 
 
@@ -54,16 +56,6 @@ class FieldNamePerson:
 class CamelCasePersonWithOverride:
     given_name: str
     years_on_earth: int = field(metadata=config(field_name='age'))
-
-
-@dataclass_json
-@dataclass
-class CamelCaseProtectedNamePerson:
-    _given_name_2: str = field(
-        metadata={'dataclasses_json': {
-            'letter_case': LetterCase.CAMEL
-        }}
-    )
 
 
 @dataclass_json

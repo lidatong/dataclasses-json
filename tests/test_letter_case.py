@@ -76,6 +76,21 @@ class CamelCaseProtectedNamePerson:
     )
 
 
+@dataclass_json
+@dataclass
+class CamelCaseDuplicatedNameEncodingPerson:
+    given_name_1: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.CAMEL
+        }}
+    )
+    given_name1: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.CAMEL
+        }}
+    )
+
+
 class TestLetterCase:
     def test_camel_encode(self):
         assert CamelCasePerson('Alice').to_json() == '{"givenName": "Alice"}'
@@ -133,3 +148,7 @@ class TestLetterCase:
 
     def test_protected_decode(self):
         assert CamelCaseProtectedNamePerson.from_json('{"givenName2": "Alice"}') == CamelCaseProtectedNamePerson('Alice')
+
+    def test_duplicated_encoding(self):
+        with pytest.raises(ValueError):
+            CamelCaseDuplicatedNameEncodingPerson('Alice', 'Bob').to_json()

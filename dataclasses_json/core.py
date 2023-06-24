@@ -167,17 +167,23 @@ def _decode_dataclass(cls, kvs, infer_missing):
 
         field_value = kvs[field.name]
         field_type = types[field.name]
-        if field_value is None and not _is_optional(field_type):
-            warning = (f"value of non-optional type {field.name} detected "
-                       f"when decoding {cls.__name__}")
-            if infer_missing:
-                warnings.warn(
-                    f"Missing {warning} and was defaulted to None by "
-                    f"infer_missing=True. "
-                    f"Set infer_missing=False (the default) to prevent this "
-                    f"behavior.", RuntimeWarning)
-            else:
-                warnings.warn(f"`NoneType` object {warning}.", RuntimeWarning)
+        if field_value is None:
+            if not _is_optional(field_type):
+                warning = (
+                    f"value of non-optional type {field.name} detected "
+                    f"when decoding {cls.__name__}"
+                )
+                if infer_missing:
+                    warnings.warn(
+                        f"Missing {warning} and was defaulted to None by "
+                        f"infer_missing=True. "
+                        f"Set infer_missing=False (the default) to prevent "
+                        f"this behavior.", RuntimeWarning
+                    )
+                else:
+                    warnings.warn(
+                        f"`NoneType` object {warning}.", RuntimeWarning
+                    )
             init_kwargs[field.name] = field_value
             continue
 
@@ -235,6 +241,10 @@ def _support_extended_types(field_type, field_value):
         res = (field_value
                if isinstance(field_value, UUID)
                else UUID(field_value))
+    elif _issubclass_safe(field_type, (int, float, str, bool)):
+        res = (field_value
+               if isinstance(field_value, field_type)
+               else field_type(field_value))
     else:
         res = field_value
     return res
@@ -271,10 +281,12 @@ def _decode_generic(type_, value, infer_missing):
 
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on constructing using type_ itself
+        materialize_type = type_
         try:
-            res = _get_type_cons(type_)(xs)
+            materialize_type = _get_type_cons(type_)
         except (TypeError, AttributeError):
-            res = type_(xs)
+            pass
+        res = materialize_type(xs)
     else:  # Optional or Union
         _args = _get_type_args(type_)
         if _args is _NO_ARGS:

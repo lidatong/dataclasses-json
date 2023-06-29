@@ -83,7 +83,7 @@ class _NoArgs(object):
 _NO_ARGS = _NoArgs()
 
 
-def _get_type_args(tp: Type, default: Tuple[Type, ...] = _NO_ARGS) -> \
+def _get_type_args(tp: Type, default: Union[Tuple[Type, ...], _NoArgs] = _NO_ARGS) -> \
         Union[Tuple[Type, ...], _NoArgs]:
     if hasattr(tp, '__args__'):
         if tp.__args__ is not None:

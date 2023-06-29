@@ -29,8 +29,10 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
 
 Json = Union[dict, list, str, int, float, bool, None]
 
-confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
-FieldOverride = namedtuple('FieldOverride', confs)
+FieldOverride = namedtuple(
+    'FieldOverride',
+    ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
+)
 
 
 class _ExtendedEncoder(json.JSONEncoder):

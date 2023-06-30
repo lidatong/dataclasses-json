@@ -54,12 +54,12 @@ class LetterCase(Enum):
 def config(metadata: dict = None, *,
            # TODO: these can be typed more precisely
            # Specifically, a Callable[A, B], where `B` is bound as a JSON type
-           encoder: Callable = None,
-           decoder: Callable = None,
+           encoder: Optional[Callable] = None,
+           decoder: Optional[Callable] = None,
            mm_field: MarshmallowField = None,
            letter_case: Union[Callable[[str], str], LetterCase, None] = None,
            undefined: Optional[Union[str, Undefined]] = None,
-           field_name: str = None,
+           field_name: Optional[str] = None,
            exclude: Union[Callable[[str, T], bool], Exclude, None] = None,
            ) -> Dict[str, dict]:
     if metadata is None:

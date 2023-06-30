@@ -154,12 +154,12 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             raise NotImplementedError()
 
         @typing.overload
-        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[TEncoded]:  # type: ignore
+        def dump(self, obj: typing.List[A], many: typing.Optional[bool] = None) -> typing.List[TEncoded]:  # type: ignore
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             pass
 
         @typing.overload
-        def dump(self, obj: A, many: bool = None) -> TEncoded:
+        def dump(self, obj: A, many: typing.Optional[bool] = None) -> TEncoded:
             pass
 
         def dump(self, obj: TOneOrMulti,
@@ -167,40 +167,40 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             pass
 
         @typing.overload
-        def dumps(self, obj: typing.List[A], many: bool = None, *args,
+        def dumps(self, obj: typing.List[A], many: typing.Optional[bool] = None, *args,
                   **kwargs) -> str:
             pass
 
         @typing.overload
-        def dumps(self, obj: A, many: bool = None, *args, **kwargs) -> str:
+        def dumps(self, obj: A, many: typing.Optional[bool] = None, *args, **kwargs) -> str:
             pass
 
-        def dumps(self, obj: TOneOrMulti, many: bool = None, *args,
+        def dumps(self, obj: TOneOrMulti, many: typing.Optional[bool] = None, *args,
                   **kwargs) -> str:
             pass
 
         @typing.overload  # type: ignore
         def load(self, data: typing.List[TEncoded],
-                 many: bool = True, partial: bool = None,
-                 unknown: str = None) -> \
+                 many: bool = True, partial: typing.Optional[bool] = None,
+                 unknown: typing.Optional[str] = None) -> \
                 typing.List[A]:
             # ignore the mypy error of the decorator because mm does not define lists as an allowed input type
             pass
 
         @typing.overload
         def load(self, data: TEncoded,
-                 many: None = None, partial: bool = None,
-                 unknown: str = None) -> A:
+                 many: None = None, partial: typing.Optional[bool] = None,
+                 unknown: typing.Optional[str] = None) -> A:
             pass
 
         def load(self, data: TOneOrMultiEncoded,
-                 many: bool = None, partial: bool = None,
-                 unknown: str = None) -> TOneOrMulti:
+                 many: typing.Optional[bool] = None, partial: typing.Optional[bool] = None,
+                 unknown: typing.Optional[str] = None) -> TOneOrMulti:
             pass
 
         @typing.overload  # type: ignore
         def loads(self, json_data: JsonData,  # type: ignore
-                  many: bool = True, partial: bool = None, unknown: str = None,
+                  many: typing.Optional[bool] = True, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
                   **kwargs) -> typing.List[A]:
             # ignore the mypy error of the decorator because mm does not define bytes as correct input data
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
@@ -209,12 +209,12 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
 
         @typing.overload
         def loads(self, json_data: JsonData,
-                  many: None = None, partial: bool = None, unknown: str = None,
+                  many: None = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
                   **kwargs) -> A:
             pass
 
         def loads(self, json_data: JsonData,
-                  many: bool = None, partial: bool = None, unknown: str = None,
+                  many: bool = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
                   **kwargs) -> TOneOrMulti:
             pass
 

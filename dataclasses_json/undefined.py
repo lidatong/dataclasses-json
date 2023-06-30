@@ -180,7 +180,9 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
                                              # type: ignore
                                              dataclasses._MISSING_TYPE)
         default_value: Union[
-            Type[_CatchAllUndefinedParameters._SentinelNoDefault], Any] = _CatchAllUndefinedParameters._SentinelNoDefault
+            Type[_CatchAllUndefinedParameters._SentinelNoDefault], Any] = _CatchAllUndefinedParameters\
+            ._SentinelNoDefault
+
         if has_default:
             default_value = catch_all_field.default
         elif has_default_factory:

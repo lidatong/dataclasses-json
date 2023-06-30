@@ -30,8 +30,8 @@ class DataClassJsonMixin(abc.ABC):
                 check_circular: bool = True,
                 allow_nan: bool = True,
                 indent: Optional[Union[int, str]] = None,
-                separators: Tuple[str, str] = None,
-                default: Callable = None,
+                separators: Optional[Tuple[str, str]] = None,
+                default: Optional[Callable] = None,
                 sort_keys: bool = False,
                 **kw) -> str:
         return json.dumps(self.to_dict(encode_json=False),

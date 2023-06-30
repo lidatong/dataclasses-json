@@ -207,12 +207,6 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             # for the return type overlap
             pass
 
-        @typing.overload
-        def loads(self, json_data: JsonData,
-                  many: None = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
-                  **kwargs) -> A:
-            pass
-
         def loads(self, json_data: JsonData,
                   many: typing.Optional[bool] = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
                   **kwargs) -> TOneOrMulti:

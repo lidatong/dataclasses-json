@@ -69,8 +69,21 @@ class DataClassJsonMixin(abc.ABC):
                   infer_missing=False) -> A:
         return _decode_dataclass(cls, kvs, infer_missing)
 
-    def to_dict(self, encode_json=False) -> Dict[str, Json]:
-        return _asdict(self, encode_json=encode_json)
+    def to_dict(self,
+                encode_json=False,
+                use_frozendict=False
+                ) -> Dict[str, Json]:
+        """
+        Converts a dataclass object into a dictionary.
+
+        :param use_frozendict: If set to True, frozen dataclasses will be
+        converted to frozendicts instead of normal dicts.
+
+        :returns: A dictionary representation of the dataclass object.
+        """
+        return _asdict(self,
+                       encode_json=encode_json,
+                       use_frozendict=use_frozendict)
 
     @classmethod
     def schema(cls: Type[A],

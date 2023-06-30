@@ -12,6 +12,7 @@ from enum import Enum
 from typing import (Any, Collection, Mapping, Union, get_type_hints,
                     Tuple, TypeVar)
 from uuid import UUID
+from frozendict import frozendict
 
 from typing_inspect import is_union_type  # type: ignore
 
@@ -355,7 +356,7 @@ def _decode_items(type_arg, xs, infer_missing):
     return items
 
 
-def _asdict(obj, encode_json=False):
+def _asdict(obj, encode_json=False, use_frozendict=False):
     """
     A re-implementation of `asdict` (based on the original in the `dataclasses`
     source) to support arbitrary Collection and Mapping types.
@@ -375,8 +376,13 @@ def _asdict(obj, encode_json=False):
 
         result = _handle_undefined_parameters_safe(cls=obj, kvs=dict(result),
                                                    usage="to")
-        return _encode_overrides(dict(result), _user_overrides_or_exts(obj),
-                                 encode_json=encode_json)
+        result = _encode_overrides(dict(result), _user_overrides_or_exts(obj),
+                                   encode_json=encode_json)
+
+        if use_frozendict and obj.__dataclass_params__.frozen:
+            result = frozendict(result)
+
+        return result
     elif isinstance(obj, Mapping):
         return dict((_asdict(k, encode_json=encode_json),
                      _asdict(v, encode_json=encode_json)) for k, v in

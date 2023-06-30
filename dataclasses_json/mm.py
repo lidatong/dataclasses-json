@@ -13,9 +13,9 @@ from enum import Enum
 
 from typing_inspect import is_union_type  # type: ignore
 
-from marshmallow import fields, Schema, post_load
+from marshmallow import fields, Schema, post_load  # type: ignore
 from marshmallow_enum import EnumField  # type: ignore
-from marshmallow.exceptions import ValidationError
+from marshmallow.exceptions import ValidationError  # type: ignore
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
                                    _ExtendedEncoder, _user_overrides_or_exts)
@@ -154,8 +154,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             raise NotImplementedError()
 
         @typing.overload
-        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[
-            TEncoded]:  # type: ignore
+        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[TEncoded]:  # type: ignore
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             pass
 

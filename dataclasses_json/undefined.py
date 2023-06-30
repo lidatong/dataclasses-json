@@ -6,7 +6,7 @@ from dataclasses import Field, fields
 from typing import Any, Callable, Dict, Optional, Tuple
 from enum import Enum
 
-from marshmallow import ValidationError
+from marshmallow.exceptions import ValidationError  # type: ignore
 
 from dataclasses_json.utils import CatchAllVar
 

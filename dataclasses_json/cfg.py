@@ -2,7 +2,7 @@ import functools
 from enum import Enum
 from typing import Callable, Dict, Optional, TypeVar, Union
 
-from marshmallow.fields import Field as MarshmallowField
+from marshmallow.fields import Field as MarshmallowField  # type: ignore
 
 from dataclasses_json.stringcase import (camelcase, pascalcase, snakecase,
                                          spinalcase)  # type: ignore

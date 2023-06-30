@@ -162,7 +162,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
         def dump(self, obj: A, many: typing.Optional[bool] = None) -> TEncoded:
             pass
 
-        def dump(self, obj: TOneOrMulti,
+        def dump(self, obj: TOneOrMulti,    # type: ignore
                  many: typing.Optional[bool] = None) -> TOneOrMultiEncoded:
             pass
 
@@ -175,7 +175,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
         def dumps(self, obj: A, many: typing.Optional[bool] = None, *args, **kwargs) -> str:
             pass
 
-        def dumps(self, obj: TOneOrMulti, many: typing.Optional[bool] = None, *args,
+        def dumps(self, obj: TOneOrMulti, many: typing.Optional[bool] = None, *args,   # type: ignore
                   **kwargs) -> str:
             pass
 
@@ -316,7 +316,7 @@ def build_schema(cls: typing.Type[A],
                  partial) -> typing.Type["SchemaType[A]"]:
     Meta = type('Meta',
                 (),
-                {'fields': tuple(field.name for field in dc_fields(cls)
+                {'fields': tuple(field.name for field in dc_fields(cls)  # type: ignore
                                  if
                                  field.name != 'dataclass_json_config' and field.type !=
                                  typing.Optional[CatchAllVar]),

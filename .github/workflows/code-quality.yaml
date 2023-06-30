@@ -29,12 +29,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install ".[dev]"
+      - name: Install Poetry and dependencies
+        run:
+          set -e
+          
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install --all-extras
 
       - uses: reviewdog/action-setup@v1
 
       - name: run mypy
-        run: mypy --no-warn-no-return dataclasses_json
+        run: poetry run mypy --no-warn-no-return dataclasses_json

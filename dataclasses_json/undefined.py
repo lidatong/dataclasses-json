@@ -179,6 +179,7 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
         has_default_factory = not isinstance(catch_all_field.default_factory,
                                              # type: ignore
                                              dataclasses._MISSING_TYPE)
+        # TODO: black this for proper formatting
         default_value: Union[
             Type[_CatchAllUndefinedParameters._SentinelNoDefault], Any] = _CatchAllUndefinedParameters\
             ._SentinelNoDefault

@@ -163,7 +163,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             pass
 
         def dump(self, obj: TOneOrMulti,
-                 many: bool = None) -> TOneOrMultiEncoded:
+                 many: typing.Optional[bool] = None) -> TOneOrMultiEncoded:
             pass
 
         @typing.overload
@@ -214,7 +214,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             pass
 
         def loads(self, json_data: JsonData,
-                  many: bool = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
+                  many: typing.Optional[bool] = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
                   **kwargs) -> TOneOrMulti:
             pass
 

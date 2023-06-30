@@ -2,9 +2,7 @@ import copy
 import json
 import warnings
 from collections import defaultdict, namedtuple
-# noinspection PyProtectedMember
 from dataclasses import (MISSING,
-                         _is_dataclass_instance,
                          fields,
                          is_dataclass  # type: ignore
                          )
@@ -30,7 +28,7 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
 Json = Union[dict, list, str, int, float, bool, None]
 
 confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
-FieldOverride = namedtuple('FieldOverride', confs)
+FieldOverride = namedtuple('FieldOverride', confs)  # type: ignore
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -362,7 +360,7 @@ def _asdict(obj, encode_json=False):
     A re-implementation of `asdict` (based on the original in the `dataclasses`
     source) to support arbitrary Collection and Mapping types.
     """
-    if _is_dataclass_instance(obj):
+    if is_dataclass(obj):
         result = []
         overrides = _user_overrides_or_exts(obj)
         for field in fields(obj):

@@ -75,7 +75,7 @@ def camelcase(string):
     if not string:
         return string
     return (uplowcase(string[0], 'low')
-            + re.sub(r"[\-_\.\s]([a-z])",
+            + re.sub(r"[\-_\.\s]([a-z0-9])",
                      lambda matched: uplowcase(matched.group(1), 'up'),
                      string[1:]))
 
@@ -96,7 +96,7 @@ def snakecase(string):
     if not string:
         return string
     return (uplowcase(string[0], 'low')
-            + re.sub(r"[A-Z]",
+            + re.sub(r"[A-Z0-9]",
                      lambda matched: '_' + uplowcase(matched.group(0), 'low'),
                      string[1:]))
 

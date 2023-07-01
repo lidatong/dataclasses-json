@@ -2,9 +2,7 @@ import copy
 import json
 import warnings
 from collections import defaultdict, namedtuple
-# noinspection PyProtectedMember
 from dataclasses import (MISSING,
-                         _is_dataclass_instance,
                          fields,
                          is_dataclass  # type: ignore
                          )
@@ -30,7 +28,7 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
 Json = Union[dict, list, str, int, float, bool, None]
 
 confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
-FieldOverride = namedtuple('FieldOverride', confs)
+FieldOverride = namedtuple('FieldOverride', confs)  # type: ignore
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -114,6 +112,11 @@ def _encode_overrides(kvs, overrides, encode_json=False):
             letter_case = overrides[k].letter_case
             original_key = k
             k = letter_case(k) if letter_case is not None else k
+            if k in override_kvs:
+                raise ValueError(
+                    f"Multiple fields map to the same JSON "
+                    f"key after letter case encoding: {k}"
+                )
 
             encoder = overrides[original_key].encoder
             # v = encoder(v) if encoder is not None else v
@@ -301,10 +304,12 @@ def _decode_generic(type_, value, infer_missing):
 
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on constructing using type_ itself
+        materialize_type = type_
         try:
-            res = _get_type_cons(type_)(xs)
+            materialize_type = _get_type_cons(type_)
         except (TypeError, AttributeError):
-            res = type_(xs)
+            pass
+        res = materialize_type(xs)
     else:  # Optional or Union
         _args = _get_type_args(type_)
         if _args is _NO_ARGS:
@@ -375,7 +380,7 @@ def _asdict(obj, encode_json=False):
     A re-implementation of `asdict` (based on the original in the `dataclasses`
     source) to support arbitrary Collection and Mapping types.
     """
-    if _is_dataclass_instance(obj):
+    if is_dataclass(obj):
         result = []
         overrides = _user_overrides_or_exts(obj)
         for field in fields(obj):

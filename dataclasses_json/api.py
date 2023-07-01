@@ -30,8 +30,8 @@ class DataClassJsonMixin(abc.ABC):
                 check_circular: bool = True,
                 allow_nan: bool = True,
                 indent: Optional[Union[int, str]] = None,
-                separators: Tuple[str, str] = None,
-                default: Callable = None,
+                separators: Optional[Tuple[str, str]] = None,
+                default: Optional[Callable] = None,
                 sort_keys: bool = False,
                 **kw) -> str:
         return json.dumps(self.to_dict(encode_json=False),
@@ -131,10 +131,10 @@ def _process_class(cls, letter_case, undefined) -> Type[DataClassJsonMixin]:
     cls.to_json = DataClassJsonMixin.to_json
     # unwrap and rewrap classmethod to tag it to cls rather than the literal
     # DataClassJsonMixin ABC
-    cls.from_json = classmethod(DataClassJsonMixin.from_json.__func__)
+    cls.from_json = classmethod(DataClassJsonMixin.from_json.__func__)  # type: ignore
     cls.to_dict = DataClassJsonMixin.to_dict
-    cls.from_dict = classmethod(DataClassJsonMixin.from_dict.__func__)
-    cls.schema = classmethod(DataClassJsonMixin.schema.__func__)
+    cls.from_dict = classmethod(DataClassJsonMixin.from_dict.__func__)  # type: ignore
+    cls.schema = classmethod(DataClassJsonMixin.schema.__func__)  # type: ignore
 
     cls.__init__ = _handle_undefined_parameters_safe(cls, kvs=(), usage="init")
     # register cls as a virtual subclass of DataClassJsonMixin

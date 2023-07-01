@@ -18,8 +18,7 @@ setup(
     keywords='dataclasses json',
     install_requires=[
         'dataclasses;python_version=="3.6"',
-        'marshmallow>=3.3.0,<4.0.0',
-        'marshmallow-enum>=1.5.1,<2.0.0',
+        'marshmallow>=3.18.0,<4.0.0',
         'typing-inspect>=0.4.0'
     ],
     python_requires='>=3.6',

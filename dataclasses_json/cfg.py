@@ -16,8 +16,8 @@ class Exclude:
     Pre-defined constants for exclusion. By default, fields are configured to
     be included.
     """
-    ALWAYS: Callable[[T], bool] = lambda _: True
-    NEVER: Callable[[T], bool] = lambda _: False
+    ALWAYS: Callable[[object], bool] = lambda _: True
+    NEVER: Callable[[object], bool] = lambda _: False
 
 
 # TODO: add warnings?
@@ -60,7 +60,7 @@ def config(metadata: Optional[dict] = None, *,
            letter_case: Union[Callable[[str], str], LetterCase, None] = None,
            undefined: Optional[Union[str, Undefined]] = None,
            field_name: Optional[str] = None,
-           exclude: Union[Callable[[str, T], bool], Exclude, None] = None,
+           exclude: Optional[Callable[[T], bool]] = None,
            ) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}

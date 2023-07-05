@@ -276,11 +276,10 @@ def _decode_generic(type_, value, infer_missing):
             # a mapping type has `.keys()` and `.values()`
             # (see collections.abc)
             ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
-            vs = _decode_items(v_type, value.values(), infer_missing)
+            vs = _decode_items([v_type], value.values(), infer_missing)
             xs = zip(ks, vs)
         else:
-            xs = _decode_items(_get_type_arg_param(type_, 0),
-                               value, infer_missing)
+            xs = _decode_items(_get_type_args(type_), value, infer_missing)
 
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on constructing using type_ itself
@@ -332,10 +331,10 @@ def _decode_dict_keys(key_type, xs, infer_missing):
         decode_function = tuple
         key_type = key_type
 
-    return map(decode_function, _decode_items(key_type, xs, infer_missing))
+    return map(decode_function, _decode_items([key_type], xs, infer_missing))
 
 
-def _decode_items(type_arg, xs, infer_missing):
+def _decode_items(types_arg, xs, infer_missing):
     """
     This is a tricky situation where we need to check both the annotated
     type info (which is usually a type from `typing`) and check the
@@ -344,14 +343,20 @@ def _decode_items(type_arg, xs, infer_missing):
     If the type_arg is a generic we can use the annotated type, but if the
     type_arg is a typevar we need to extract the reified type information
     hence the check of `is_dataclass(vs)`
+
+    length of types_arg may be > 1 for tuples so that we have to iterate
+    while iterating on items
     """
-    if is_dataclass(type_arg) or is_dataclass(xs):
-        items = (_decode_dataclass(type_arg, x, infer_missing)
-                 for x in xs)
-    elif _is_supported_generic(type_arg):
-        items = (_decode_generic(type_arg, x, infer_missing) for x in xs)
-    else:
-        items = xs
+    items = []
+    for i, x in enumerate(xs):
+        type_arg = types_arg[i] if len(types_arg) > i else types_arg[0]
+        if is_dataclass(type_arg) or is_dataclass(xs):
+            item = _decode_dataclass(type_arg, x, infer_missing)
+        elif _is_supported_generic(type_arg):
+            item = _decode_generic(type_arg, x, infer_missing)
+        else:
+            item = _support_extended_types(type_arg, x)
+        items.append(item)
     return items
 
 

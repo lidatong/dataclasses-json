@@ -360,3 +360,14 @@ class DataClassWithNestedOptional:
 @dataclass
 class DataClassWithNestedDictWithTupleKeys:
     a: Dict[Tuple[int], int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithListUuid:
+    xs: List[UUID]
+
+@dataclass_json
+@dataclass
+class DataClassWithListNestedTupleUuid:
+    xs: List[Tuple[UUID, int]]

@@ -1,3 +1,4 @@
+from uuid import uuid4
 from collections import deque
 
 from tests.entities import (DataClassIntImmutableDefault,
@@ -19,7 +20,8 @@ from tests.entities import (DataClassIntImmutableDefault,
                             DataClassWithFrozenSetUnbound,
                             DataClassWithDequeCollections,
                             DataClassWithTuple, DataClassWithTupleUnbound,
-                            DataClassWithUnionIntNone, MyCollection)
+                            DataClassWithUnionIntNone, MyCollection,
+                            DataClassWithListUuid, DataClassWithListNestedTupleUuid)
 
 
 class TestEncoder:
@@ -111,6 +113,16 @@ class TestEncoder:
 
     def test_mutable_default_dict(self):
         assert DataClassMutableDefaultDict().to_json() == '{"xs": {}}'
+
+    def test_list_uuid(self):
+        uuid = uuid4()
+        assert (DataClassWithListUuid([uuid]).to_json()
+                == '{"xs": ["' + str(uuid) + '"]}')
+
+    def test_list_nested_tuple_uuid(self):
+        uuid = uuid4()
+        assert (DataClassWithListNestedTupleUuid([(uuid, 1)]).to_json()
+                == '{"xs": [["' + str(uuid) + '", 1]]}')
 
 
 class TestDecoder:
@@ -235,3 +247,13 @@ class TestDecoder:
                 == DataClassMutableDefaultDict())
         assert (DataClassMutableDefaultDict.from_json('{}', infer_missing=True)
                 == DataClassMutableDefaultDict())
+
+    def test_list_uuid(self):
+        uuid = uuid4()
+        assert (DataClassWithListUuid.from_json('{"xs": ["' + str(uuid) + '"]}')
+                == DataClassWithListUuid([uuid]))
+
+    def test_list_nested_tuple_uuid(self):
+        uuid = uuid4()
+        assert (DataClassWithListNestedTupleUuid.from_json('{"xs": [["' + str(uuid) + '", 1]]}')
+                == DataClassWithListNestedTupleUuid([(uuid, 1)]))

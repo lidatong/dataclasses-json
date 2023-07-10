@@ -11,8 +11,7 @@ repository = 'https://github.com/lidatong/dataclasses-json'
 [tool.poetry.dependencies]
 python = ">=3.7, <3.12"
 typing-inspect = ">=0.4.0, <1"
-marshmallow = ">=3.3.0,<4.0.0"
-marshmallow-enum = ">=1.5.1,<2.0.0"
+marshmallow = ">=3.18.0,<4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1"

@@ -248,6 +248,8 @@ def build_type(type_, options, mixin, field, cls):
         if _is_optional(type_):
             options["allow_none"] = True
 
+        if origin is tuple:
+            return TYPES[origin](args, **options)
         if origin in TYPES:
             return TYPES[origin](*args, **options)
 

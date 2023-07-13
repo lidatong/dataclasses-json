@@ -71,15 +71,17 @@ jobs:
           version=$(git describe --tags --abbrev=7)
           sed -i "s/version = \"0.0.0\"/version = \"${version:1}\"/" pyproject.toml
           echo "__version__ = '${version:1}'" > ./dataclasses_json/_version.py
-      - name: Publish distribution 📦 to Test PyPI
+      - name: Build package
         run:
           set -e
-          
-          poetry config repositories.test-pypi https://test.pypi.org/legacy/
-          poetry build && poetry publish -r test-pypi
+        
+          poetry build
+
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
       - name: Publish distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags')
-        run:
-          set -e
-          
-          poetry build && poetry publish
+        uses: pypa/gh-action-pypi-publish@release/v1

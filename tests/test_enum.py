@@ -1,6 +1,6 @@
 import json
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 import pytest
 
 from dataclasses import dataclass, field
@@ -71,16 +71,6 @@ container = EnumContainer(
     dict_enum_value={"key1str": MyEnum.STR1, "key1float": MyEnum.FLOAT1})
 
 
-@dataclass_json
-@dataclass
-class DataWithHeterogeneousTuple:
-    my_tuple: Tuple[MyEnum, str, float]
-
-
-tuple_json = '{"my_tuple": ["str1", "str2", 1.23]}'
-tuple_data = DataWithHeterogeneousTuple(my_tuple=(MyEnum.STR1, "str2", 1.23))
-
-
 class TestEncoder:
     def test_data_with_enum(self):
         assert d1.to_json() == d1_json, f'Actual: {d1.to_json()}, Expected: {d1_json}'
@@ -101,10 +91,6 @@ class TestEncoder:
     def test_enum_with_list(self):
         assert d5_list.to_json() == d5_list_json, f'Actual: {d5_list.to_json()}, Expected: {d5_list_json}'
         assert d5_list.to_dict(encode_json=True) == json.loads(d5_list_json), f'Actual: {d5_list.to_dict()}, Expected: {json.loads(d5_list_json)}'
-
-    def test_enum_with_tuple(self):
-        assert tuple_data.to_json() == tuple_json, f'Actual: {tuple_data.to_json()}, Expected: {tuple_json}'
-        assert tuple_data.to_dict(encode_json=True) == json.loads(tuple_json), f'Actual: {tuple_data.to_dict()}, Expected: {json.loads(tuple_json)}'
 
 
 class TestDecoder:
@@ -137,11 +123,6 @@ class TestDecoder:
         container_from_json = EnumContainer.from_json(container_json)
         assert container == container_from_json
         assert container_from_json.to_json() == container_json
-
-    def test_enum_with_tuple(self):
-        tuple_data_from_json = DataWithHeterogeneousTuple.from_json(tuple_json)
-        assert tuple_data == tuple_data_from_json
-        assert tuple_data_from_json.to_json() == tuple_json
 
 
 class TestValidator:

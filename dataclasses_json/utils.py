@@ -150,6 +150,10 @@ def _is_collection(type_):
     return _issubclass_safe(_get_type_origin(type_), Collection)
 
 
+def _is_tuple(type_):
+    return _issubclass_safe(_get_type_origin(type_), Tuple)
+
+
 def _is_nonstr_collection(type_):
     return (_issubclass_safe(_get_type_origin(type_), Collection)
             and not _issubclass_safe(type_, str))

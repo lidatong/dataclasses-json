@@ -1,0 +1,19 @@
+name: Prepare GH Release
+
+on: workflow_dispatch
+
+jobs:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Create Release
+        uses: SneaksAndData/github-actions/semver_release@v0.1.0
+        with:
+          major_v: 0
+          minor_v: 5

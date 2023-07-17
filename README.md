@@ -654,3 +654,11 @@ consider submitting an issue for discussion before a PR. Please also take a look
 at existing issues / PRs to see what you're proposing has  already been covered 
 before / exists.
 - I like to follow the commit conventions documented [here](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+
+### Setting up your environment
+
+This project uses [Poetry](https://python-poetry.org/) for dependency and venv management. It is quite simple to get ready for your first commit:
+- [Install](https://python-poetry.org/docs/#installation) latest stable Poetry
+- Navigate to where you cloned `dataclasses-json`
+- Run `poetry install`
+- Create a branch and start writing code!

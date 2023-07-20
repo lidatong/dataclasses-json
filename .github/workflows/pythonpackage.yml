@@ -27,16 +27,27 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install Poetry and dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install ".[dev]"
+        set -e
+        
+        curl -sSL https://install.python-poetry.org | python3 -
+        poetry install --all-extras
     - name: Lint with flake8
       run: |
-        flake8 dataclasses_json --show-source --statistics --count
+        set -e
+        poetry run flake8 dataclasses_json --show-source --statistics --count
     - name: Test with pytest
       run: |
-        pytest
+        set -euxo pipefail    
+        
+        poetry run pytest ./tests --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=term-missing:skip-covered | tee pytest-coverage.txt
+    - name: Publish Code Coverage
+      uses: MishaKav/pytest-coverage-comment@main
+      with:
+        pytest-coverage-path: ./pytest-coverage.txt
+        junitxml-path: ./junit/test-results.xml
+
 
   release:
     needs: [test]
@@ -50,25 +61,27 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
-      - name: Install pypa/build
-        run: >-
-          python3 -m
-          pip install
-          build
-          --user
-      - name: Build a binary wheel and a source tarball
-        run: >-
-          python3 -m
-          build
-          --sdist
-          --wheel
-          --outdir dist/
-          .
+          python-version: "3.9.x"
+      - name: Install Poetry and Prepare version
+        run: |
+          set -e
+          
+          curl -sSL https://install.python-poetry.org | python3 -
+          
+          version=$(git describe --tags --abbrev=7)
+          sed -i "s/version = \"0.0.0\"/version = \"${version:1}\"/" pyproject.toml
+          echo "__version__ = '${version:1}'" > ./dataclasses_json/_version.py
+      - name: Build package
+        run: |
+          set -e
+        
+          poetry build
+
       - name: Publish distribution 📦 to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+
       - name: Publish distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@release/v1

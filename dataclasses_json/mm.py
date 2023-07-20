@@ -13,9 +13,8 @@ from enum import Enum
 
 from typing_inspect import is_union_type  # type: ignore
 
-from marshmallow import fields, Schema, post_load
-from marshmallow_enum import EnumField  # type: ignore
-from marshmallow.exceptions import ValidationError
+from marshmallow import fields, Schema, post_load  # type: ignore
+from marshmallow.exceptions import ValidationError  # type: ignore
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
                                    _ExtendedEncoder, _user_overrides_or_exts)
@@ -154,68 +153,61 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             raise NotImplementedError()
 
         @typing.overload
-        def dump(self, obj: typing.List[A], many: bool = None) -> typing.List[
-            TEncoded]:  # type: ignore
+        def dump(self, obj: typing.List[A], many: typing.Optional[bool] = None) -> typing.List[TEncoded]:  # type: ignore
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             pass
 
         @typing.overload
-        def dump(self, obj: A, many: bool = None) -> TEncoded:
+        def dump(self, obj: A, many: typing.Optional[bool] = None) -> TEncoded:
             pass
 
-        def dump(self, obj: TOneOrMulti,
-                 many: bool = None) -> TOneOrMultiEncoded:
+        def dump(self, obj: TOneOrMulti,    # type: ignore
+                 many: typing.Optional[bool] = None) -> TOneOrMultiEncoded:
             pass
 
         @typing.overload
-        def dumps(self, obj: typing.List[A], many: bool = None, *args,
+        def dumps(self, obj: typing.List[A], many: typing.Optional[bool] = None, *args,
                   **kwargs) -> str:
             pass
 
         @typing.overload
-        def dumps(self, obj: A, many: bool = None, *args, **kwargs) -> str:
+        def dumps(self, obj: A, many: typing.Optional[bool] = None, *args, **kwargs) -> str:
             pass
 
-        def dumps(self, obj: TOneOrMulti, many: bool = None, *args,
+        def dumps(self, obj: TOneOrMulti, many: typing.Optional[bool] = None, *args,   # type: ignore
                   **kwargs) -> str:
             pass
 
         @typing.overload  # type: ignore
         def load(self, data: typing.List[TEncoded],
-                 many: bool = True, partial: bool = None,
-                 unknown: str = None) -> \
+                 many: bool = True, partial: typing.Optional[bool] = None,
+                 unknown: typing.Optional[str] = None) -> \
                 typing.List[A]:
             # ignore the mypy error of the decorator because mm does not define lists as an allowed input type
             pass
 
         @typing.overload
         def load(self, data: TEncoded,
-                 many: None = None, partial: bool = None,
-                 unknown: str = None) -> A:
+                 many: None = None, partial: typing.Optional[bool] = None,
+                 unknown: typing.Optional[str] = None) -> A:
             pass
 
         def load(self, data: TOneOrMultiEncoded,
-                 many: bool = None, partial: bool = None,
-                 unknown: str = None) -> TOneOrMulti:
+                 many: typing.Optional[bool] = None, partial: typing.Optional[bool] = None,
+                 unknown: typing.Optional[str] = None) -> TOneOrMulti:
             pass
 
         @typing.overload  # type: ignore
         def loads(self, json_data: JsonData,  # type: ignore
-                  many: bool = True, partial: bool = None, unknown: str = None,
+                  many: typing.Optional[bool] = True, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
                   **kwargs) -> typing.List[A]:
             # ignore the mypy error of the decorator because mm does not define bytes as correct input data
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             # for the return type overlap
             pass
 
-        @typing.overload
         def loads(self, json_data: JsonData,
-                  many: None = None, partial: bool = None, unknown: str = None,
-                  **kwargs) -> A:
-            pass
-
-        def loads(self, json_data: JsonData,
-                  many: bool = None, partial: bool = None, unknown: str = None,
+                  many: typing.Optional[bool] = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
                   **kwargs) -> TOneOrMulti:
             pass
 
@@ -260,7 +252,7 @@ def build_type(type_, options, mixin, field, cls):
             return TYPES[origin](*args, **options)
 
         if _issubclass_safe(origin, Enum):
-            return EnumField(enum=origin, by_value=True, *args, **options)
+            return fields.Enum(enum=origin, by_value=True, *args, **options)
 
         if is_union_type(type_):
             union_types = [a for a in getattr(type_, '__args__', []) if
@@ -323,7 +315,7 @@ def build_schema(cls: typing.Type[A],
                  partial) -> typing.Type["SchemaType[A]"]:
     Meta = type('Meta',
                 (),
-                {'fields': tuple(field.name for field in dc_fields(cls)
+                {'fields': tuple(field.name for field in dc_fields(cls)  # type: ignore
                                  if
                                  field.name != 'dataclass_json_config' and field.type !=
                                  typing.Optional[CatchAllVar]),

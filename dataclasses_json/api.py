@@ -1,13 +1,9 @@
 import abc
 import json
-from enum import Enum
 from typing import (Any, Callable, Dict, List, Optional, Tuple, Type, TypeVar,
                     Union)
 
-from stringcase import (camelcase, pascalcase, snakecase,
-                        spinalcase)  # type: ignore
-
-from dataclasses_json.cfg import config
+from dataclasses_json.cfg import config, LetterCase  # noqa: F401
 from dataclasses_json.core import (Json, _ExtendedEncoder, _asdict,
                                    _decode_dataclass)
 from dataclasses_json.mm import (JsonData, SchemaType, build_schema)
@@ -16,16 +12,7 @@ from dataclasses_json.utils import (_handle_undefined_parameters_safe,
                                     _undefined_parameter_action_safe)
 
 A = TypeVar('A', bound="DataClassJsonMixin")
-B = TypeVar('B')
-C = TypeVar('C')
 Fields = List[Tuple[str, Any]]
-
-
-class LetterCase(Enum):
-    CAMEL = camelcase
-    KEBAB = spinalcase
-    SNAKE = snakecase
-    PASCAL = pascalcase
 
 
 class DataClassJsonMixin(abc.ABC):
@@ -43,8 +30,8 @@ class DataClassJsonMixin(abc.ABC):
                 check_circular: bool = True,
                 allow_nan: bool = True,
                 indent: Optional[Union[int, str]] = None,
-                separators: Tuple[str, str] = None,
-                default: Callable = None,
+                separators: Optional[Tuple[str, str]] = None,
+                default: Optional[Callable] = None,
                 sort_keys: bool = False,
                 **kw) -> str:
         return json.dumps(self.to_dict(encode_json=False),
@@ -96,7 +83,7 @@ class DataClassJsonMixin(abc.ABC):
                load_only=(),
                dump_only=(),
                partial: bool = False,
-               unknown=None) -> SchemaType:
+               unknown=None) -> "SchemaType[A]":
         Schema = build_schema(cls, DataClassJsonMixin, infer_missing, partial)
 
         if unknown is None:
@@ -144,10 +131,10 @@ def _process_class(cls, letter_case, undefined):
     cls.to_json = DataClassJsonMixin.to_json
     # unwrap and rewrap classmethod to tag it to cls rather than the literal
     # DataClassJsonMixin ABC
-    cls.from_json = classmethod(DataClassJsonMixin.from_json.__func__)
+    cls.from_json = classmethod(DataClassJsonMixin.from_json.__func__)  # type: ignore
     cls.to_dict = DataClassJsonMixin.to_dict
-    cls.from_dict = classmethod(DataClassJsonMixin.from_dict.__func__)
-    cls.schema = classmethod(DataClassJsonMixin.schema.__func__)
+    cls.from_dict = classmethod(DataClassJsonMixin.from_dict.__func__)  # type: ignore
+    cls.schema = classmethod(DataClassJsonMixin.schema.__func__)  # type: ignore
 
     cls.__init__ = _handle_undefined_parameters_safe(cls, kvs=(), usage="init")
     # register cls as a virtual subclass of DataClassJsonMixin

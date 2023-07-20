@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+import pytest
+
 from dataclasses_json import LetterCase, dataclass_json, config
 
 
@@ -53,7 +55,32 @@ class FieldNamePerson:
 @dataclass
 class CamelCasePersonWithOverride:
     given_name: str
-    years_on_earth: str = field(metadata=config(field_name='age'))
+    years_on_earth: int = field(metadata=config(field_name='age'))
+
+
+@dataclass_json
+@dataclass
+class CamelCaseProtectedNamePerson:
+    _given_name_2: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.CAMEL
+        }}
+    )
+
+
+@dataclass_json
+@dataclass
+class CamelCaseDuplicatedNameEncodingPerson:
+    given_name_1: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.CAMEL
+        }}
+    )
+    given_name1: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.CAMEL
+        }}
+    )
 
 
 class TestLetterCase:
@@ -107,3 +134,13 @@ class TestLetterCase:
 
     def test_to_dict(self):
         assert {'givenName': 'Alice'} == CamelCasePerson('Alice').to_dict()
+
+    def test_protected_encode(self):
+        assert CamelCaseProtectedNamePerson('Alice').to_json() == '{"givenName2": "Alice"}'
+
+    def test_protected_decode(self):
+        assert CamelCaseProtectedNamePerson.from_json('{"givenName2": "Alice"}') == CamelCaseProtectedNamePerson('Alice')
+
+    def test_duplicated_encoding(self):
+        with pytest.raises(ValueError):
+            CamelCaseDuplicatedNameEncodingPerson('Alice', 'Bob').to_json()

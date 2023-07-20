@@ -1,8 +1,11 @@
 import functools
+from enum import Enum
 from typing import Callable, Dict, Optional, TypeVar, Union
 
-from marshmallow.fields import Field as MarshmallowField
+from marshmallow.fields import Field as MarshmallowField  # type: ignore
 
+from dataclasses_json.stringcase import (camelcase, pascalcase, snakecase,
+                                         spinalcase)  # type: ignore
 from dataclasses_json.undefined import Undefined, UndefinedParameterError
 
 T = TypeVar("T")
@@ -13,8 +16,8 @@ class Exclude:
     Pre-defined constants for exclusion. By default, fields are configured to
     be included.
     """
-    ALWAYS: Callable[[T], bool] = lambda _: True
-    NEVER: Callable[[T], bool] = lambda _: False
+    ALWAYS: Callable[[object], bool] = lambda _: True
+    NEVER: Callable[[object], bool] = lambda _: False
 
 
 # TODO: add warnings?
@@ -41,16 +44,23 @@ class _GlobalConfig:
 global_config = _GlobalConfig()
 
 
-def config(metadata: dict = None, *,
+class LetterCase(Enum):
+    CAMEL = camelcase
+    KEBAB = spinalcase
+    SNAKE = snakecase
+    PASCAL = pascalcase
+
+
+def config(metadata: Optional[dict] = None, *,
            # TODO: these can be typed more precisely
            # Specifically, a Callable[A, B], where `B` is bound as a JSON type
-           encoder: Callable = None,
-           decoder: Callable = None,
-           mm_field: MarshmallowField = None,
-           letter_case: Callable[[str], str] = None,
+           encoder: Optional[Callable] = None,
+           decoder: Optional[Callable] = None,
+           mm_field: Optional[MarshmallowField] = None,
+           letter_case: Union[Callable[[str], str], LetterCase, None] = None,
            undefined: Optional[Union[str, Undefined]] = None,
-           field_name: str = None,
-           exclude: Optional[Callable[[str, T], bool]] = None,
+           field_name: Optional[str] = None,
+           exclude: Optional[Callable[[T], bool]] = None,
            ) -> Dict[str, dict]:
     if metadata is None:
         metadata = {}
@@ -68,11 +78,11 @@ def config(metadata: dict = None, *,
 
     if field_name is not None:
         if letter_case is not None:
-            @functools.wraps(letter_case)
+            @functools.wraps(letter_case)  # type:ignore
             def override(_, _letter_case=letter_case, _field_name=field_name):
                 return _letter_case(_field_name)
         else:
-            def override(_, _field_name=field_name):
+            def override(_, _field_name=field_name):  # type:ignore
                 return _field_name
         letter_case = override
 

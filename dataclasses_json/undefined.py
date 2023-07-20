@@ -3,10 +3,10 @@ import dataclasses
 import functools
 import inspect
 from dataclasses import Field, fields
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Any, Callable, Dict, Optional, Tuple, Union, Type
 from enum import Enum
 
-from marshmallow import ValidationError
+from marshmallow.exceptions import ValidationError  # type: ignore
 
 from dataclasses_json.utils import CatchAllVar
 
@@ -179,7 +179,11 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
         has_default_factory = not isinstance(catch_all_field.default_factory,
                                              # type: ignore
                                              dataclasses._MISSING_TYPE)
-        default_value = _CatchAllUndefinedParameters._SentinelNoDefault
+        # TODO: black this for proper formatting
+        default_value: Union[
+            Type[_CatchAllUndefinedParameters._SentinelNoDefault], Any] = _CatchAllUndefinedParameters\
+            ._SentinelNoDefault
+
         if has_default:
             default_value = catch_all_field.default
         elif has_default_factory:

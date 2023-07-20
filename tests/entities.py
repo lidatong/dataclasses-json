@@ -1,4 +1,6 @@
+from collections import deque
 from dataclasses import dataclass, field
+from datetime import datetime
 from decimal import Decimal
 from typing import (Collection,
                     Deque,
@@ -16,15 +18,12 @@ from uuid import UUID
 
 from marshmallow import fields
 
-import dataclasses_json
-from datetime import datetime
-
-from dataclasses_json.cfg import config
 from dataclasses_json import (DataClassJsonMixin, LetterCase, dataclass_json)
+from dataclasses_json.cfg import config
 
 A = TypeVar('A')
-Id = NewType('Id', UUID)
-ProductId = NewType('ProductId', Id)
+UUIDWrapper = NewType('UUIDWrapper', UUID)
+UUIDWrapperWrapper = NewType('UUIDWrapperWrapper', UUIDWrapper)
 
 
 @dataclass(frozen=True)
@@ -34,17 +33,27 @@ class DataClassWithDecimal(DataClassJsonMixin):
 
 @dataclass(frozen=True)
 class DataClassWithNewType(DataClassJsonMixin):
-    id: Id
+    id: UUIDWrapper
 
 
 @dataclass(frozen=True)
 class DataClassWithNestedNewType(DataClassJsonMixin):
-    id: ProductId
+    id: UUIDWrapperWrapper
 
 
 @dataclass(frozen=True)
 class DataClassWithList(DataClassJsonMixin):
     xs: List[int]
+
+
+@dataclass(frozen=True)
+class DataClassWithListBuiltin(DataClassJsonMixin):
+    xs: list
+
+
+@dataclass(frozen=True)
+class DataClassWithListUnbound(DataClassJsonMixin):
+    xs: List
 
 
 @dataclass(frozen=True)
@@ -63,6 +72,16 @@ class DataClassWithDict(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithDictBuiltin(DataClassJsonMixin):
+    kvs: Dict
+
+
+@dataclass(frozen=True)
+class DataClassWithDictUnbound(DataClassJsonMixin):
+    kvs: Dict
+
+
+@dataclass(frozen=True)
 class DataClassWithDictInt(DataClassJsonMixin):
     kvs: Dict[int, str]
 
@@ -78,8 +97,28 @@ class DataClassWithSet(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithSetBuiltin(DataClassJsonMixin):
+    xs: set
+
+
+@dataclass(frozen=True)
+class DataClassWithSetUnbound(DataClassJsonMixin):
+    xs: Set
+
+
+@dataclass(frozen=True)
 class DataClassWithTuple(DataClassJsonMixin):
     xs: Tuple[int]
+
+
+@dataclass(frozen=True)
+class DataClassWithTupleBuiltin(DataClassJsonMixin):
+    xs: tuple
+
+
+@dataclass(frozen=True)
+class DataClassWithTupleUnbound(DataClassJsonMixin):
+    xs: Tuple
 
 
 @dataclass(frozen=True)
@@ -88,13 +127,43 @@ class DataClassWithFrozenSet(DataClassJsonMixin):
 
 
 @dataclass(frozen=True)
+class DataClassWithFrozenSetBuiltin(DataClassJsonMixin):
+    xs: frozenset
+
+
+@dataclass(frozen=True)
+class DataClassWithFrozenSetUnbound(DataClassJsonMixin):
+    xs: FrozenSet
+
+
+@dataclass(frozen=True)
 class DataClassWithDeque(DataClassJsonMixin):
+    xs: Deque[int]
+
+
+@dataclass(frozen=True)
+class DataClassWithDequeCollections(DataClassJsonMixin):
+    xs: deque
+
+
+@dataclass(frozen=True)
+class DataClassWithDequeUnbound(DataClassJsonMixin):
     xs: Deque[int]
 
 
 @dataclass(frozen=True)
 class DataClassWithOptional(DataClassJsonMixin):
     x: Optional[int]
+
+
+@dataclass(frozen=True)
+class DataClassWithOptionalWithDefault(DataClassJsonMixin):
+    x: Optional[int] = None
+
+
+@dataclass(frozen=True)
+class DataClassWithOptionalUnbound(DataClassJsonMixin):
+    x: Optional
 
 
 @dataclass
@@ -105,6 +174,11 @@ class DataClassWithOptionalStr(DataClassJsonMixin):
 @dataclass(frozen=True)
 class DataClassWithOptionalNested(DataClassJsonMixin):
     x: Optional[DataClassWithOptional]
+
+
+@dataclass(frozen=True)
+class DataClassWithOptionalNestedWithDefault(DataClassJsonMixin):
+    x: Optional[DataClassWithOptional] = None
 
 
 @dataclass(frozen=True)
@@ -190,6 +264,19 @@ class DataClassWithConfigHelper:
     id: float = field(metadata=config(encoder=str))
 
 
+@dataclass_json
+@dataclass
+class DataClassWithErroneousDecode:
+    # Accepts no arguments, so passing in a single argument will result in a TypeError.
+    id: float = field(metadata=config(decoder=lambda: None))
+
+
+@dataclass_json
+@dataclass
+class DataClassMappingBadDecode:
+    map: Dict[str, DataClassWithErroneousDecode]
+
+
 @dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class DataClassWithConfigDecorator:
@@ -267,3 +354,9 @@ class DataClassWithNestedOptionalAny:
 @dataclass
 class DataClassWithNestedOptional:
     a: Dict[str, Optional[int]]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithNestedDictWithTupleKeys:
+    a: Dict[Tuple[int], int]

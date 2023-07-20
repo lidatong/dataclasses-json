@@ -1,0 +1,42 @@
+name: code-quality
+
+on:
+  push:
+    branches:
+      - master
+      - release/*  # this is a backup. prefer publishing using a tagged master.
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  codestyle:
+    name: codestyle
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+      matrix:
+        # https://github.com/actions/python-versions/blob/main/versions-manifest.json
+        python-version: [ "3.9", "3.11" ]
+
+    if: github.ref != 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry and dependencies
+        run: |
+          set -e
+          
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install --all-extras
+
+      - uses: reviewdog/action-setup@v1
+
+      - name: run mypy
+        run: poetry run mypy --no-warn-no-return dataclasses_json

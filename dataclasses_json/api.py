@@ -122,7 +122,7 @@ def dataclass_json(_cls=None, *, letter_case=None,
     return wrap(_cls)
 
 
-def _process_class(cls, letter_case, undefined) -> Type[DataClassJsonMixin]:
+def _process_class(cls, letter_case, undefined):
     if letter_case is not None or undefined is not None:
         cls.dataclass_json_config = config(letter_case=letter_case,
                                            undefined=undefined)[

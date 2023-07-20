@@ -279,7 +279,11 @@ def _decode_generic(type_, value, infer_missing):
             vs = _decode_items(v_type, value.values(), infer_missing)
             xs = zip(ks, vs)
         elif _is_tuple(type_):
-            xs = _decode_items(_get_type_args(type_) or _NO_ARGS, value, infer_missing)
+            types = _get_type_args(type_)
+            if Ellipsis in types:
+                xs = _decode_items(types[0], value, infer_missing)
+            else:
+                xs = _decode_items(_get_type_args(type_) or _NO_ARGS, value, infer_missing)
         else:
             xs = _decode_items(_get_type_arg_param(type_, 0), value, infer_missing)
 

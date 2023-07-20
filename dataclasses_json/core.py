@@ -23,7 +23,7 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _get_type_arg_param,
                                     _get_type_args,
                                     _NO_ARGS,
-                                    _issubclass_safe)
+                                    _issubclass_safe, _is_tuple)
 
 Json = Union[dict, list, str, int, float, bool, None]
 
@@ -298,9 +298,14 @@ def _decode_generic(type_, value, infer_missing):
             ks = _decode_dict_keys(k_type, value.keys(), infer_missing)
             vs = _decode_items(v_type, value.values(), infer_missing)
             xs = zip(ks, vs)
+        elif _is_tuple(type_):
+            types = _get_type_args(type_)
+            if Ellipsis in types:
+                xs = _decode_items(types[0], value, infer_missing)
+            else:
+                xs = _decode_items(_get_type_args(type_) or _NO_ARGS, value, infer_missing)
         else:
-            xs = _decode_items(_get_type_arg_param(type_, 0),
-                               value, infer_missing)
+            xs = _decode_items(_get_type_arg_param(type_, 0), value, infer_missing)
 
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on constructing using type_ itself
@@ -355,7 +360,7 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     return map(decode_function, _decode_items(key_type, xs, infer_missing))
 
 
-def _decode_items(type_arg, xs, infer_missing):
+def _decode_items(type_args, xs, infer_missing):
     """
     This is a tricky situation where we need to check both the annotated
     type info (which is usually a type from `typing`) and check the
@@ -365,14 +370,16 @@ def _decode_items(type_arg, xs, infer_missing):
     type_arg is a typevar we need to extract the reified type information
     hence the check of `is_dataclass(vs)`
     """
-    if is_dataclass(type_arg) or is_dataclass(xs):
-        items = (_decode_dataclass(type_arg, x, infer_missing)
-                 for x in xs)
-    elif _is_supported_generic(type_arg):
-        items = (_decode_generic(type_arg, x, infer_missing) for x in xs)
-    else:
-        items = xs
-    return items
+    def _decode_item(type_arg, x):
+        if is_dataclass(type_arg) or is_dataclass(xs):
+            return _decode_dataclass(type_arg, x, infer_missing)
+        if _is_supported_generic(type_arg):
+            return _decode_generic(type_arg, x, infer_missing)
+        return x
+
+    if _isinstance_safe(type_args, Collection) and not _issubclass_safe(type_args, Enum):
+        return list(_decode_item(type_arg, x) for type_arg, x in zip(type_args, xs))
+    return list(_decode_item(type_args, x) for x in xs)
 
 
 def _asdict(obj, encode_json=False):

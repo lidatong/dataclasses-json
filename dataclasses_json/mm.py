@@ -14,7 +14,6 @@ from enum import Enum
 from typing_inspect import is_union_type  # type: ignore
 
 from marshmallow import fields, Schema, post_load  # type: ignore
-from marshmallow_enum import EnumField  # type: ignore
 from marshmallow.exceptions import ValidationError  # type: ignore
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
@@ -253,7 +252,7 @@ def build_type(type_, options, mixin, field, cls):
             return TYPES[origin](*args, **options)
 
         if _issubclass_safe(origin, Enum):
-            return EnumField(enum=origin, by_value=True, *args, **options)
+            return fields.Enum(enum=origin, by_value=True, *args, **options)
 
         if is_union_type(type_):
             union_types = [a for a in getattr(type_, '__args__', []) if

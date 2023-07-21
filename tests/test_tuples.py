@@ -69,9 +69,9 @@ class TestSchemaEncoder:
         js = DataWithNestedTuple.schema().dumps(nested_tuple_data)
         assert js == nested_tuple_json, f'Actual: {js}, Expected: {nested_tuple_json}'
 
-    # def test_ellipsis_tuple(self):
-    #     js = DataWithEllipsisTuple.schema().dumps(ellipsis_tuple_data)
-    #     assert js == ellipsis_tuple_json, f'Actual: {js}, Expected: {ellipsis_tuple_json}'
+    def test_ellipsis_tuple(self):
+        js = DataWithEllipsisTuple.schema().dumps(ellipsis_tuple_data)
+        assert js == ellipsis_tuple_json, f'Actual: {js}, Expected: {ellipsis_tuple_json}'
         
     
     
@@ -103,7 +103,7 @@ class TestSchemaDecoder:
         assert nested_tuple_data == tuple_data_from_json
         assert tuple_data_from_json.to_json() == nested_tuple_json
 
-    # def test_ellipsis_tuple(self):
-    #     tuple_data_from_json = DataWithEllipsisTuple.schema().loads(ellipsis_tuple_json)
-    #     assert ellipsis_tuple_data == tuple_data_from_json
-    #     assert tuple_data_from_json.to_json() == ellipsis_tuple_json
+    def test_ellipsis_tuple(self):
+        tuple_data_from_json = DataWithEllipsisTuple.schema().loads(ellipsis_tuple_json)
+        assert ellipsis_tuple_data == tuple_data_from_json
+        assert tuple_data_from_json.to_json() == ellipsis_tuple_json

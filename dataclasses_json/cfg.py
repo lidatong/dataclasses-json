@@ -24,9 +24,12 @@ class Exclude:
 class _GlobalConfig:
 
     def __init__(self):
-        self.encoders: Dict[type, Callable] = {}
-        self.decoders: Dict[type, Callable] = {}
-        self.mm_fields: Dict[type, MarshmallowField] = {}
+        self.encoders: Dict[Union[type, Optional[type]], Callable] = {}
+        self.decoders: Dict[Union[type, Optional[type]], Callable] = {}
+        self.mm_fields: Dict[
+            Union[type, Optional[type]],
+            MarshmallowField
+        ] = {}
         # self._json_module = json
 
     # TODO: #180

@@ -42,8 +42,10 @@ jobs:
         set -euxo pipefail    
         
         poetry run pytest ./tests --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=term-missing:skip-covered | tee pytest-coverage.txt
+        
     - name: Publish Code Coverage
       uses: MishaKav/pytest-coverage-comment@main
+      if: ${{ !github.event.pull_request.head.repo.fork }}
       with:
         pytest-coverage-path: ./pytest-coverage.txt
         junitxml-path: ./junit/test-results.xml

@@ -63,7 +63,7 @@ def _user_overrides_or_exts(cls):
         if field.type in decoders:
             global_metadata[field.name]['decoder'] = decoders[field.type]
         if field.type in mm_fields:
-            global_metadata[field.name]['mm_fields'] = mm_fields[field.type]
+            global_metadata[field.name]['mm_field'] = mm_fields[field.type]
     try:
         cls_config = (cls.dataclass_json_config
                       if cls.dataclass_json_config is not None else {})

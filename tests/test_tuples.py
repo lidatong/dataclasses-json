@@ -1,3 +1,4 @@
+import dataclasses
 import json
 from enum import Enum
 from typing import Tuple
@@ -49,16 +50,31 @@ class TestEncoder:
     def test_enum_with_tuple(self):
         assert hetero_tuple_data.to_json() == hetero_tuple_json, f'Actual: {hetero_tuple_data.to_json()}, Expected: {hetero_tuple_json}'
         assert hetero_tuple_data.to_dict(encode_json=True) == json.loads(hetero_tuple_json), f'Actual: {hetero_tuple_data.to_dict()}, Expected: {json.loads(hetero_tuple_json)}'
-
+    
     def test_nested_tuple(self):
         assert nested_tuple_data.to_json() == nested_tuple_json, f'Actual: {nested_tuple_data.to_json()}, Expected: {nested_tuple_json}'
         assert nested_tuple_data.to_dict(encode_json=True) == json.loads(nested_tuple_json), f'Actual: {nested_tuple_data.to_dict()}, Expected: {json.loads(nested_tuple_json)}'
-
+    
     def test_ellipsis_tuple(self):
         assert ellipsis_tuple_data.to_json() == ellipsis_tuple_json, f'Actual: {ellipsis_tuple_data.to_json()}, Expected: {ellipsis_tuple_json}'
         assert ellipsis_tuple_data.to_dict(encode_json=True) == json.loads(ellipsis_tuple_json), f'Actual: {ellipsis_tuple_data.to_dict()}, Expected: {json.loads(ellipsis_tuple_json)}'
 
 
+class TestSchemaEncoder:
+    def test_enum_with_tuple(self):
+        js = DataWithHeterogeneousTuple.schema().dumps(hetero_tuple_data)
+        assert js == hetero_tuple_json, f'Actual: {js}, Expected: {hetero_tuple_json}'
+
+    def test_nested_tuple(self):
+        js = DataWithNestedTuple.schema().dumps(nested_tuple_data)
+        assert js == nested_tuple_json, f'Actual: {js}, Expected: {nested_tuple_json}'
+
+    def test_ellipsis_tuple(self):
+        js = DataWithEllipsisTuple.schema().dumps(ellipsis_tuple_data)
+        assert js == ellipsis_tuple_json, f'Actual: {js}, Expected: {ellipsis_tuple_json}'
+        
+    
+    
 class TestDecoder:
     def test_enum_with_tuple(self):
         tuple_data_from_json = DataWithHeterogeneousTuple.from_json(hetero_tuple_json)
@@ -72,5 +88,22 @@ class TestDecoder:
 
     def test_ellipsis_tuple(self):
         tuple_data_from_json = DataWithEllipsisTuple.from_json(ellipsis_tuple_json)
+        assert ellipsis_tuple_data == tuple_data_from_json
+        assert tuple_data_from_json.to_json() == ellipsis_tuple_json
+
+
+class TestSchemaDecoder:
+    def test_enum_with_tuple(self):
+        tuple_data_from_json = DataWithHeterogeneousTuple.schema().loads(hetero_tuple_json)
+        assert hetero_tuple_data == tuple_data_from_json
+        assert tuple_data_from_json.to_json() == hetero_tuple_json
+
+    def test_nested_tuple(self):
+        tuple_data_from_json = DataWithNestedTuple.schema().loads(nested_tuple_json)
+        assert nested_tuple_data == tuple_data_from_json
+        assert tuple_data_from_json.to_json() == nested_tuple_json
+
+    def test_ellipsis_tuple(self):
+        tuple_data_from_json = DataWithEllipsisTuple.schema().loads(ellipsis_tuple_json)
         assert ellipsis_tuple_data == tuple_data_from_json
         assert tuple_data_from_json.to_json() == ellipsis_tuple_json

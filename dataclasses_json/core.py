@@ -388,6 +388,7 @@ def _asdict(obj, encode_json=False):
         return dict((_asdict(k, encode_json=encode_json),
                      _asdict(v, encode_json=encode_json)) for k, v in
                     obj.items())
+    # enum.IntFlag and enum.Flag are regarded as collections in Python 3.11, thus a check against Enum is needed
     elif isinstance(obj, Collection) and not isinstance(obj, (str, bytes, Enum)):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:

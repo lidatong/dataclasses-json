@@ -1,5 +1,5 @@
 import json
-from enum import Enum
+from enum import Enum, IntFlag, auto
 from typing import Dict, List
 import pytest
 
@@ -20,6 +20,12 @@ class MyEnum(Enum):
 
 class MyStrEnum(str, Enum):
     STR1 = "str1"
+
+
+class MyFlag(IntFlag):
+    A = auto()
+    B = auto()
+    C = auto()
 
 
 @dataclass_json
@@ -71,6 +77,19 @@ container = EnumContainer(
     dict_enum_value={"key1str": MyEnum.STR1, "key1float": MyEnum.FLOAT1})
 
 
+@dataclass_json
+@dataclass(frozen=True)
+class FlagContainer:
+    flag_list: List[MyFlag]
+    flag: MyFlag
+
+flag_container_json = '{"flag_list": [1, 4], "flag": 1}'
+flag_container = FlagContainer(
+    flag_list=[MyFlag.A, MyFlag.C],
+    flag=MyFlag.A
+)
+
+
 class TestEncoder:
     def test_data_with_enum(self):
         assert d1.to_json() == d1_json, f'Actual: {d1.to_json()}, Expected: {d1_json}'
@@ -91,6 +110,10 @@ class TestEncoder:
     def test_enum_with_list(self):
         assert d5_list.to_json() == d5_list_json, f'Actual: {d5_list.to_json()}, Expected: {d5_list_json}'
         assert d5_list.to_dict(encode_json=True) == json.loads(d5_list_json), f'Actual: {d5_list.to_dict()}, Expected: {json.loads(d5_list_json)}'
+
+    def test_enum_flag(self):
+        assert flag_container.to_json() == flag_container_json, f'Actual: {flag_container.to_json()}, Expected: {flag_container_json}'
+        assert flag_container.to_dict(encode_json=True) == json.loads(flag_container_json), f'Actual: {flag_container.to_dict()}, Expected: {json.loads(flag_container_json)}'
 
 
 class TestDecoder:
@@ -123,6 +146,11 @@ class TestDecoder:
         container_from_json = EnumContainer.from_json(container_json)
         assert container == container_from_json
         assert container_from_json.to_json() == container_json
+
+    def test_enum_flag(self):
+        flag_container_from_json = FlagContainer.from_json(flag_container_json)
+        assert flag_container == flag_container_from_json
+        assert flag_container_from_json.to_json() == flag_container_json
 
 
 class TestValidator:

@@ -19,7 +19,7 @@ jobs:
       max-parallel: 5
       matrix:
         # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        python-version: [3.7, 3.8, 3.9, "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v3
@@ -27,6 +27,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
     - name: Install Poetry and dependencies
       run: |
         set -e

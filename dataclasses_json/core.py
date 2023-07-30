@@ -185,7 +185,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
                     )
                 else:
                     warnings.warn(
-                        f"`NoneType` object {warning}.", RuntimeWarning
+                        f"'NoneType' object {warning}.", RuntimeWarning
                     )
             init_kwargs[field.name] = field_value
             continue

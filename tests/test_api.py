@@ -127,7 +127,7 @@ class TestWarnings:
             assert (actual == expected)
 
     def test_warns_when_required_field_is_none(self):
-        with pytest.warns(RuntimeWarning, match='`NoneType` object'):
+        with pytest.warns(RuntimeWarning, match='\'NoneType\' object'):
             assert (DataClassWithDataClass.from_json(
                 '{"dc_with_list": null}') == DataClassWithDataClass(None))
 

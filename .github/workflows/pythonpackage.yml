@@ -70,10 +70,7 @@ jobs:
           set -e
           
           curl -sSL https://install.python-poetry.org | python3 -
-          
-          version=$(git describe --tags --abbrev=7)
-          sed -i "s/version = \"0.0.0\"/version = \"${version:1}\"/" pyproject.toml
-          echo "__version__ = '${version:1}'" > ./dataclasses_json/_version.py
+          poetry self add "poetry-dynamic-versioning[plugin]"
       - name: Build package
         run: |
           set -e

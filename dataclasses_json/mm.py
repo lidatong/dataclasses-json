@@ -1,5 +1,5 @@
 # flake8: noqa
-
+import dataclasses
 import typing
 import warnings
 import sys
@@ -318,11 +318,23 @@ def schema(cls, mixin, infer_missing):
                 options['data_key'] = metadata.letter_case(field.name)
 
             t = build_type(type_, options, mixin, field, cls)
+            _account_for_decoder_if_necessary(field, t)
+
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
             if field.type != typing.Optional[CatchAllVar]:
                 schema[field.name] = t
 
     return schema
+
+
+def _account_for_decoder_if_necessary(field: dataclasses.Field, t: fields.Field):
+    decoder = field.metadata.get('dataclasses_json', {}).get('decoder')
+    if decoder:
+        t._deserialize = _dummy_deserialize
+
+
+def _dummy_deserialize(value: typing.Any, *_args, **_kwargs):
+    return value
 
 
 def build_schema(cls: typing.Type[A],

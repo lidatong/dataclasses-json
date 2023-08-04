@@ -271,6 +271,16 @@ class DataClassWithErroneousDecode:
     id: float = field(metadata=config(decoder=lambda: None))
 
 
+def split_str(data: str, *_args, **_kwargs):
+    return data.split(',')
+
+
+@dataclass_json
+@dataclass
+class DataClassDifferentTypeDecode:
+    lst: List[str] = field(default=None, metadata=config(decoder=split_str))
+
+
 @dataclass_json
 @dataclass
 class DataClassMappingBadDecode:

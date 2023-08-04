@@ -9,7 +9,7 @@ readme = "README.md"
 repository = 'https://github.com/lidatong/dataclasses-json'
 
 [tool.poetry.dependencies]
-python = ">=3.7, <3.12"
+python = ">=3.7, <3.13"
 typing-inspect = ">=0.4.0, <1"
 marshmallow = ">=3.18.0,<4.0.0"
 
@@ -27,5 +27,8 @@ black = "^22"
 line-length = 120
 
 [build-system]
-requires = ["poetry-core>=1.2.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.2.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry-dynamic-versioning]
+enable = true

@@ -112,6 +112,15 @@ class _UnionField(fields.Field):
         return super()._deserialize(tmp_value, attr, data, **kwargs)
 
 
+class _TupleVarLen(fields.List):
+    """
+    variable-length homogeneous tuples
+    """
+    def _deserialize(self, value, attr, data, **kwargs):
+        optional_list = super()._deserialize(value, attr, data, **kwargs)
+        return None if optional_list is None else tuple(optional_list)
+
+
 TYPES = {
     typing.Mapping: fields.Mapping,
     typing.MutableMapping: fields.Mapping,
@@ -244,10 +253,17 @@ def build_type(type_, options, mixin, field, cls):
         origin = getattr(type_, '__origin__', type_)
         args = [inner(a, {}) for a in getattr(type_, '__args__', []) if
                 a is not type(None)]
-
+        
+        if type_ == Ellipsis:
+            return type_
+        
         if _is_optional(type_):
             options["allow_none"] = True
-
+        if origin is tuple:
+            if len(args) == 2 and args[1] == Ellipsis:
+                return _TupleVarLen(args[0], **options)
+            else:
+                return fields.Tuple(args, **options)
         if origin in TYPES:
             return TYPES[origin](*args, **options)
 

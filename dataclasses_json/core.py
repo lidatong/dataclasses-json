@@ -63,7 +63,7 @@ def _user_overrides_or_exts(cls):
         if field.type in decoders:
             global_metadata[field.name]['decoder'] = decoders[field.type]
         if field.type in mm_fields:
-            global_metadata[field.name]['mm_fields'] = mm_fields[field.type]
+            global_metadata[field.name]['mm_field'] = mm_fields[field.type]
     try:
         cls_config = (cls.dataclass_json_config
                       if cls.dataclass_json_config is not None else {})
@@ -185,7 +185,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
                     )
                 else:
                     warnings.warn(
-                        f"`NoneType` object {warning}.", RuntimeWarning
+                        f"'NoneType' object {warning}.", RuntimeWarning
                     )
             init_kwargs[field.name] = field_value
             continue
@@ -388,8 +388,8 @@ def _asdict(obj, encode_json=False):
         return dict((_asdict(k, encode_json=encode_json),
                      _asdict(v, encode_json=encode_json)) for k, v in
                     obj.items())
-    elif isinstance(obj, Collection) and not isinstance(obj, str) \
-            and not isinstance(obj, bytes):
+    # enum.IntFlag and enum.Flag are regarded as collections in Python 3.11, thus a check against Enum is needed
+    elif isinstance(obj, Collection) and not isinstance(obj, (str, bytes, Enum)):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
     else:
         return copy.deepcopy(obj)

@@ -19,7 +19,7 @@ jobs:
       max-parallel: 5
       matrix:
         # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        python-version: [3.7, 3.8, 3.9, "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v3
@@ -27,6 +27,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
     - name: Install Poetry and dependencies
       run: |
         set -e
@@ -42,8 +43,10 @@ jobs:
         set -euxo pipefail    
         
         poetry run pytest ./tests --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=term-missing:skip-covered | tee pytest-coverage.txt
+        
     - name: Publish Code Coverage
       uses: MishaKav/pytest-coverage-comment@main
+      if: ${{ !github.event.pull_request.head.repo.fork }}
       with:
         pytest-coverage-path: ./pytest-coverage.txt
         junitxml-path: ./junit/test-results.xml
@@ -67,10 +70,7 @@ jobs:
           set -e
           
           curl -sSL https://install.python-poetry.org | python3 -
-          
-          version=$(git describe --tags --abbrev=7)
-          sed -i "s/version = \"0.0.0\"/version = \"${version:1}\"/" pyproject.toml
-          echo "__version__ = '${version:1}'" > ./dataclasses_json/_version.py
+          poetry self add "poetry-dynamic-versioning[plugin]"
       - name: Build package
         run: |
           set -e

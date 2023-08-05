@@ -333,7 +333,7 @@ def _account_for_decoder_if_necessary(field: dataclasses.Field, t: fields.Field)
     decoder = field.metadata.get('dataclasses_json', {}).get('decoder')
     if decoder:
         # Used in order to avoid mypy error. See https://github.com/python/mypy/issues/2427 for more details
-        setattr(t, '_deserialize', _dummy_deserialize)
+        t._deserialize = _dummy_deserialize  # type: ignore
 
 
 def _dummy_deserialize(value: typing.Any, *_args, **_kwargs):

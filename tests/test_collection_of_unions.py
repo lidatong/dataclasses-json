@@ -97,24 +97,24 @@ class TestCollectionOfUnions:
         data = {
             'roster': [
                 {
-                    'player1'
+                    'name': 'player1'
                 },
                 {
-                    'player2'
+                    'name': 'player2'
                 },
                 {
-                    'player3'
+                    'name': 'player3'
                 }
             ],
             'roster_backup': {
                 1: {
-                    'player1'
+                    'name': 'player1'
                 },
                 2: {
-                    'player2'
+                    'name': 'player2'
                 },
                 3: {
-                    'player3'
+                    'name': 'player3'
                 }
             }
         }
@@ -127,13 +127,13 @@ class TestCollectionOfUnions:
         data = {
             'roster': [
                 {
-                    'player1'
+                    'name': 'player1'
                 },
                 {
-                    'player2'
+                    'name': 'player2'
                 },
                 {
-                    'player3'
+                    'name': 'player3'
                 }
             ],
             'roster_backup': {
@@ -156,13 +156,13 @@ class TestCollectionOfUnions:
             ],
             'roster_backup': {
                 1: {
-                    'player1'
+                    'name': 'player1'
                 },
                 2: {
-                    'player2'
+                    'name': 'player2'
                 },
                 3: {
-                    'player3'
+                    'name': 'player3'
                 }
             }
         }

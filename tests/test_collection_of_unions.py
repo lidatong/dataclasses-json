@@ -38,8 +38,8 @@ class Player:
 @dataclass_json
 @dataclass(frozen=True)
 class Team:
-    roster: list[int | Player]
-    roster_backup: dict[int, int | Player]
+    roster: list[Union[int, Player]]
+    roster_backup: dict[int, Union[int, Player]]
 
 
 class TestCollectionOfUnions:

@@ -326,7 +326,6 @@ def schema(cls, mixin, infer_missing):
                 # This is the method that Field implementations override to perform the actual deserialization logic.
                 # In this case we specifically override this method instead of `deserialize` to minimize potential
                 # side effects, and only cancel the actual value deserialization.
-                # Ignored mypy error. See https://github.com/python/mypy/issues/2427 for more details
                 t._deserialize = lambda v, *_a, **_kw: v
 
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.

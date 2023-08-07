@@ -89,7 +89,7 @@ class TestCollectionOfUnions:
             }
         }
         json_str = json.dumps(data)
-        obj: Team = ListUnion.from_json(json_str)
+        obj: Team = Team.from_json(json_str)
 
         assert type(obj.roster[0]) is int and type(obj.roster_backup[1]) is int
 
@@ -119,7 +119,7 @@ class TestCollectionOfUnions:
             }
         }
         json_str = json.dumps(data)
-        obj: Team = ListUnion.from_json(json_str)
+        obj: Team = Team.from_json(json_str)
 
         assert type(obj.roster[0]) is Player and type(obj.roster_backup[1]) is Player
 
@@ -143,7 +143,7 @@ class TestCollectionOfUnions:
             }
         }
         json_str = json.dumps(data)
-        obj: Team = ListUnion.from_json(json_str)
+        obj: Team = Team.from_json(json_str)
 
         assert type(obj.roster[0]) is Player and type(obj.roster_backup[1]) is int
 
@@ -167,6 +167,6 @@ class TestCollectionOfUnions:
             }
         }
         json_str = json.dumps(data)
-        obj: Team = ListUnion.from_json(json_str)
+        obj: Team = Team.from_json(json_str)
 
         assert type(obj.roster[0]) is int and type(obj.roster_backup[1]) is Player

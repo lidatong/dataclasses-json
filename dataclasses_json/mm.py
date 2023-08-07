@@ -116,7 +116,6 @@ class _TupleVarLen(fields.List):
     """
     variable-length homogeneous tuples
     """
-
     def _deserialize(self, value, attr, data, **kwargs):
         optional_list = super()._deserialize(value, attr, data, **kwargs)
         return None if optional_list is None else tuple(optional_list)
@@ -163,7 +162,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             raise NotImplementedError()
 
         @typing.overload
-        def dump(self, obj: typing.List[A],  many: typing.Optional[bool] = None) -> typing.List[TEncoded]:  # type: ignore
+        def dump(self, obj: typing.List[A],  many: typing.Optional[bool] = None) -> typing.List[TEncoded]: # type: ignore
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             pass
 
@@ -171,7 +170,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
         def dump(self, obj: A, many: typing.Optional[bool] = None) -> TEncoded:
             pass
 
-        def dump(self, obj: TOneOrMulti, # type: ignore
+        def dump(self, obj: TOneOrMulti,   # type: ignore
                  many: typing.Optional[bool] = None) -> TOneOrMultiEncoded:
             pass
 
@@ -184,7 +183,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
         def dumps(self, obj: A, many: typing.Optional[bool] = None, *args, **kwargs) -> str:
             pass
 
-        def dumps(self, obj: TOneOrMulti, many: typing.Optional[bool] = None, *args, # type: ignore
+        def dumps(self, obj: TOneOrMulti, many: typing.Optional[bool] = None, *args,   # type: ignore
                   **kwargs) -> str:
             pass
 
@@ -209,14 +208,16 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
 
         @typing.overload  # type: ignore
         def loads(self, json_data: JsonData,  # type: ignore
-                  many: typing.Optional[bool] = True, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None, **kwargs) -> typing.List[A]:
+                  many: typing.Optional[bool] = True, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
+                  **kwargs) -> typing.List[A]:
             # ignore the mypy error of the decorator because mm does not define bytes as correct input data
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             # for the return type overlap
             pass
 
         def loads(self, json_data: JsonData,
-                  many: typing.Optional[bool] = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None, **kwargs) -> TOneOrMulti:
+                  many: typing.Optional[bool] = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None,
+                  **kwargs) -> TOneOrMulti:
             pass
 
 

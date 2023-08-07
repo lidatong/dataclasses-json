@@ -162,7 +162,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             raise NotImplementedError()
 
         @typing.overload
-        def dump(self, obj: typing.List[A],  many: typing.Optional[bool] = None) -> typing.List[TEncoded]: # type: ignore
+        def dump(self, obj: typing.List[A],  many: typing.Optional[bool] = None) -> typing.List[TEncoded]:  # type: ignore
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             pass
 

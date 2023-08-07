@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, Union, List
+import json
 
 from dataclasses_json import dataclass_json
 
@@ -40,10 +41,9 @@ class TestCollectionOfUnions:
                 }
             }
         }
-        json_str = NotWorkingDictUnion.schema().dump(data)
+        json_str = json.dumps(data)
         obj = NotWorkingDictUnion.from_json(json_str)
 
-        # type is <class 'dict'>, as opposed to TestChild/TestOtherChild
         assert type(obj.d['child']) in (TestChild, TestOtherChild)
 
     def test_list(self):
@@ -57,8 +57,7 @@ class TestCollectionOfUnions:
                 }
             ]
         }
-        json_str = NotWorkingListUnion.schema().dump(data)
+        json_str = json.dumps(data)
         obj = NotWorkingListUnion.from_json(json_str)
 
-        # type is <class 'dict'>, as opposed to TestChild/TestOtherChild
         assert type(obj.l[0]) in (TestChild, TestOtherChild)

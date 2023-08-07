@@ -163,8 +163,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
             raise NotImplementedError()
 
         @typing.overload
-        def dump(self, obj: typing.List[A],  # type: ignore
-                 many: typing.Optional[bool] = None) -> typing.List[TEncoded]:
+        def dump(self, obj: typing.List[A],  many: typing.Optional[bool] = None) -> typing.List[TEncoded]:  # type: ignore
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             pass
 
@@ -172,7 +171,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
         def dump(self, obj: A, many: typing.Optional[bool] = None) -> TEncoded:
             pass
 
-        def dump(self, obj: TOneOrMulti,  # type: ignore
+        def dump(self, obj: TOneOrMulti, # type: ignore
                  many: typing.Optional[bool] = None) -> TOneOrMultiEncoded:
             pass
 
@@ -185,7 +184,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
         def dumps(self, obj: A, many: typing.Optional[bool] = None, *args, **kwargs) -> str:
             pass
 
-        def dumps(self, obj: TOneOrMulti, many: typing.Optional[bool] = None, *args,  # type: ignore
+        def dumps(self, obj: TOneOrMulti, many: typing.Optional[bool] = None, *args, # type: ignore
                   **kwargs) -> str:
             pass
 
@@ -210,16 +209,14 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
 
         @typing.overload  # type: ignore
         def loads(self, json_data: JsonData,  # type: ignore
-                  many: typing.Optional[bool] = True, partial: typing.Optional[bool] = None,
-                  unknown: typing.Optional[str] = None, **kwargs) -> typing.List[A]:
+                  many: typing.Optional[bool] = True, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None, **kwargs) -> typing.List[A]:
             # ignore the mypy error of the decorator because mm does not define bytes as correct input data
             # mm has the wrong return type annotation (dict) so we can ignore the mypy error
             # for the return type overlap
             pass
 
         def loads(self, json_data: JsonData,
-                  many: typing.Optional[bool] = None, partial: typing.Optional[bool] = None,
-                  unknown: typing.Optional[str] = None, **kwargs) -> TOneOrMulti:
+                  many: typing.Optional[bool] = None, partial: typing.Optional[bool] = None, unknown: typing.Optional[str] = None, **kwargs) -> TOneOrMulti:
             pass
 
 
@@ -320,24 +317,20 @@ def schema(cls, mixin, infer_missing):
                 options['data_key'] = metadata.letter_case(field.name)
 
             t = build_type(type_, options, mixin, field, cls)
-            _account_for_decoder_if_necessary(field, t)
+            if field.metadata.get('dataclasses_json', {}).get('decoder'):
+                # From Marshmallow's documentation for the _deserialize method:
+                # "Deserialize value. Concrete :class:`Field` classes should implement this method. "
+                # This is the method that Field implementations override to perform the actual deserialization logic.
+                # In this case we specifically override this method instead of deserialize to minimize potential
+                # side effects, and only cancel the actual value deserialization.
+                # Ignored mypy error. See https://github.com/python/mypy/issues/2427 for more details
+                t._deserialize = lambda v, *_a, **_kw: v
 
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
             if field.type != typing.Optional[CatchAllVar]:
                 schema[field.name] = t
 
     return schema
-
-
-def _account_for_decoder_if_necessary(field: dataclasses.Field, t: fields.Field):
-    decoder = field.metadata.get('dataclasses_json', {}).get('decoder')
-    if decoder:
-        # Used in order to avoid mypy error. See https://github.com/python/mypy/issues/2427 for more details
-        t._deserialize = _dummy_deserialize  # type: ignore
-
-
-def _dummy_deserialize(value: typing.Any, *_args, **_kwargs):
-    return value
 
 
 def build_schema(cls: typing.Type[A],

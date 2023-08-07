@@ -314,19 +314,21 @@ def _decode_generic(type_, value, infer_missing):
                 # already decoded
                 res = value
             else:
-                # FIXME if both types in the union are dataclasses this
+                # FIXME if all types in the union are dataclasses this
                 #  will just pick the first option -
-                #  maybe find the better fitting class in that case instead?
-                if is_dataclass(type_options[0]):
-                    res = _decode_dataclass(type_options[0], value, infer_missing)
-                elif is_dataclass(type_options[1]):
-                    res = _decode_dataclass(type_options[1], value, infer_missing)
-                else:
+                #  maybe find the best fitting class in that case instead?
+                res = value
+                changed = False
+                for type_option in type_options:
+                    if is_dataclass(type_option):
+                        res = _decode_dataclass(type_options[0], value, infer_missing)
+                        changed = True
+                        break
+                if not changed:
                     warnings.warn(
                         f"Failed encoding {value} Union dataclasses."
                         f"Expected Union to include a dataclass and it didn't."
                     )
-                    res = value
     return res
 
 

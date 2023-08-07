@@ -1,5 +1,4 @@
 # flake8: noqa
-import dataclasses
 import typing
 import warnings
 import sys

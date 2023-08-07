@@ -170,7 +170,7 @@ if sys.version_info >= (3, 7) or typing.TYPE_CHECKING:
         def dump(self, obj: A, many: typing.Optional[bool] = None) -> TEncoded:
             pass
 
-        def dump(self, obj: TOneOrMulti,   # type: ignore
+        def dump(self, obj: TOneOrMulti,    # type: ignore
                  many: typing.Optional[bool] = None) -> TOneOrMultiEncoded:
             pass
 
@@ -319,10 +319,12 @@ def schema(cls, mixin, infer_missing):
 
             t = build_type(type_, options, mixin, field, cls)
             if field.metadata.get('dataclasses_json', {}).get('decoder'):
+                # If the field defines a custom decoder, it should completely replace the Marshmallow field's conversion
+                # logic.
                 # From Marshmallow's documentation for the _deserialize method:
                 # "Deserialize value. Concrete :class:`Field` classes should implement this method. "
                 # This is the method that Field implementations override to perform the actual deserialization logic.
-                # In this case we specifically override this method instead of deserialize to minimize potential
+                # In this case we specifically override this method instead of `deserialize` to minimize potential
                 # side effects, and only cancel the actual value deserialization.
                 # Ignored mypy error. See https://github.com/python/mypy/issues/2427 for more details
                 t._deserialize = lambda v, *_a, **_kw: v

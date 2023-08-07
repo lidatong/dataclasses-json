@@ -253,10 +253,10 @@ def build_type(type_, options, mixin, field, cls):
         origin = getattr(type_, '__origin__', type_)
         args = [inner(a, {}) for a in getattr(type_, '__args__', []) if
                 a is not type(None)]
-        
+
         if type_ == Ellipsis:
             return type_
-        
+
         if _is_optional(type_):
             options["allow_none"] = True
         if origin is tuple:
@@ -318,6 +318,16 @@ def schema(cls, mixin, infer_missing):
                 options['data_key'] = metadata.letter_case(field.name)
 
             t = build_type(type_, options, mixin, field, cls)
+            if field.metadata.get('dataclasses_json', {}).get('decoder'):
+                # If the field defines a custom decoder, it should completely replace the Marshmallow field's conversion
+                # logic.
+                # From Marshmallow's documentation for the _deserialize method:
+                # "Deserialize value. Concrete :class:`Field` classes should implement this method. "
+                # This is the method that Field implementations override to perform the actual deserialization logic.
+                # In this case we specifically override this method instead of `deserialize` to minimize potential
+                # side effects, and only cancel the actual value deserialization.
+                t._deserialize = lambda v, *_a, **_kw: v
+
             # if type(t) is not fields.Field:  # If we use `isinstance` we would return nothing.
             if field.type != typing.Optional[CatchAllVar]:
                 schema[field.name] = t

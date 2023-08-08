@@ -38,7 +38,7 @@ class Player:
 @dataclass_json
 @dataclass(frozen=True)
 class Team:
-    roster: list[Union[int, Player]]
+    roster: List[Union[int, Player]]
     roster_backup: dict[int, Union[int, Player]]
 
 

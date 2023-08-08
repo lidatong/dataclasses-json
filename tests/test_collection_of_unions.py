@@ -39,7 +39,7 @@ class Player:
 @dataclass(frozen=True)
 class Team:
     roster: List[Union[int, Player]]
-    roster_backup: dict[int, Union[int, Player]]
+    roster_backup: Dict[int, Union[int, Player]]
 
 
 class TestCollectionOfUnions:

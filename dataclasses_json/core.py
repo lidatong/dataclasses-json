@@ -321,7 +321,7 @@ def _decode_generic(type_, value, infer_missing):
                 changed = False
                 for type_option in type_options:
                     if is_dataclass(type_option):
-                        res = _decode_dataclass(type_options[0], value, infer_missing)
+                        res = _decode_dataclass(type_option, value, infer_missing)
                         changed = True
                         break
                 if not changed:

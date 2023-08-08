@@ -2,7 +2,8 @@ import marshmallow
 import pytest
 
 from .entities import (DataClassDefaultListStr, DataClassDefaultOptionalList, DataClassList, DataClassOptional,
-                       DataClassWithNestedOptional, DataClassWithNestedOptionalAny, DataClassWithNestedAny)
+                       DataClassWithNestedOptional, DataClassWithNestedOptionalAny, DataClassWithNestedAny,
+                       DataClassDifferentTypeDecode)
 from .test_letter_case import CamelCasePerson, KebabCasePerson, SnakeCasePerson, FieldNamePerson
 
 test_do_list = """[{}, {"children": [{"name": "a"}, {"name": "b"}]}]"""
@@ -47,3 +48,7 @@ class TestSchema:
     def test_nested_any_accepts_optional(self):
         DataClassWithNestedAny.schema().loads(nested_optional_data)
         assert True
+
+    def test_accounts_for_decode(self):
+        assert DataClassDifferentTypeDecode.schema().load({'lst': '1,2,3'}) == \
+               DataClassDifferentTypeDecode(lst=['1', '2', '3'])

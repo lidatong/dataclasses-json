@@ -111,7 +111,7 @@ def _isinstance_safe(o, t):
         return result
 
 
-def _issubclass_safe(cls, classinfo):
+def _issubclass_safe(cls: Type[Any], classinfo: Type[Any]) -> bool:
     try:
         return issubclass(cls, classinfo)
     except Exception:

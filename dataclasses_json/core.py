@@ -244,7 +244,9 @@ def _support_extended_types(field_type, field_value):
         res = (field_value
                if isinstance(field_value, UUID)
                else UUID(field_value))
-    elif _issubclass_safe(field_type, bool):  # issubclass(bool, int) -> True, thus values >1 will always convert to True in the next clause, unless intercepted
+    elif _issubclass_safe(field_type, bool):
+        # issubclass(bool, int) -> True
+        # thus values >1 will always convert to True in the next clause, unless intercepted
         if field_value in ('True', 'true', True, 1):
             res = True
         elif field_value in ('False', 'false', False, 0):

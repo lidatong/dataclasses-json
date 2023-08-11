@@ -53,7 +53,7 @@ def test_dataclass_with_implicit_builtins(model_dict: Dict, expected_model: Data
     [
         param(
             {"actually_a_str": "str", "actually_an_int": 42, "actually_a_float": 42.1, "actually_a_bool": 1234},
-            id="Bool passed using valid discrete integer range [0,1]"
+            id="Bool passed using invalid integer"
         ),
         param(
             {"actually_a_str": "str", "actually_an_int": 42, "actually_a_float": 42.1, "actually_a_bool": "0"},

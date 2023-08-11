@@ -9,7 +9,8 @@ jobs:
     if: ${{ github.ref == 'refs/heads/master' }}
 
     steps:
-      - uses: actions/checkout@v2
+      - run: git config --global core.autocrlf input
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Create Release

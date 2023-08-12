@@ -135,7 +135,9 @@ def _decode_letter_case_overrides(field_names, overrides):
         if field_override is not None:
             letter_case = field_override.letter_case
             if letter_case is not None:
-                names[letter_case(field_name)] = field_name
+                names[field_name] = letter_case(field_name)
+        if field_name not in names:
+            names[field_name] = field_name
     return names
 
 
@@ -146,7 +148,8 @@ def _decode_dataclass(cls, kvs, infer_missing):
     kvs = {} if kvs is None and infer_missing else kvs
     field_names = [field.name for field in fields(cls)]
     decode_names = _decode_letter_case_overrides(field_names, overrides)
-    kvs = {decode_names.get(k, k): v for k, v in kvs.items()}
+    undefined_fields = {k: v for k, v in kvs.items() if k not in decode_names.values()}
+    kvs = {**{k: kvs[v] for k, v in decode_names.items() if v in kvs}, **undefined_fields}
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
 
     for field in missing_fields:

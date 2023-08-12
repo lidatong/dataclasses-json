@@ -2,7 +2,7 @@ import inspect
 import sys
 from datetime import datetime, timezone
 from typing import (Collection, Mapping, Optional, TypeVar, Any, Type, Tuple,
-                    Union, cast)
+                    Union, cast, Counter)
 
 
 def _get_type_cons(type_):
@@ -140,6 +140,10 @@ def _is_optional(type_):
     return (_issubclass_safe(type_, Optional) or
             _hasargs(type_, type(None)) or
             type_ is Any)
+
+
+def _is_counter(type_):
+    return _issubclass_safe(_get_type_origin(type_), Counter)
 
 
 def _is_mapping(type_):

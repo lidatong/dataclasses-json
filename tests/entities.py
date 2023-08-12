@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
 from typing import (Collection,
+                    Counter,
                     Deque,
                     Dict,
                     FrozenSet,
@@ -370,3 +371,9 @@ class DataClassWithNestedOptional:
 @dataclass
 class DataClassWithNestedDictWithTupleKeys:
     a: Dict[Tuple[int], int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithCounter:
+    c: Counter[str]

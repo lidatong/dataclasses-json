@@ -434,8 +434,7 @@ from __future__ import annotations
 as it will cause problems with the way dataclasses_json accesses the type annotations.
 
 ### Use numpy or pandas types?
-Numpy and pandas types are not supported by default, but you can easily add support for them 
-by using custom decoders and encoders. Below are two examples for numpy and pandas types.
+Data types specific to libraries commonly used in data analysis and machine learning like [numpy](https://github.com/numpy/numpy) and [pandas](https://github.com/pandas-dev/pandas) are not supported by default, but you can easily enable them by using custom decoders and encoders. Below are two examples for `numpy` and `pandas` types.
 
 ```python
 from dataclasses import field, dataclass

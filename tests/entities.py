@@ -1,9 +1,8 @@
-from collections import deque
+from collections import deque, Counter
 from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
 from typing import (Collection,
-                    Counter,
                     Deque,
                     Dict,
                     FrozenSet,

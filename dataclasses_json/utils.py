@@ -1,8 +1,9 @@
 import inspect
 import sys
 from datetime import datetime, timezone
+from collections import Counter
 from typing import (Collection, Mapping, Optional, TypeVar, Any, Type, Tuple,
-                    Union, cast, Counter)
+                    Union, cast)
 
 
 def _get_type_cons(type_):

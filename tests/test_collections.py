@@ -1,4 +1,4 @@
-from collections import deque
+from collections import Counter, deque
 
 from tests.entities import (DataClassIntImmutableDefault,
                             DataClassMutableDefaultDict,
@@ -19,7 +19,8 @@ from tests.entities import (DataClassIntImmutableDefault,
                             DataClassWithFrozenSetUnbound,
                             DataClassWithDequeCollections,
                             DataClassWithTuple, DataClassWithTupleUnbound,
-                            DataClassWithUnionIntNone, MyCollection)
+                            DataClassWithUnionIntNone, MyCollection,
+                            DataClassWithCounter)
 
 
 class TestEncoder:
@@ -111,6 +112,10 @@ class TestEncoder:
 
     def test_mutable_default_dict(self):
         assert DataClassMutableDefaultDict().to_json() == '{"xs": {}}'
+
+    def test_counter(self):
+        assert DataClassWithCounter(
+            c=Counter('foo')).to_json() == '{"c": {"f": 1, "o": 2}}'
 
 
 class TestDecoder:
@@ -235,3 +240,7 @@ class TestDecoder:
                 == DataClassMutableDefaultDict())
         assert (DataClassMutableDefaultDict.from_json('{}', infer_missing=True)
                 == DataClassMutableDefaultDict())
+
+    def test_counter(self):
+        assert DataClassWithCounter.from_json('{"c": {"f": 1, "o": 2}}') == \
+               DataClassWithCounter(c=Counter('foo'))

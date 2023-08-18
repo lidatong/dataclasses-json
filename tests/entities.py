@@ -1,3 +1,4 @@
+import sys
 from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -15,6 +16,10 @@ from typing import (Collection,
                     Union,
                     Any)
 from uuid import UUID
+if sys.version_info >= (3, 9):
+    from collections import Counter
+else:
+    from typing import Counter
 
 from marshmallow import fields
 
@@ -370,3 +375,9 @@ class DataClassWithNestedOptional:
 @dataclass
 class DataClassWithNestedDictWithTupleKeys:
     a: Dict[Tuple[int], int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithCounter:
+    c: Counter[str]

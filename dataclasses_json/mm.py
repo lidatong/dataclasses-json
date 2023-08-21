@@ -100,16 +100,25 @@ class _UnionField(fields.Field):
                 if is_dataclass(type_) and type_.__name__ == dc_name:
                     del tmp_value['__type']
                     return schema_._deserialize(tmp_value, attr, data, **kwargs)
-        for type_, schema_ in self.desc.items():
-            if isinstance(tmp_value, _get_type_origin(type_)):
-                return schema_._deserialize(tmp_value, attr, data, **kwargs)
-        else:
+        elif isinstance(tmp_value, dict):
             warnings.warn(
-                f'The type "{type(tmp_value).__name__}" (value: "{tmp_value}") '
-                f'is not in the list of possible types of typing.Union '
-                f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
-                f'Value cannot be deserialized properly.')
-        return super()._deserialize(tmp_value, attr, data, **kwargs)
+                f'Attempting to deserialize "dict" (value: "{tmp_value}) '
+                f'that does not have a "__type" type specifier field into'
+                f'(dataclass: {self.cls.__name__}, field: {self.field.name}).'
+                f'Deserialization may fail, or deserialization to wrong type may occur.'
+            )
+            return super()._deserialize(tmp_value, attr, data, **kwargs)
+        else:
+            for type_, schema_ in self.desc.items():
+                if isinstance(tmp_value, _get_type_origin(type_)):
+                    return schema_._deserialize(tmp_value, attr, data, **kwargs)
+            else:
+                warnings.warn(
+                    f'The type "{type(tmp_value).__name__}" (value: "{tmp_value}") '
+                    f'is not in the list of possible types of typing.Union '
+                    f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
+                    f'Value cannot be deserialized properly.')
+            return super()._deserialize(tmp_value, attr, data, **kwargs)
 
 
 class _TupleVarLen(fields.List):

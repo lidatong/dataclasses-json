@@ -39,8 +39,18 @@ class Aux2:
 
 @dataclass_json
 @dataclass
+class Aux3:
+    f2: str
+
+@dataclass_json
+@dataclass
 class C4:
     f1: Union[Aux1, Aux2]
+
+@dataclass_json
+@dataclass
+class C12:
+    f1: Union[Aux2, Aux3]
 
 
 @dataclass_json
@@ -198,3 +208,29 @@ def test_deserialize_with_error(cls, data):
     s = cls.schema()
     with pytest.raises(ValidationError):
         assert s.load(data)
+
+def test_deserialize_without_discriminator():
+    # determine based on type
+    json = '{"f1": {"f1": 1}}'
+    s = C4.schema()
+    obj = s.loads(json)
+    assert obj.f1 is not None
+    assert type(obj.f1) == Aux1
+
+    json = '{"f1": {"f1": "str1"}}'
+    s = C4.schema()
+    obj = s.loads(json)
+    assert obj.f1 is not None
+    assert type(obj.f1) == Aux2
+
+    # determine based on field name
+    json = '{"f1": {"f1": "str1"}}'
+    s = C12.schema()
+    obj = s.loads(json)
+    assert obj.f1 is not None
+    assert type(obj.f1) == Aux2
+    json = '{"f1": {"f2": "str1"}}'
+    s = C12.schema()
+    obj = s.loads(json)
+    assert obj.f1 is not None
+    assert type(obj.f1) == Aux3

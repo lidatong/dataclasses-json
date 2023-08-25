@@ -34,7 +34,7 @@ jobs:
       run: |
         set -e
 
-        if [[ $PYTHON_VERSION -eq "3.7" ]]
+        if [[ $PYTHON_VERSION -eq '3.7' ]]
         then
           curl -sSL https://install.python-poetry.org | python3 - --version 1.5.1
         else

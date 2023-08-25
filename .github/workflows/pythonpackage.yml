@@ -29,6 +29,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
     - name: Install Poetry and dependencies
+      if: ${{ matrix.python-version != "3.7" }}
       run: |
         set -e
         

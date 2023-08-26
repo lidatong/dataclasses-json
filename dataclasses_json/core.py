@@ -21,7 +21,7 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _is_collection, _is_mapping, _is_new_type,
                                     _is_optional, _isinstance_safe,
                                     _get_type_arg_param,
-                                    _get_type_args,
+                                    _get_type_args, _is_counter,
                                     _NO_ARGS,
                                     _issubclass_safe, _is_tuple)
 
@@ -271,7 +271,7 @@ def _decode_generic(type_, value, infer_missing):
         res = type_(value)
     # FIXME this is a hack to fix a deeper underlying issue. A refactor is due.
     elif _is_collection(type_):
-        if _is_mapping(type_):
+        if _is_mapping(type_) and not _is_counter(type_):
             k_type, v_type = _get_type_args(type_, (Any, Any))
             # a mapping type has `.keys()` and `.values()`
             # (see collections.abc)
@@ -284,6 +284,8 @@ def _decode_generic(type_, value, infer_missing):
                 xs = _decode_items(types[0], value, infer_missing)
             else:
                 xs = _decode_items(_get_type_args(type_) or _NO_ARGS, value, infer_missing)
+        elif _is_counter(type_):
+            xs = dict(zip(_decode_items(_get_type_arg_param(type_, 0), value.keys(), infer_missing), value.values()))
         else:
             xs = _decode_items(_get_type_arg_param(type_, 0), value, infer_missing)
 

@@ -433,6 +433,35 @@ from __future__ import annotations
 ```
 as it will cause problems with the way dataclasses_json accesses the type annotations.
 
+### Use numpy or pandas types?
+Data types specific to libraries commonly used in data analysis and machine learning like [numpy](https://github.com/numpy/numpy) and [pandas](https://github.com/pandas-dev/pandas) are not supported by default, but you can easily enable them by using custom decoders and encoders. Below are two examples for `numpy` and `pandas` types.
+
+```python
+from dataclasses import field, dataclass
+from dataclasses_json import config, dataclass_json
+import numpy as np
+import pandas as pd
+
+@dataclass_json
+@dataclass
+class DataWithNumpy:
+    my_int: np.int64 = field(metadata=config(decoder=np.int64))
+    my_float: np.float64 = field(metadata=config(decoder=np.float64))
+    my_array: np.ndarray = field(metadata=config(decoder=np.asarray))
+DataWithNumpy.from_json("{\"my_int\": 42, \"my_float\": 13.37, \"my_array\": [1,2,3]}")
+
+@dataclass_json
+@dataclass
+class DataWithPandas:
+    my_df: pd.DataFrame = field(metadata=config(decoder=pd.DataFrame.from_records, encoder=lambda x: x.to_dict(orient="records")))
+data = DataWithPandas.from_dict({"my_df": [{"col1": 1, "col2": 2}, {"col1": 3, "col2": 4}]})
+# my_df results in:
+# col1  col2
+# 1    2    
+# 3    4
+data.to_dict()
+# {"my_df": [{"col1": 1, "col2": 2}, {"col1": 3, "col2": 4}]}
+```
 
 ## Marshmallow interop
 

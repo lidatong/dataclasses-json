@@ -668,9 +668,8 @@ Any version that is not listed in the table below we do not test against, though
 
 | Python version range | Compatible dataclasses-json version |
 |----------------------|:-----------------------------------:|
-| 3.7.x - 3.12.x       |                0.5.x                |
-| 3.8.x - 3.12.x       |                0.6.x                |
-| > 3.13.x             |         No official support         |
+| 3.7.x - 3.12.x       |            0.5.x - 0.6.x            |
+| >= 3.13.x            |         No official support (yet)   |
 
 
 ## Roadmap

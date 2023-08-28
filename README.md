@@ -661,6 +661,16 @@ The current convention is:
 
 Once this library is 1.0.0, it will follow standard SEMVER conventions.
 
+### Python compatibility 
+
+Any version that is not listed in the table below we do not test against, though you might still be able to install the library. For future Python versions, please open an issue and/or a pull request, adding them to the CI suite.
+
+
+| Python version range | Compatible dataclasses-json version |
+|----------------------|:-----------------------------------:|
+| 3.7.x - 3.12.x       |            0.5.x - 0.6.x            |
+| >= 3.13.x            |         No official support (yet)   |
+
 
 ## Roadmap
 

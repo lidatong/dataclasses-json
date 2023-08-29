@@ -16,4 +16,4 @@ jobs:
         uses: SneaksAndData/github-actions/semver_release@v0.1.0
         with:
           major_v: 0
-          minor_v: 5
+          minor_v: 6

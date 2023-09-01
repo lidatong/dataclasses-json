@@ -313,7 +313,7 @@ def _decode_generic(type_, value, infer_missing):
         else:  # Union (already decoded or try to decode a dataclass)
             type_options = _get_type_args(type_)
             res = value
-            if type(value) not dict or dict not in type_options:
+            if type(value) is not dict or dict not in type_options:
                 # FIXME if all types in the union are dataclasses this
                 #  will just pick the first option -
                 #  maybe find the best fitting class in that case instead?

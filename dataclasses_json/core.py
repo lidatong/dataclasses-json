@@ -325,7 +325,7 @@ def _decode_generic(type_, value, infer_missing):
                             continue
                 if not changed:
                     warnings.warn(
-                        f"Failed encoding {value} Union dataclasses."
+                        f"Failed to encode {value} Union dataclasses."
                         f"Expected Union to include a dataclass and it didn't."
                     )
     return res

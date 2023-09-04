@@ -312,7 +312,7 @@ def _decode_generic(type_, value, infer_missing):
                 res = _support_extended_types(type_arg, value)
         else:  # Union (already decoded or try to decode a dataclass)
             type_options = _get_type_args(type_)
-            res = value
+            res = value # assume already decoded
             if type(value) is dict and dict not in type_options:
                 changed = False
                 for type_option in type_options:

@@ -32,3 +32,8 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.poetry-dynamic-versioning]
 enable = true
+
+[tool.poetry.urls]
+changelog = "https://github.com/lidatong/dataclasses-json/releases"
+documentation = "https://lidatong.github.io/dataclasses-json/"
+issues = "https://github.com/lidatong/dataclasses-json/issues"

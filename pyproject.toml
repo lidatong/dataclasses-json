@@ -7,6 +7,9 @@ maintainers = ['Charles Li <charles.dt.li@gmail.com>', 'Georgiy Zubrienko <gzu@e
 license = 'MIT'
 readme = "README.md"
 repository = 'https://github.com/lidatong/dataclasses-json'
+changelog = "https://github.com/lidatong/dataclasses-json/releases"
+documentation = "https://lidatong.github.io/dataclasses-json/"
+issues = "https://github.com/lidatong/dataclasses-json/issues"
 
 [tool.poetry.dependencies]
 python = "^3.7"

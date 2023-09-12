@@ -234,3 +234,9 @@ def test_deserialize_without_discriminator():
     obj = s.loads(json)
     assert obj.f1 is not None
     assert type(obj.f1) == Aux3
+
+    # if no matching types, type should remain dict
+    json = '{"f1": {"f3": "str2"}}'
+    s = C12.schema()
+    obj = s.loads(json)
+    assert type(obj.f1) == dict

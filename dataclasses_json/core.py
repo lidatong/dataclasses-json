@@ -314,19 +314,17 @@ def _decode_generic(type_, value, infer_missing):
             type_options = _get_type_args(type_)
             res = value  # assume already decoded
             if type(value) is dict and dict not in type_options:
-                changed = False
                 for type_option in type_options:
                     if is_dataclass(type_option):
                         try:
                             res = _decode_dataclass(type_option, value, infer_missing)
-                            changed = True
                             break
                         except (KeyError, ValueError):
                             continue
-                if not changed:
+                if res == value:
                     warnings.warn(
-                        f"Failed to encode {value} Union dataclasses."
-                        f"Expected Union to include a dataclass and it didn't."
+                        f"Failed to decode {value} Union dataclasses."
+                        f"Expected Union to include a matching dataclass and it didn't."
                     )
     return res
 

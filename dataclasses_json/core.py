@@ -1,5 +1,6 @@
 import copy
 import json
+import sys
 import warnings
 from collections import defaultdict, namedtuple
 from dataclasses import (MISSING,
@@ -10,7 +11,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import (Any, Collection, Mapping, Union, get_type_hints,
-                    Tuple, TypeVar)
+                    Tuple, TypeVar, Type)
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
@@ -372,6 +373,19 @@ def _decode_items(type_args, xs, infer_missing):
         if _is_supported_generic(type_arg):
             return _decode_generic(type_arg, x, infer_missing)
         return x
+
+    def handle_pep0673(pre_0673_hint: str) -> Type:
+        for module in sys.modules:
+            maybe_resolved = getattr(sys.modules[module], type_args, None)
+            if maybe_resolved:
+                return maybe_resolved
+
+        warnings.warn(f"Could not resolve self-reference for type {pre_0673_hint}, decoded type might be incorrect or decode might fail altogether.")
+        return pre_0673_hint
+
+    # Before https://peps.python.org/pep-0673 (3.11+) self-type hints are simply strings
+    if sys.version_info.minor < 11 and type_args is not type and type(type_args) is str:
+        type_args = handle_pep0673(type_args)
 
     if _isinstance_safe(type_args, Collection) and not _issubclass_safe(type_args, Enum):
         return list(_decode_item(type_arg, x) for type_arg, x in zip(type_args, xs))

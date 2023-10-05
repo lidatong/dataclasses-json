@@ -383,15 +383,8 @@ class DataClassWithCounter:
     c: Counter[str]
 
 
-if sys.version_info.minor < 11:
-    @dataclass_json
-    @dataclass
-    class DataClassWithSelf(DataClassJsonMixin):
-        id: str
-        ref: Optional['DataClassWithSelf']
-else:
-    @dataclass_json
-    @dataclass
-    class DataClassWithSelf(DataClassJsonMixin):
-        id: str
-        ref: Optional[DataClassWithSelf]
+@dataclass_json
+@dataclass
+class DataClassWithSelf(DataClassJsonMixin):
+    id: str
+    ref: Optional['DataClassWithSelf']

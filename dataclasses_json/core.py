@@ -374,7 +374,7 @@ def _decode_items(type_args, xs, infer_missing):
             return _decode_generic(type_arg, x, infer_missing)
         return x
 
-    def handle_pep0673(pre_0673_hint: str) -> Type:
+    def handle_pep0673(pre_0673_hint: str) -> Union[Type, str]:
         for module in sys.modules:
             maybe_resolved = getattr(sys.modules[module], type_args, None)
             if maybe_resolved:

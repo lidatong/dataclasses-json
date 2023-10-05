@@ -380,7 +380,8 @@ def _decode_items(type_args, xs, infer_missing):
             if maybe_resolved:
                 return maybe_resolved
 
-        warnings.warn(f"Could not resolve self-reference for type {pre_0673_hint}, decoded type might be incorrect or decode might fail altogether.")
+        warnings.warn(f"Could not resolve self-reference for type {pre_0673_hint}, "
+                      f"decoded type might be incorrect or decode might fail altogether.")
         return pre_0673_hint
 
     # Before https://peps.python.org/pep-0673 (3.11+) self-type hints are simply strings

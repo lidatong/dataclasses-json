@@ -381,3 +381,10 @@ class DataClassWithNestedDictWithTupleKeys:
 @dataclass
 class DataClassWithCounter:
     c: Counter[str]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithSelf(DataClassJsonMixin):
+    id: str
+    ref: Optional['DataClassWithSelf']

@@ -10,6 +10,7 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
+from itertools import product
 from typing import (Any, Collection, Mapping, Union, get_type_hints,
                     Tuple, TypeVar, Type)
 from uuid import UUID
@@ -389,7 +390,12 @@ def _decode_items(type_args, xs, infer_missing):
         type_args = handle_pep0673(type_args)
 
     if _isinstance_safe(type_args, Collection) and not _issubclass_safe(type_args, Enum):
-        return list(_decode_item(type_arg, x) for type_arg, x in zip(type_args, xs))
+        if len(type_args) == len(xs):
+            return list(_decode_item(type_arg, xs[type_ix]) for type_ix, type_arg in enumerate(type_args))
+        if len(type_args) == 1:
+            return list(_decode_item(type_arg, x) for type_arg, x in zip(type_args, xs))
+        else:
+            raise TypeError(f"Number of types specified in collection type {str(type_args)} is greater than one and does not match number of elements in the collection. Please review the type hint for this field.")
     return list(_decode_item(type_args, x) for x in xs)
 
 

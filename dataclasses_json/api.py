@@ -21,7 +21,7 @@ class DataClassJsonMixin(abc.ABC):
 
     As with other ABCs, it should not be instantiated directly.
     """
-    dataclass_json_config = None
+    dataclass_json_config: Optional[dict] = None
 
     def to_json(self,
                 *,

@@ -393,7 +393,7 @@ def _decode_items(type_args, xs, infer_missing):
             return list(_decode_item(type_arg, x) for type_arg, x in zip(type_args, xs))
         else:
             raise TypeError(f"Number of types specified in the collection type {str(type_args)} "
-                            f"does not match number of elements in the collection. In case you are working with tuples,"
+                            f"does not match number of elements in the collection. In case you are working with tuples"
                             f"take a look at this document "
                             f"https://docs.python.org/3/library/typing.html#annotating-tuples.")
     return list(_decode_item(type_args, x) for x in xs)

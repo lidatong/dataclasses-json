@@ -10,7 +10,6 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from itertools import product
 from typing import (Any, Collection, Mapping, Union, get_type_hints,
                     Tuple, TypeVar, Type)
 from uuid import UUID

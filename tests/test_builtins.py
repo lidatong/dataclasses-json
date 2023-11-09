@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from decimal import Decimal
+from typing import List
 
 from pytest import mark, param
 
@@ -20,7 +21,7 @@ class StrSubclass(str):
 
 @dataclass
 class DataClassWithBuiltinCollection(DataClassJsonMixin):
-    things: list[StrSubclass]
+    things: List[StrSubclass]
 
 
 @mark.parametrize(

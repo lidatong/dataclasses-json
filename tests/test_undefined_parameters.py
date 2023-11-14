@@ -384,3 +384,21 @@ def test_undefined_parameters_catch_all_default_factory_init_converts_factory(va
 
     dump = UnknownAPIDumpDefault(**valid_response)
     assert dump.catch_all == {}
+
+
+def test_undefined_inheritance():
+    @dataclass_json(undefined=Undefined.INCLUDE)
+    @dataclass
+    class TestInternalConfig:
+        options: CatchAll = None
+        val: str = "bar"
+        val2: int = 0
+
+    @dataclass_json
+    @dataclass
+    class TestInternalExtendConfig(TestInternalConfig):
+        val: str = "baz"
+
+    tie = TestInternalExtendConfig()
+    tie.to_dict()
+

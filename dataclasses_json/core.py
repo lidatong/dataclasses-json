@@ -169,6 +169,13 @@ def _decode_dataclass(cls, kvs, infer_missing):
         if not field.init:
             continue
 
+        if field.name not in kvs:
+            # Raise an user friendly error message, letting the code crash
+            # with the default error message if the field is required.
+            raise TypeError(
+                f"The JSON data is missing the required field '{field.name}' when decoding {cls.__name__} from JSON."
+            )
+
         field_value = kvs[field.name]
         field_type = types[field.name]
         if field_value is None:

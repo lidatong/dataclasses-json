@@ -198,7 +198,7 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
     @staticmethod
     def handle_to_dict(obj, kvs: Dict[Any, Any]) -> Dict[Any, Any]:
         catch_all_field = \
-            _CatchAllUndefinedParameters._get_catch_all_field(obj)
+            _CatchAllUndefinedParameters._get_catch_all_field(obj.__class__)
         undefined_parameters = kvs.pop(catch_all_field.name)
         if isinstance(undefined_parameters, dict):
             kvs.update(

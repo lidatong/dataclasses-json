@@ -1,4 +1,3 @@
-print("Hello world")
 import copy
 import json
 import sys

@@ -1,3 +1,4 @@
+print("Hello world")
 import copy
 import json
 import sys
@@ -200,7 +201,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
         if (field.name in overrides
                 and overrides[field.name].decoder is not None):
             # FIXME hack
-            if field_type is type(field_value):
+            if isinstance(field_value, field_type):
                 init_kwargs[field.name] = field_value
             else:
                 init_kwargs[field.name] = overrides[field.name].decoder(

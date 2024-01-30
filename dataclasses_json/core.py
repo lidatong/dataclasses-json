@@ -320,7 +320,7 @@ def _decode_generic(type_, value, infer_missing):
                         try:
                             res = _decode_dataclass(type_option, value, infer_missing)
                             break
-                        except (KeyError, ValueError):
+                        except (KeyError, ValueError, AttributeError):
                             continue
                 if res == value:
                     warnings.warn(

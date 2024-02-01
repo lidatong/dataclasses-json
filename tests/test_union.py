@@ -42,10 +42,12 @@ class Aux2:
 class Aux3:
     f2: str
 
+
 @dataclass_json
 @dataclass
 class C4:
     f1: Union[Aux1, Aux2]
+
 
 @dataclass_json
 @dataclass
@@ -123,6 +125,31 @@ except TypeError:
          Replace test case on versions prior to 3.10
         """
         f1: Union[str, None] = None
+
+
+@dataclass_json
+@dataclass
+class C13:
+    data: str
+
+
+@dataclass_json
+@dataclass
+class C14:
+    content: str
+
+
+@dataclass_json
+@dataclass
+class C15:
+    data: C13
+
+
+@dataclass_json
+@dataclass
+class C16:
+    event: Union[C15, C13]
+
 
 params = [
     (C1(f1=12), {"f1": 12}, '{"f1": 12}'),
@@ -209,6 +236,7 @@ def test_deserialize_with_error(cls, data):
     with pytest.raises(ValidationError):
         assert s.load(data)
 
+
 def test_deserialize_without_discriminator():
     # determine based on type
     json = '{"f1": {"f1": 1}}'
@@ -240,3 +268,11 @@ def test_deserialize_without_discriminator():
     s = C12.schema()
     obj = s.loads(json)
     assert type(obj.f1) == dict
+
+
+def test_deserialize_with_mismatched_field_types():
+    json = '{"event": {"data": "Hello world!"} }'
+    s = C16.schema()
+    obj = s.loads(json)
+    assert obj.event is not None
+    assert obj.event.data == "Hello world!"

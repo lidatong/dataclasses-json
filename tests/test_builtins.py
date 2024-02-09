@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Optional
+from typing import List
 
 from pytest import mark, param
 
@@ -13,6 +13,15 @@ class DataClassWithBuiltins(DataClassJsonMixin):
     actually_a_str: str
     actually_an_int: int
     actually_a_float: float
+
+
+class StrSubclass(str):
+    pass
+
+
+@dataclass
+class DataClassWithBuiltinCollection(DataClassJsonMixin):
+    things: List[StrSubclass]
 
 
 @mark.parametrize(
@@ -32,3 +41,25 @@ class DataClassWithBuiltins(DataClassJsonMixin):
 )
 def test__DataClassWithBuiltins__from_dict(model_dict, expected_model):
     assert DataClassWithBuiltins.from_dict(model_dict) == expected_model
+
+
+@mark.parametrize(
+    "serialized_model, expected_model",
+    [
+        param(
+            '{"things": ["John Doe"]}',
+            DataClassWithBuiltinCollection(things=[StrSubclass("John Doe")]),
+            id="Collection of str subclasses"
+        ),
+        param(
+            '{"things": []}',
+            DataClassWithBuiltinCollection(things=[]),
+            id="Empty collection of str subclasses"
+        ),
+    ]
+)
+def test_builtins_collections_with_subclass(serialized_model: str, expected_model: DataClassWithBuiltinCollection):
+    deser = DataClassWithBuiltinCollection.from_json(serialized_model)
+    if len(deser.things) > 0:
+        assert isinstance(deser.things[0], StrSubclass)
+    # for empty list we just assert there is no exception

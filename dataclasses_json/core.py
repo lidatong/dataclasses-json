@@ -372,6 +372,8 @@ def _decode_items(type_args, xs, infer_missing):
             return _decode_dataclass(type_arg, x, infer_missing)
         if _is_supported_generic(type_arg):
             return _decode_generic(type_arg, x, infer_missing)
+        if type_arg.__class__.__module__ == "builtins":
+            return type_arg(x)
         return x
 
     def handle_pep0673(pre_0673_hint: str) -> Union[Type, str]:

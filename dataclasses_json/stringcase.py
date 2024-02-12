@@ -91,14 +91,17 @@ def snakecase(string):
         string: Snake cased string.
 
     """
-
     string = re.sub(r"[\-\.\s]", '_', str(string))
     if not string:
         return string
-    return (uplowcase(string[0], 'low')
-            + re.sub(r"[A-Z0-9]",
-                     lambda matched: '_' + uplowcase(matched.group(0), 'low'),
-                     string[1:]))
+    return uplowcase(
+        '_'.join(
+            re.sub(
+                '([A-Z][a-z]+)', r' \1',
+                re.sub('([A-Z]+)', r' \1', string.replace('-', ' '))
+            ).split()
+        ), 'low'
+    )
 
 
 def spinalcase(string):

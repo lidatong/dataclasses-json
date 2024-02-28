@@ -10,7 +10,7 @@ import functools
 
 def _cache(maxsize=128):
     def decorator(func):
-        cached_func = functools.lru_cache(maxsize=128)(func)
+        cached_func = functools.lru_cache(maxsize=maxsize)(func)
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             if cfg.global_config.enable_cache:

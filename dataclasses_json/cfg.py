@@ -30,6 +30,8 @@ class _GlobalConfig:
             Union[type, Optional[type]],
             MarshmallowField
         ] = {}
+        self.enable_cache = False
+        self.include_class_info = False
         # self._json_module = json
 
     # TODO: #180

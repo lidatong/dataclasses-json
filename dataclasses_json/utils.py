@@ -4,7 +4,21 @@ from datetime import datetime, timezone
 from collections import Counter
 from typing import (Collection, Mapping, Optional, TypeVar, Any, Type, Tuple,
                     Union, cast)
+from dataclasses import _FIELDS
+from dataclasses_json import cfg
+import functools
 
+def _cache(maxsize=128):
+    def decorator(func):
+        cached_func = functools.lru_cache(maxsize=128)(func)
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if cfg.global_config.enable_cache:
+                return cached_func(*args, **kwargs)
+            else:
+                return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 def _get_type_cons(type_):
     """More spaghetti logic for 3.6 vs. 3.7"""
@@ -66,6 +80,8 @@ def _hasargs(type_, *args):
     else:
         return res
 
+def _is_dataclass(obj):
+    return hasattr(obj.__class__,_FIELDS) or hasattr(obj,_FIELDS)
 
 class _NoArgs(object):
     def __bool__(self):
@@ -111,7 +127,7 @@ def _isinstance_safe(o, t):
     else:
         return result
 
-
+@_cache(maxsize=2**12)
 def _issubclass_safe(cls, classinfo):
     try:
         return issubclass(cls, classinfo)
@@ -136,7 +152,7 @@ def _is_new_type_subclass_safe(cls, classinfo):
 def _is_new_type(type_):
     return inspect.isfunction(type_) and hasattr(type_, "__supertype__")
 
-
+@_cache(maxsize=2**12)
 def _is_optional(type_):
     return (_issubclass_safe(type_, Optional) or
             _hasargs(type_, type(None)) or

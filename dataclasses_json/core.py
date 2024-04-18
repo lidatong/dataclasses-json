@@ -24,7 +24,8 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _get_type_arg_param,
                                     _get_type_args, _is_counter,
                                     _NO_ARGS,
-                                    _issubclass_safe, _is_tuple)
+                                    _issubclass_safe, _is_tuple,
+                                    _is_generic_dataclass)
 
 Json = Union[dict, list, str, int, float, bool, None]
 
@@ -259,8 +260,9 @@ def _is_supported_generic(type_):
         return False
     not_str = not _issubclass_safe(type_, str)
     is_enum = _issubclass_safe(type_, Enum)
+    is_generic_dataclass = _is_generic_dataclass(type_)
     return (not_str and _is_collection(type_)) or _is_optional(
-        type_) or is_union_type(type_) or is_enum
+        type_) or is_union_type(type_) or is_enum or is_generic_dataclass
 
 
 def _decode_generic(type_, value, infer_missing):
@@ -298,6 +300,9 @@ def _decode_generic(type_, value, infer_missing):
         except (TypeError, AttributeError):
             pass
         res = materialize_type(xs)
+    elif _is_generic_dataclass(type_):
+        origin = _get_type_origin(type_)
+        res = _decode_dataclass(origin, value, infer_missing)
     else:  # Optional or Union
         _args = _get_type_args(type_)
         if _args is _NO_ARGS:

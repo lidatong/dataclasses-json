@@ -227,6 +227,17 @@ def _decode_dataclass(cls, kvs, infer_missing):
     return cls(**init_kwargs)
 
 
+def _decode_type(type_, value, infer_missing):
+    if _has_decoder_in_global_config(type_):
+        return _get_decoder_in_global_config(type_)(value)
+    if is_dataclass(type_) or is_dataclass(type_):
+        return _decode_dataclass(type_, value, infer_missing)
+    if _is_supported_generic(type_):
+        return _decode_generic(type_, value, infer_missing)
+    else:
+        return _support_extended_types(type_, value)
+
+
 def _support_extended_types(field_type, field_value):
     if _issubclass_safe(field_type, datetime):
         # FIXME this is a hack to deal with mm already decoding
@@ -305,12 +316,7 @@ def _decode_generic(type_, value, infer_missing):
             res = value
         elif _is_optional(type_) and len(_args) == 2:  # Optional
             type_arg = _get_type_arg_param(type_, 0)
-            if is_dataclass(type_arg) or is_dataclass(value):
-                res = _decode_dataclass(type_arg, value, infer_missing)
-            elif _is_supported_generic(type_arg):
-                res = _decode_generic(type_arg, value, infer_missing)
-            else:
-                res = _support_extended_types(type_arg, value)
+            res = _decode_type(type_arg, value, infer_missing)
         else:  # Union (already decoded or try to decode a dataclass)
             type_options = _get_type_args(type_)
             res = value  # assume already decoded
@@ -367,13 +373,6 @@ def _decode_items(type_args, xs, infer_missing):
     type_arg is a typevar we need to extract the reified type information
     hence the check of `is_dataclass(vs)`
     """
-    def _decode_item(type_arg, x):
-        if is_dataclass(type_arg) or is_dataclass(xs):
-            return _decode_dataclass(type_arg, x, infer_missing)
-        if _is_supported_generic(type_arg):
-            return _decode_generic(type_arg, x, infer_missing)
-        return x
-
     def handle_pep0673(pre_0673_hint: str) -> Union[Type, str]:
         for module in sys.modules:
             maybe_resolved = getattr(sys.modules[module], type_args, None)
@@ -390,13 +389,13 @@ def _decode_items(type_args, xs, infer_missing):
 
     if _isinstance_safe(type_args, Collection) and not _issubclass_safe(type_args, Enum):
         if len(type_args) == len(xs):
-            return list(_decode_item(type_arg, x) for type_arg, x in zip(type_args, xs))
+            return list(_decode_type(type_arg, x, infer_missing) for type_arg, x in zip(type_args, xs))
         else:
             raise TypeError(f"Number of types specified in the collection type {str(type_args)} "
                             f"does not match number of elements in the collection. In case you are working with tuples"
                             f"take a look at this document "
                             f"docs.python.org/3/library/typing.html#annotating-tuples.")
-    return list(_decode_item(type_args, x) for x in xs)
+    return list(_decode_type(type_args, x, infer_missing) for x in xs)
 
 
 def _asdict(obj, encode_json=False):
@@ -428,5 +427,25 @@ def _asdict(obj, encode_json=False):
     # enum.IntFlag and enum.Flag are regarded as collections in Python 3.11, thus a check against Enum is needed
     elif isinstance(obj, Collection) and not isinstance(obj, (str, bytes, Enum)):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
+    # encoding of generics primarily relies on concrete types while decoding relies on type annotations. This makes
+    # applying encoders/decoders from global configuration inconsistent.
+    elif _has_encoder_in_global_config(type(obj)):
+        return _get_encoder_in_global_config(type(obj))(obj)
     else:
         return copy.deepcopy(obj)
+
+
+def _has_decoder_in_global_config(type_):
+    return type_ in cfg.global_config.decoders
+
+
+def _get_decoder_in_global_config(type_):
+    return cfg.global_config.decoders[type_]
+
+
+def _has_encoder_in_global_config(type_):
+    return type_ in cfg.global_config.encoders
+
+
+def _get_encoder_in_global_config(type_):
+    return cfg.global_config.encoders[type_]

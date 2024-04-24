@@ -234,8 +234,7 @@ def _decode_type(type_, value, infer_missing):
         return _decode_dataclass(type_, value, infer_missing)
     if _is_supported_generic(type_):
         return _decode_generic(type_, value, infer_missing)
-    else:
-        return _support_extended_types(type_, value)
+    return _support_extended_types(type_, value)
 
 
 def _support_extended_types(field_type, field_value):

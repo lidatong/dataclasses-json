@@ -231,7 +231,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
 def _decode_type(type_, value, infer_missing):
     if _has_decoder_in_global_config(type_):
         return _get_decoder_in_global_config(type_)(value)
-    if is_dataclass(type_) or is_dataclass(type_):
+    if is_dataclass(type_) or is_dataclass(value):
         return _decode_dataclass(type_, value, infer_missing)
     if _is_supported_generic(type_):
         return _decode_generic(type_, value, infer_missing)

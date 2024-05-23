@@ -3,6 +3,8 @@ import json
 import sys
 import warnings
 from collections import defaultdict, namedtuple
+from collections.abc import (Collection as ABCCollection, Mapping as ABCMapping, MutableMapping, MutableSequence,
+                             MutableSet, Sequence, Set)
 from dataclasses import (MISSING,
                          fields,
                          is_dataclass  # type: ignore
@@ -10,6 +12,7 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
+from types import MappingProxyType
 from typing import (Any, Collection, Mapping, Union, get_type_hints,
                     Tuple, TypeVar, Type)
 from uuid import UUID
@@ -31,6 +34,15 @@ Json = Union[dict, list, str, int, float, bool, None]
 
 confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
 FieldOverride = namedtuple('FieldOverride', confs)  # type: ignore
+collections_abc_mapping = MappingProxyType({
+    ABCCollection: tuple,
+    ABCMapping: dict,
+    MutableMapping: dict,
+    MutableSequence: list,
+    MutableSet: set,
+    Sequence: tuple,
+    Set: frozenset,
+})
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -304,11 +316,14 @@ def _decode_generic(type_, value, infer_missing):
 
         # get the constructor if using corresponding generic type in `typing`
         # otherwise fallback on constructing using type_ itself
-        materialize_type = type_
         try:
             materialize_type = _get_type_cons(type_)
         except (TypeError, AttributeError):
-            pass
+            materialize_type = type_
+
+        # map abstract collection to concrete implementation
+        materialize_type = collections_abc_mapping.get(materialize_type, materialize_type)
+
         res = materialize_type(xs)
     elif _is_generic_dataclass(type_):
         origin = _get_type_origin(type_)

@@ -34,7 +34,7 @@ Json = Union[dict, list, str, int, float, bool, None]
 
 confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
 FieldOverride = namedtuple('FieldOverride', confs)  # type: ignore
-collections_abc_mapping = MappingProxyType({
+collections_abc_type_to_implementation_type = MappingProxyType({
     ABCCollection: tuple,
     ABCMapping: dict,
     MutableMapping: dict,
@@ -322,7 +322,7 @@ def _decode_generic(type_, value, infer_missing):
             materialize_type = type_
 
         # map abstract collection to concrete implementation
-        materialize_type = collections_abc_mapping.get(materialize_type, materialize_type)
+        materialize_type = collections_abc_type_to_implementation_type.get(materialize_type, materialize_type)
 
         res = materialize_type(xs)
     elif _is_generic_dataclass(type_):

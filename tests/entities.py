@@ -19,8 +19,9 @@ from typing import (Collection,
 from uuid import UUID
 if sys.version_info >= (3, 9):
     from collections import Counter
+    from collections.abc import Mapping, MutableMapping, MutableSequence, MutableSet, Sequence, Set as ABCSet
 else:
-    from typing import Counter
+    from typing import Counter, Mapping, MutableMapping, MutableSequence, MutableSet, Sequence, Set as ABCSet
 
 from marshmallow import fields
 

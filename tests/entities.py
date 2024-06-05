@@ -1,5 +1,6 @@
 import sys
 from collections import deque
+from collections.abc import Mapping, MutableMapping, MutableSequence, MutableSet, Sequence, Set as ABCSet
 from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
@@ -18,8 +19,9 @@ from typing import (Collection,
 from uuid import UUID
 if sys.version_info >= (3, 9):
     from collections import Counter
+    from collections.abc import Mapping, MutableMapping, MutableSequence, MutableSet, Sequence, Set as ABCSet
 else:
-    from typing import Counter
+    from typing import Counter, Mapping, MutableMapping, MutableSequence, MutableSet, Sequence, Set as ABCSet
 
 from marshmallow import fields
 
@@ -388,3 +390,45 @@ class DataClassWithCounter:
 class DataClassWithSelf(DataClassJsonMixin):
     id: str
     ref: Optional['DataClassWithSelf']
+
+
+@dataclass_json
+@dataclass
+class DataClassWithCollection(DataClassJsonMixin):
+    c: Collection[int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithMapping(DataClassJsonMixin):
+    c: Mapping[str, int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithMutableMapping(DataClassJsonMixin):
+    c: MutableMapping[str, int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithMutableSequence(DataClassJsonMixin):
+    c: MutableSequence[int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithMutableSet(DataClassJsonMixin):
+    c: MutableSet[int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithSequence(DataClassJsonMixin):
+    c: Sequence[int]
+
+
+@dataclass_json
+@dataclass
+class DataClassWithAbstractSet(DataClassJsonMixin):
+    c: ABCSet[int]

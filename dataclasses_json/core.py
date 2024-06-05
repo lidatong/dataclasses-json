@@ -314,17 +314,8 @@ def _decode_generic(type_, value, infer_missing):
         else:
             xs = _decode_items(_get_type_arg_param(type_, 0), value, infer_missing)
 
-        # get the constructor if using corresponding generic type in `typing`
-        # otherwise fallback on constructing using type_ itself
-        try:
-            materialize_type = _get_type_cons(type_)
-        except (TypeError, AttributeError):
-            materialize_type = type_
-
-        # map abstract collection to concrete implementation
-        materialize_type = collections_abc_type_to_implementation_type.get(materialize_type, materialize_type)
-
-        res = materialize_type(xs)
+        collection_type = _resolve_collection_type_to_decode_to(type_)
+        res = collection_type(xs)
     elif _is_generic_dataclass(type_):
         origin = _get_type_origin(type_)
         res = _decode_dataclass(origin, value, infer_missing)
@@ -415,6 +406,18 @@ def _decode_items(type_args, xs, infer_missing):
                             f"take a look at this document "
                             f"docs.python.org/3/library/typing.html#annotating-tuples.")
     return list(_decode_type(type_args, x, infer_missing) for x in xs)
+
+
+def _resolve_collection_type_to_decode_to(type_):
+    # get the constructor if using corresponding generic type in `typing`
+    # otherwise fallback on constructing using type_ itself
+    try:
+        collection_type = _get_type_cons(type_)
+    except (TypeError, AttributeError):
+        collection_type = type_
+
+    # map abstract collection to concrete implementation
+    return collections_abc_type_to_implementation_type.get(collection_type, collection_type)
 
 
 def _asdict(obj, encode_json=False):

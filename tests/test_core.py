@@ -27,7 +27,10 @@ if sys.version_info >= (3, 9):
 
 
 
-@pytest.mark.skipif(sys.version_info < (3, 9), reason="requires generic types for bug")
+@pytest.mark.skipif(
+    not ((3, 9) < sys.version_info < (3, 11)),
+    reason="syntax only valid on Py3.9, but bug disappears after Python 3.11",
+)
 class TestWarning:
     def test_warns_about_nondeterministic_resolution(self):
         with pytest.warns(UserWarning, match="Assuming hint Option resolves to .*"):

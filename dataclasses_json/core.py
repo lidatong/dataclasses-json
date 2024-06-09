@@ -3,6 +3,8 @@ import json
 import sys
 import warnings
 from collections import defaultdict, namedtuple
+from collections.abc import (Collection as ABCCollection, Mapping as ABCMapping, MutableMapping, MutableSequence,
+                             MutableSet, Sequence, Set)
 from dataclasses import (MISSING,
                          fields,
                          is_dataclass  # type: ignore
@@ -10,6 +12,7 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
+from types import MappingProxyType
 from typing import (Any, Collection, Mapping, Union, get_type_hints,
                     Tuple, TypeVar, Type)
 from uuid import UUID
@@ -31,6 +34,15 @@ Json = Union[dict, list, str, int, float, bool, None]
 
 confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
 FieldOverride = namedtuple('FieldOverride', confs)  # type: ignore
+collections_abc_type_to_implementation_type = MappingProxyType({
+    ABCCollection: tuple,
+    ABCMapping: dict,
+    MutableMapping: dict,
+    MutableSequence: list,
+    MutableSet: set,
+    Sequence: tuple,
+    Set: frozenset,
+})
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -302,14 +314,8 @@ def _decode_generic(type_, value, infer_missing):
         else:
             xs = _decode_items(_get_type_arg_param(type_, 0), value, infer_missing)
 
-        # get the constructor if using corresponding generic type in `typing`
-        # otherwise fallback on constructing using type_ itself
-        materialize_type = type_
-        try:
-            materialize_type = _get_type_cons(type_)
-        except (TypeError, AttributeError):
-            pass
-        res = materialize_type(xs)
+        collection_type = _resolve_collection_type_to_decode_to(type_)
+        res = collection_type(xs)
     elif _is_generic_dataclass(type_):
         origin = _get_type_origin(type_)
         res = _decode_dataclass(origin, value, infer_missing)
@@ -402,6 +408,18 @@ def _decode_items(type_args, xs, infer_missing):
                             f"take a look at this document "
                             f"docs.python.org/3/library/typing.html#annotating-tuples.")
     return list(_decode_type(type_args, x, infer_missing) for x in xs)
+
+
+def _resolve_collection_type_to_decode_to(type_):
+    # get the constructor if using corresponding generic type in `typing`
+    # otherwise fallback on constructing using type_ itself
+    try:
+        collection_type = _get_type_cons(type_)
+    except (TypeError, AttributeError):
+        collection_type = type_
+
+    # map abstract collection to concrete implementation
+    return collections_abc_type_to_implementation_type.get(collection_type, collection_type)
 
 
 def _asdict(obj, encode_json=False):

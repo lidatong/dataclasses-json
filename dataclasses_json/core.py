@@ -17,7 +17,7 @@ from typing import (Any, Collection, Mapping, Union, get_type_hints,
                     Tuple, TypeVar, Type)
 from uuid import UUID
 
-from typing_inspect import is_union_type  # type: ignore
+from typing_inspect import is_union_type, is_literal_type  # type: ignore
 
 from dataclasses_json import cfg
 from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
@@ -358,7 +358,8 @@ def _decode_dict_keys(key_type, xs, infer_missing):
     #   This is a special case for Python 3.7 and Python 3.8.
     #   By some reason, "unbound" dicts are counted
     #   as having key type parameter to be TypeVar('KT')
-    if key_type is None or key_type == Any or isinstance(key_type, TypeVar):
+    # Literal types are also passed through without any decoding.
+    if key_type is None or key_type == Any or isinstance(key_type, TypeVar) or is_literal_type(key_type):
         decode_function = key_type = (lambda x: x)
     # handle a nested python dict that has tuples for keys. E.g. for
     # Dict[Tuple[int], int], key_type will be typing.Tuple[int], but

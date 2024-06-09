@@ -384,9 +384,11 @@ def _decode_items(type_args, xs, infer_missing):
     hence the check of `is_dataclass(vs)`
     """
     def handle_pep0673(pre_0673_hint: str) -> Union[Type, str]:
-        for module in sys.modules:
-            maybe_resolved = getattr(sys.modules[module], type_args, None)
-            if maybe_resolved:
+        for module in sys.modules.values():
+            if hasattr(module, type_args):
+                maybe_resolved = getattr(module, type_args)
+                warnings.warn(f"Assuming hint {pre_0673_hint} resolves to {maybe_resolved} "
+                              "This is not necessarily the value that is in-scope.")
                 return maybe_resolved
 
         warnings.warn(f"Could not resolve self-reference for type {pre_0673_hint}, "

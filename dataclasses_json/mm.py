@@ -11,14 +11,14 @@ from decimal import Decimal
 from uuid import UUID
 from enum import Enum
 
-from typing_inspect import is_union_type  # type: ignore
+from typing_inspect import is_union_type, is_literal_type  # type: ignore
 
 from marshmallow import fields, Schema, post_load  # type: ignore
 from marshmallow.exceptions import ValidationError  # type: ignore
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
                                    _ExtendedEncoder, _user_overrides_or_exts)
-from dataclasses_json.utils import (_is_collection, _is_optional,
+from dataclasses_json.utils import (_get_type_args, _is_collection, _is_optional,
                                     _issubclass_safe, _timestamp_to_dt_aware,
                                     _is_new_type, _get_type_origin,
                                     _handle_undefined_parameters_safe,
@@ -128,6 +128,46 @@ class _TupleVarLen(fields.List):
     def _deserialize(self, value, attr, data, **kwargs):
         optional_list = super()._deserialize(value, attr, data, **kwargs)
         return None if optional_list is None else tuple(optional_list)
+
+
+class _LiteralField(fields.Field):
+    def __init__(self, literal_values, cls, field, *args, **kwargs):
+        """Create a new Literal field.
+
+        Literals allow you to specify the set of valid _values_ for a field. The field
+        implementation validates against these values on deserialization.
+
+        Example:
+        >>> @dataclass
+        ... class DataClassWithLiteral(DataClassJsonMixin):
+        ...     read_mode: Literal["r", "w", "a"]
+
+        Args:
+            literal_values: A sequence of possible values for the field.
+            cls: The dataclass that the field belongs to.
+            field: The field that the schema describes.
+        """
+        self.literal_values = literal_values
+        self.cls = cls
+        self.field = field
+        super().__init__(*args, **kwargs)
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        if self.allow_none and value is None:
+            return None
+        if value not in self.literal_values:
+            warnings.warn(
+                f'The value "{value}" is not one of the values of typing.Literal '
+                f'(dataclass: {self.cls.__name__}, field: {self.field.name}). '
+                f'Value will not be de-serialized properly.')
+        return super()._serialize(value, attr, obj, **kwargs)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        if value not in self.literal_values:
+            raise ValidationError(
+                f'Value "{value}" is not one in typing.Literal{self.literal_values} '
+                f'(dataclass: {self.cls.__name__}, field: {self.field.name}).')
+        return super()._deserialize(value, attr, data, **kwargs)
 
 
 TYPES = {
@@ -259,9 +299,14 @@ def build_type(type_, options, mixin, field, cls):
                               f"`dataclass_json` decorator or mixin.")
                 return fields.Field(**options)
 
-        origin = getattr(type_, '__origin__', type_)
-        args = [inner(a, {}) for a in getattr(type_, '__args__', []) if
-                a is not type(None)]
+        origin = _get_type_origin(type_)
+
+        # Type arguments are typically types (e.g. int in list[int]) except for Literal
+        # types, where they are values.
+        if is_literal_type(type_):
+            args = []
+        else:
+            args = [inner(a, {}) for a in _get_type_args(type_) if a is not type(None)]
 
         if type_ == Ellipsis:
             return type_
@@ -278,6 +323,10 @@ def build_type(type_, options, mixin, field, cls):
 
         if _issubclass_safe(origin, Enum):
             return fields.Enum(enum=origin, by_value=True, *args, **options)
+
+        if is_literal_type(type_):
+            literal_values = _get_type_args(type_)
+            return _LiteralField(literal_values, cls, field, **options)
 
         if is_union_type(type_):
             union_types = [a for a in getattr(type_, '__args__', []) if

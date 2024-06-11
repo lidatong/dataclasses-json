@@ -276,11 +276,3 @@ def test_deserialize_with_mismatched_field_types():
     obj = s.loads(json)
     assert obj.event is not None
     assert obj.event.data == "Hello world!"
-
-
-def test_deserialize_with_mismatched_field_types():
-    json = '{"event": {"data": "Hello world!"} }'
-    s = C16.schema()
-    obj = s.loads(json)
-    assert obj.event is not None
-    assert obj.event.data == "Hello world!"

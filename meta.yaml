@@ -1,0 +1,55 @@
+{% set name = "dataclasses-json" %}
+{% set version = "0.3.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ebdf7407681763d6125fd00d15ed037cc3aa6f9129fe7634e8f891410e89559f
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  skip: True  # [py<36]
+
+requirements:
+  host:
+    - dataclasses;python_version =="3.6"
+    - marshmallow >=3.0.1,<4.0.0
+    - marshmallow-enum >=1.5.1,<2.0.0
+    - pip
+    - python
+    - stringcase ==1.2.0,<2.0.0
+    - typing-inspect >=0.4.0
+  run:
+    - dataclasses;python_version =="3.6"
+    - marshmallow >=3.0.1,<4.0.0
+    - marshmallow-enum >=1.5.1,<2.0.0
+    - python
+    - stringcase ==1.2.0,<2.0.0
+    - typing-inspect >=0.4.0
+
+test:
+  imports:
+    - dataclasses_json
+  requires:
+    - pytest
+  source_files:
+    - tests
+  commands:
+    - pytest
+
+about:
+  home: "https://github.com/lidatong/dataclasses-json"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Easily serialize dataclasses to and from JSON"
+  doc_url: "https://lidatong.github.io/dataclasses-json"
+  dev_url: "https://github.com/lidatong/dataclasses-json"
+
+extra:
+  recipe-maintainers:
+    - lidatong

@@ -133,7 +133,14 @@ def _encode_overrides(kvs, overrides, encode_json=False):
                 )
 
             encoder = overrides[original_key].encoder
-            v = encoder(v) if encoder is not None else v
+            # v = encoder(v) if encoder is not None else v
+            if encoder is not None:
+                try:
+                    v = encoder(v)
+                except Exception:
+                    raise ValueError(
+                        f"Encoder encountered an error with field '{k}'"
+                    )
 
         if encode_json:
             v = _encode_json_type(v)
@@ -182,7 +189,13 @@ def _decode_dataclass(cls, kvs, infer_missing):
         if not field.init:
             continue
 
-        field_value = kvs[field.name]
+        try:
+            field_value = kvs[field.name]
+        except KeyError:
+            raise KeyError(
+                f"Required field '{field.name}' not found while "
+                f"decoding into dataclass '{cls.__name__}'"
+            )
         field_type = types[field.name]
         if field_value is None:
             if not _is_optional(field_type):
@@ -216,8 +229,15 @@ def _decode_dataclass(cls, kvs, infer_missing):
             if field_type is type(field_value):
                 init_kwargs[field.name] = field_value
             else:
-                init_kwargs[field.name] = overrides[field.name].decoder(
-                    field_value)
+                try:
+                    init_kwargs[field.name] = overrides[field.name].decoder(
+                        field_value
+                    )
+                except Exception:
+                    raise ValueError(
+                        f"Decoder encountered an error with field "
+                        f"'{field.name}' in '{cls.__name__}'"
+                    )
         elif is_dataclass(field_type):
             # FIXME this is a band-aid to deal with the value already being
             # serialized when handling nested marshmallow schema

@@ -81,7 +81,7 @@ In addition to the supported types in the
 - [Decimal](https://docs.python.org/3/library/decimal.html) objects. They are
   also encoded as `str`.
 
-**The [latest release](https://github.com/lidatong/dataclasses-json/releases/latest) is compatible with both Python 3.7 and Python 3.6 (with the dataclasses backport).**
+**The [latest release](https://github.com/lidatong/dataclasses-json/releases/latest) is compatible with Python 3.7.**
 
 ## Usage
 

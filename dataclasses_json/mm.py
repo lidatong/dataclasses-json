@@ -13,7 +13,7 @@ from enum import Enum
 
 from typing_inspect import is_union_type  # type: ignore
 
-from marshmallow import fields, Schema, post_load  # type: ignore
+from marshmallow import fields, Schema, post_dump, post_load  # type: ignore
 from marshmallow.exceptions import ValidationError  # type: ignore
 
 from dataclasses_json.core import (_is_supported_generic, _decode_dataclass,
@@ -326,6 +326,11 @@ def schema(cls, mixin, infer_missing):
             if metadata.letter_case is not None:
                 options['data_key'] = metadata.letter_case(field.name)
 
+            if metadata.exclude:
+                options.setdefault("metadata", {}).setdefault("dataclasses_json", {})[
+                    "exclude"
+                ] = metadata.exclude
+
             t = build_type(type_, options, mixin, field, cls)
             if field.metadata.get('dataclasses_json', {}).get('decoder'):
                 # If the field defines a custom decoder, it should completely replace the Marshmallow field's conversion
@@ -368,6 +373,28 @@ def build_schema(cls: typing.Type[A],
 
         return Schema.dumps(self, *args, **kwargs)
 
+    @post_dump(pass_many=True)
+    def _exclude_fields(self, data, many, **kwargs):
+        def exclude(k, v) -> bool:
+            if self.fields.get(k):
+                f = self.fields[k]
+                if f.metadata.get("dataclasses_json", {}).get(
+                    "exclude", lambda x: False
+                )(v):
+                    return True
+            return False
+
+        if many:
+            for i, _data in enumerate(data):
+                for k in list(_data.keys()):
+                    if exclude(k, _data[k]):
+                        del _data[k]
+        else:
+            for k in list(data.keys()):
+                if exclude(k, data[k]):
+                    del data[k]
+        return data
+
     def dump(self, obj, *, many=None):
         many = self.many if many is None else bool(many)
         dumped = Schema.dump(self, obj, many=many)
@@ -392,6 +419,7 @@ def build_schema(cls: typing.Type[A],
         (Schema,),
         {'Meta': Meta,
          f'make_{cls.__name__.lower()}': make_instance,
+         f"_exclude_fields": _exclude_fields,
          'dumps': dumps,
          'dump': dump,
          **schema_})

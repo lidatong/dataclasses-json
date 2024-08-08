@@ -49,3 +49,22 @@ def test_custom_action_excluded():
     dclass = EncodeCustom(public_field="public", sensitive_field="secret")
     encoded = dclass.to_dict()
     assert "sensitive_field" not in encoded
+
+
+def test_marshmallow_exclude_dump():
+    dclass = EncodeExclude(public_field="public", private_field="private")
+    encoded = EncodeExclude.schema().dump(dclass)
+    assert "public_field" in encoded
+    assert "private_field" not in encoded
+
+
+def test_marshmallow_exclude_dumps():
+    dclass = EncodeExclude(public_field="public", private_field="private")
+    encoded = EncodeExclude.schema().dumps(dclass)
+    assert "public_field" in encoded
+    assert "private_field" not in encoded
+
+def test_schema():
+    dclass = EncodeExclude(public_field="public", private_field="private")
+    schema = EncodeExclude.schema()
+    print(schema)

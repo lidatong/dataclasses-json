@@ -48,10 +48,13 @@ global_config = _GlobalConfig()
 
 
 class LetterCase(Enum):
-    CAMEL = camelcase
-    KEBAB = spinalcase
-    SNAKE = snakecase
-    PASCAL = pascalcase
+    CAMEL = functools.partial(camelcase)
+    KEBAB = functools.partial(spinalcase)
+    SNAKE = functools.partial(snakecase)
+    PASCAL = functools.partial(pascalcase)
+
+    def __call__(self, string: str) -> str:
+        return self.value(string)
 
 
 def config(metadata: Optional[dict] = None, *,

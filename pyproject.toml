@@ -1,9 +1,16 @@
-[tool.poetry]
+[project]
 name = "dataclasses-json"
 version = "0.0.0"
 description = "Easily serialize dataclasses to and from JSON."
-authors = ["Charles Li <charles.dt.li@gmail.com>"]
-maintainers = ['Charles Li <charles.dt.li@gmail.com>', 'Georgiy Zubrienko <gzu@ecco.com>', 'Vitaliy Savitskiy <visa@ecco.com>', 'Matthias Als <mata@ecco.com>']
+authors = [
+    { "name" = "Charles Li", "email" = "charles.dt.li@gmail.com" },
+]
+maintainers = [
+    { "name" = "Charles Li", "email" = "charles.dt.li@gmail.com" },
+    { "name" = "Georgiy Zubrienko", "email" = "gzu@ecco.com" },
+    { "name" = "Vitaliy Savitskiy", "email" = "visa@ecco.com" },
+    { "name" = "Matthias Als", "email" = "mata@ecco.com>" },
+]
 license = 'MIT'
 readme = "README.md"
 repository = 'https://github.com/lidatong/dataclasses-json'
@@ -33,7 +40,7 @@ build-backend = "poetry_dynamic_versioning.backend"
 [tool.poetry-dynamic-versioning]
 enable = true
 
-[tool.poetry.urls]
+[project.urls]
 changelog = "https://github.com/lidatong/dataclasses-json/releases"
 documentation = "https://lidatong.github.io/dataclasses-json/"
 issues = "https://github.com/lidatong/dataclasses-json/issues"

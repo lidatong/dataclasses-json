@@ -47,11 +47,13 @@ class _GlobalConfig:
 global_config = _GlobalConfig()
 
 
+LetterCaseCallable = Callable[[str], str]
+
 class LetterCase(Enum):
-    CAMEL = camelcase
-    KEBAB = spinalcase
-    SNAKE = snakecase
-    PASCAL = pascalcase
+    CAMEL: LetterCaseCallable = camelcase
+    KEBAB: LetterCaseCallable = spinalcase
+    SNAKE: LetterCaseCallable = snakecase
+    PASCAL: LetterCaseCallable = pascalcase
 
 
 def config(metadata: Optional[dict] = None, *,
@@ -60,7 +62,7 @@ def config(metadata: Optional[dict] = None, *,
            encoder: Optional[Callable] = None,
            decoder: Optional[Callable] = None,
            mm_field: Optional[MarshmallowField] = None,
-           letter_case: Union[Callable[[str], str], LetterCase, None] = None,
+           letter_case: Union[LetterCaseCallable, LetterCase, None] = None,
            undefined: Optional[Union[str, Undefined]] = None,
            field_name: Optional[str] = None,
            exclude: Optional[Callable[[T], bool]] = None,

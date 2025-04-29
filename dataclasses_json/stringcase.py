@@ -24,9 +24,10 @@
 # Copyright © 2020 Louis-Philippe Véronneau <pollo@debian.org>
 
 import re
+from typing import Literal, cast
 
 
-def uplowcase(string, case):
+def uplowcase(string: str, case: Literal["up", "low"]) -> str:
     """Convert string into upper or lower case.
 
     Args:
@@ -42,7 +43,7 @@ def uplowcase(string, case):
         return str(string).lower()
 
 
-def capitalcase(string):
+def capitalcase(string: str) -> str:
     """Convert string into capital case.
     First letters will be uppercase.
 
@@ -60,7 +61,7 @@ def capitalcase(string):
     return uplowcase(string[0], 'up') + string[1:]
 
 
-def camelcase(string):
+def camelcase(string: str) -> str:
     """ Convert string into camel case.
 
     Args:
@@ -76,11 +77,11 @@ def camelcase(string):
         return string
     return (uplowcase(string[0], 'low')
             + re.sub(r"[\-_\.\s]([a-z0-9])",
-                     lambda matched: uplowcase(matched.group(1), 'up'),
+                     lambda matched: uplowcase(cast(str, matched.group(1)), 'up'),
                      string[1:]))
 
 
-def snakecase(string):
+def snakecase(string: str) -> str:
     """Convert string into snake case.
     Join punctuation with underscore
 
@@ -97,11 +98,11 @@ def snakecase(string):
         return string
     return (uplowcase(string[0], 'low')
             + re.sub(r"[A-Z0-9]",
-                     lambda matched: '_' + uplowcase(matched.group(0), 'low'),
+                     lambda matched: '_' + uplowcase(cast(str, matched.group(0)), 'low'),
                      string[1:]))
 
 
-def spinalcase(string):
+def spinalcase(string: str) -> str:
     """Convert string into spinal case.
     Join punctuation with hyphen.
 
@@ -116,7 +117,7 @@ def spinalcase(string):
     return re.sub(r"_", "-", snakecase(string))
 
 
-def pascalcase(string):
+def pascalcase(string: str) -> str:
     """Convert string into pascal case.
 
     Args:

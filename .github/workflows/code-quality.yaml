@@ -19,24 +19,22 @@ jobs:
       max-parallel: 5
       matrix:
         # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-        python-version: [ "3.9", "3.11" ]
+        python-version: [ "3.9", "3.13", "3.14" ]
 
     if: github.ref != 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry and dependencies
-        run: |
-          set -e
-          
-          curl -sSL https://install.python-poetry.org | python3 -
-          poetry install --all-extras
-
+          allow-prereleases: true
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
       - uses: reviewdog/action-setup@v1
-
       - name: run mypy
-        run: poetry run mypy --no-warn-no-return dataclasses_json
+        run: uv run mypy --no-warn-no-return dataclasses_json

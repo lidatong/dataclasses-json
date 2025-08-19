@@ -1,39 +1,217 @@
-[tool.poetry]
+[project]
 name = "dataclasses-json"
-version = "0.0.0"
+dynamic = ["version"]
 description = "Easily serialize dataclasses to and from JSON."
-authors = ["Charles Li <charles.dt.li@gmail.com>"]
-maintainers = ['Charles Li <charles.dt.li@gmail.com>', 'Georgiy Zubrienko <gzu@ecco.com>', 'Vitaliy Savitskiy <visa@ecco.com>', 'Matthias Als <mata@ecco.com>']
-license = 'MIT'
+authors = [{ name = "Charles Li", email = "charles.dt.li@gmail.com" }]
+requires-python = ">=3.9"
 readme = "README.md"
-repository = 'https://github.com/lidatong/dataclasses-json'
+license = "MIT"
+maintainers = [
+    { name = "Charles Li", email = "charles.dt.li@gmail.com" },
+    { name = "Georgiy Zubrienko", email = "gzu@ecco.com" },
+    { name = "Vitaliy Savitskiy", email = "visa@ecco.com" },
+    { name = "Matthias Als", email = "mata@ecco.com" },
+]
+dependencies = [
+    "typing-inspect>=0.4.0, <1",
+    "marshmallow>=3.18.0,<4.0.0",
+]
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
 
-[tool.poetry.dependencies]
-python = "^3.7"
-typing-inspect = ">=0.4.0, <1"
-marshmallow = ">=3.18.0,<4.0.0"
+[project.urls]
+Repository = "https://github.com/lidatong/dataclasses-json"
+changelog = "https://github.com/lidatong/dataclasses-json/releases"
+documentation = "https://lidatong.github.io/dataclasses-json/"
+issues = "https://github.com/lidatong/dataclasses-json/issues"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.1"
-pytest-cov = "~2.12"
-mypy = ">=0.710, <2"
-hypothesis = "^6.77"
-portray = "^1.6"
-flake8 = "^5"
-simplejson = "^3.19.1"
-black = "^22"
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "pytest-cov>=6.2.1",
+    "pytest-randomly>=3.16.0",
+    "pytest-retry>=1.7.0",
+    "pytest-xdist>=3.8.0",
+    "hypothesis~=6.77",
+    "portray~=1.6",
+    "flake8>=5,<6",
+    "simplejson>=3.19.1,<4",
+    "black>=22,<23",
+    "pre-commit-uv>=4.1.4",
+    "pylint>=3.3.8",
+]
 
 [tool.black]
 line-length = 120
 
 [build-system]
-requires = ["poetry-core>=1.2.0", "poetry-dynamic-versioning"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["hatchling",   
+  "uv-dynamic-versioning"
+]
+build-backend = "hatchling.build"
 
-[tool.poetry-dynamic-versioning]
-enable = true
 
-[tool.poetry.urls]
-changelog = "https://github.com/lidatong/dataclasses-json/releases"
-documentation = "https://lidatong.github.io/dataclasses-json/"
-issues = "https://github.com/lidatong/dataclasses-json/issues"
+[tool.hatch.build.targets.sdist]
+include = ["httpxthrottlecache"]
+
+[tool.hatch.build.targets.wheel]
+include = ["httpxthrottlecache"]
+
+[tool.hatch.build.targets.wheel.sources]
+"./httpxthrottlecache" = "httpxthrottlecache"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+
+
+[tool.pyright]
+typeCheckingMode = "basic"
+reportGeneralTypeIssues = false
+reportPrivateImportUsage = false
+reportAttributeAccessIssue = false
+reportOptionalOperand = false
+exclude = ["tests/**"]
+
+[tool.ruff.lint]
+# pyflakes, pycodestyle, isort
+select = ["F", "E", "W", "S", "B", "G", "N", "I001", "T", "PD", "C90"]
+ignore = [
+  "W291",
+  "E501",
+  "S608",
+  "PD901",
+  "C901",
+  "S101",
+  # Additional rules disabled for initial migration
+  "F405",
+  "E721",
+  "F811",
+  "F403",
+  "E741",
+  "E711",
+  "N802",
+  "N815",
+  "F401",
+  "B028",
+  "B008",
+  "N806",
+  "B024"
+]
+[tool.pylint.messages_control]
+## Disable Ruff enabled reportGeneralTypeIssues
+## And, disable keywords needed to migrate repo 
+disable = ["C0104", "C0325", "C1805", "I0011", "I0020", "R0401", "R0801", "R0902", "R0903", "E0611", "W0621", "W0614", "all"]
+enable = [
+  "C0117", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/unnecessary-negation.html
+  "C0200", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/consider-using-enumerate.html
+  "C0203", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/bad-mcs-method-argument.html
+  "C0204", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/bad-mcs-classmethod-argument.html
+  "C0209", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/consider-using-f-string.html
+  "C0302", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/too-many-lines.html
+  "C0325", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/superfluous-parens.html
+  "C0327", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/mixed-line-endings.html
+  "C0328", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/unexpected-line-ending-format.html
+  "C0401", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/wrong-spelling-in-comment.html
+  "C0402", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/wrong-spelling-in-docstring.html
+  "C0403", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/invalid-characters-in-docstring.html
+  "C1803", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/use-implicit-booleaness-not-comparison.html
+  "C1804", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/use-implicit-booleaness-not-comparison-to-string.html
+  "C2503", # https://pylint.readthedocs.io/en/stable/user_guide/messages/convention/bad-file-encoding.html
+  "E0011", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/unrecognized-inline-option.html
+  "E0013", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/bad-plugin-value.html
+  "E0014", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/bad-configuration-section.html
+  "E0015", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/unrecognized-option.html
+  "E0106", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/return-arg-in-generator.html
+  "E0108", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/duplicate-argument-name.html
+  "E0203", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/access-member-before-definition.html
+  "E0211", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/no-method-argument.html
+  "E0242", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/class-variable-slots-conflict.html
+  "E0245", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/declare-non-slot.html
+  "E0310", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/invalid-length-hint-returned.html
+  "E0312", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/invalid-getnewargs-returned.html
+  "E0313", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/invalid-getnewargs-ex-returned.html
+  "E0606", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/possibly-used-before-assignment.html
+  "E0701", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/bad-except-order.html
+  "E1144", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/invalid-slice-step.html
+  "E1200", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/logging-unsupported-format.html
+  "E1201", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/logging-format-truncated.html
+  "E2511", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/invalid-character-carriage-return.html
+  "E3102", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/positional-only-arguments-expected.html
+  "E3701", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/invalid-field-call.html
+  "E4702", # https://pylint.readthedocs.io/en/stable/user_guide/messages/error/modified-iterating-dict.html
+  "F0002", # https://pylint.readthedocs.io/en/stable/user_guide/messages/fatal/astroid-error.html
+  "F0010", # https://pylint.readthedocs.io/en/stable/user_guide/messages/fatal/parse-error.html
+  "F0011", # https://pylint.readthedocs.io/en/stable/user_guide/messages/fatal/config-parse-error.html
+  "F0202", # https://pylint.readthedocs.io/en/stable/user_guide/messages/fatal/method-check-failed.html
+  "I0001", # https://pylint.readthedocs.io/en/stable/user_guide/messages/info/raw-checker-failed.html
+  "I0010", # https://pylint.readthedocs.io/en/stable/user_guide/messages/info/bad-inline-option.html
+  "I0013", # https://pylint.readthedocs.io/en/stable/user_guide/messages/info/file-ignored.html
+  "I0021", # https://pylint.readthedocs.io/en/stable/user_guide/messages/info/useless-suppression.html
+  "I0022", # https://pylint.readthedocs.io/en/stable/user_guide/messages/info/deprecated-pragma.html
+  "I1101", # https://pylint.readthedocs.io/en/stable/user_guide/messages/info/c-extension-no-member.html
+  "R0022", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/useless-option-value.html
+  "R0901", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/too-many-ancestors.html
+  "R1706", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/consider-using-ternary.html
+  "R1708", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/stop-iteration-return.html
+  "R1709", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/simplify-boolean-expression.html
+  "R1712", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/consider-swap-variables.html
+  "R1713", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/consider-using-join.html
+  "R1716", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/chained-comparison.html
+  "R1726", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/simplifiable-condition.html
+  "R1727", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/condition-evals-to-constant.html
+  "R1736", # https://pylint.readthedocs.io/en/stable/user_guide/messages/refactor/unnecessary-list-index-lookup.html
+  "W0012", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/unknown-option-value.html
+  "W0101", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/unreachable.html
+  "W0105", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/pointless-string-statement.html
+  "W0124", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/confusing-with-statement.html
+  "W0125", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/using-constant-test.html
+  "W0126", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/missing-parentheses-for-call-in-test.html
+  "W0128", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/redeclared-assigned-name.html
+  "W0134", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/return-in-finally.html
+  "W0135", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/contextmanager-generator-missing-cleanup.html
+  "W0201", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/attribute-defined-outside-init.html
+  "W0213", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/implicit-flag-alias.html
+  "W0223", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/abstract-method.html
+  "W0231", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/super-init-not-called.html
+  "W0233", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/non-parent-init-called.html
+  "W0237", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/arguments-renamed.html
+  "W0238", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/unused-private-member.html
+  "W0244", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/redefined-slots-in-subclass.html
+  "W0246", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/useless-parent-delegation.html
+  "W0407", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/preferred-module.html
+  "W0416", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/shadowed-import.html
+  "W0631", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/undefined-loop-variable.html
+  "W0641", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/possibly-unused-variable.html
+  "W0715", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/raising-format-tuple.html
+  "W1114", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/arguments-out-of-order.html
+  "W1117", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/kwarg-superseded-by-positional-arg.html
+  "W1300", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/bad-format-string-key.html
+  "W1307", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/invalid-format-index.html
+  "W1308", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/duplicate-string-formatting-argument.html
+  "W1402", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/anomalous-unicode-escape-in-string.html
+  "W1502", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/boolean-datetime.html
+  "W1503", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/redundant-unittest-assert.html
+  "W1507", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/shallow-copy-environ.html
+  "W2601", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/using-f-string-in-unsupported-version.html
+  "W2603", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/using-exception-groups-in-unsupported-version.html
+  "W2604", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/using-generic-type-syntax-in-unsupported-version.html
+  "W2605", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/using-assignment-expression-in-unsupported-version.html
+  "W2606", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/using-positional-only-args-in-unsupported-version.html
+  "W3101", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/missing-timeout.html
+  "W3601", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/bad-chained-comparison.html
+  "W4701", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/modified-iterating-list.html
+  "W4901", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/deprecated-module.html
+  "W4902", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/deprecated-method.html
+  "W4903", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/deprecated-argument.html
+  "W4905", # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/deprecated-decorator.html
+  "W4906" # https://pylint.readthedocs.io/en/stable/user_guide/messages/warning/deprecated-attribute.html
+]

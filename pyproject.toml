@@ -47,6 +47,7 @@ dev = [
     "black>=22,<23",
     "pre-commit-uv>=4.1.4",
     "pylint>=3.3.8",
+    "mypy>=1.17.1",
 ]
 
 [tool.black]

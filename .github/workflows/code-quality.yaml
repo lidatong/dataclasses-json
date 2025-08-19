@@ -19,7 +19,7 @@ jobs:
       max-parallel: 5
       matrix:
         # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-        python-version: [ "3.9", "3.13", "3.14" ]
+        python-version: [ "3.9", "3.14" ]
 
     if: github.ref != 'refs/heads/main'
     steps:
@@ -37,4 +37,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - uses: reviewdog/action-setup@v1
       - name: run mypy
-        run: uv run mypy --no-warn-no-return dataclasses_json
+        run: |
+          uv sync
+          uv run mypy --no-warn-no-return dataclasses_json

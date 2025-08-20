@@ -2,6 +2,12 @@
 
 ![](https://github.com/lidatong/dataclasses-json/workflows/dataclasses-json/badge.svg)
 
+[![PyPI Version](https://badge.fury.io/py/dataclasses-json.svg)](https://pypi.python.org/pypi/dataclasses-json)
+![Python Versions](https://img.shields.io/pypi/pyversions/dataclasses-json)
+
+[![Coverage badge](https://github.com/lidatong/dataclasses-json/raw/python-coverage-comment-action-data/badge.svg)](https://github.com/lidatong/dataclasses-json/tree/python-coverage-comment-action-data)
+
+
 This library provides a simple API for encoding and decoding [dataclasses](https://docs.python.org/3/library/dataclasses.html) to and from JSON.
 
 It's very easy to get started.

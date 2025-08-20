@@ -221,6 +221,42 @@ def test_undefined_parameters_catch_all_schema_dump(boss_json):
     assert json.loads(boss_json) == Boss.schema().dump(boss)
     assert "".join(boss_json.replace('\n', '').split()) == "".join(Boss.schema().dumps(boss).replace('\n', '').split())
 
+@dataclass_json(undefined=Undefined.INCLUDE)
+@dataclass(frozen=True)
+class Minion2:
+    name: str
+    catch_all: CatchAll
+
+@dataclass_json(undefined=Undefined.INCLUDE)
+@dataclass(frozen=True)
+class Boss2:
+    minions: List[Minion2]
+    catch_all: CatchAll
+
+def test_undefined_parameters_catch_all_schema_roundtrip2(boss_json):
+    boss1 = Boss2.schema().loads(boss_json)
+    dumped_s = Boss2.schema().dumps(boss1)
+    boss2 = Boss2.schema().loads(dumped_s)
+    assert boss1 == boss2
+
+
+def test_undefined_parameters_catch_all_schema_roundtrip(boss_json):
+    @dataclass_json(undefined=Undefined.INCLUDE)
+    @dataclass(frozen=True)
+    class Minion:
+        name: str
+        catch_all: CatchAll
+
+    @dataclass_json(undefined=Undefined.INCLUDE)
+    @dataclass(frozen=True)
+    class Boss:
+        minions: List[Minion]
+        catch_all: CatchAll
+
+    boss1 = Boss.schema().loads(boss_json)
+    dumped_s = Boss.schema().dumps(boss1)
+    boss2 = Boss.schema().loads(dumped_s)
+    assert boss1 == boss2
 
 def test_undefined_parameters_catch_all_schema_roundtrip(boss_json):
     @dataclass_json(undefined=Undefined.INCLUDE)

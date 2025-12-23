@@ -10,3 +10,5 @@ venv
 .mypy_cache
 .hypothesis
 pip-wheel-metadata
+
+__pycache__

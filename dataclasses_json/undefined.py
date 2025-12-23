@@ -7,6 +7,7 @@ from dataclasses import Field, fields
 from typing import Any, Callable, Dict, Optional, Tuple, Union, Type, get_type_hints
 from enum import Enum
 
+from .core import _safe_get_type_hints
 from marshmallow.exceptions import ValidationError  # type: ignore
 
 from dataclasses_json.utils import CatchAllVar
@@ -248,7 +249,7 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
     @staticmethod
     def _get_catch_all_field(cls) -> Field:
         cls_globals = vars(sys.modules[cls.__module__])
-        types = get_type_hints(cls, globalns=cls_globals)
+        types = _safe_get_type_hints(cls, globalns=cls_globals)
         catch_all_fields = list(
             filter(lambda f: types[f.name] == Optional[CatchAllVar], fields(cls)))
         number_of_catch_all_fields = len(catch_all_fields)

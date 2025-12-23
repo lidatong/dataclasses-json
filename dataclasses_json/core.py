@@ -18,6 +18,7 @@ from typing import (Any, Collection, Mapping, Union, get_type_hints,
 from uuid import UUID
 
 from typing_inspect import is_union_type  # type: ignore
+import typing
 
 from dataclasses_json import cfg
 from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
@@ -43,6 +44,43 @@ collections_abc_type_to_implementation_type = MappingProxyType({
     Sequence: tuple,
     Set: frozenset,
 })
+
+PEP649 = sys.version_info >= (3, 14)
+
+if PEP649:
+    import inspect
+
+def _safe_get_type_hints(c, **kwargs):
+
+    if not PEP649: 
+        # not running under PEP 649 (future/deferred annotations),
+        return typing.get_type_hints(c, include_extras=True, **kwargs)
+
+    else:        
+        if not isinstance(c, type):
+            # If we're passed an instance instead of a class, normalize to its type
+            c = c.__class__     
+        if "." not in getattr(c, "__qualname__", ""):
+            # If this is a *top-level class* (no "." in __qualname__),
+            # typing.get_type_hints works fine even under PEP 649.
+            return typing.get_type_hints(c, include_extras=True, **kwargs)
+        else:
+            # Otherwise, this is a *nested class* (defined inside another class or function),
+            # where typing.get_type_hints may fail under PEP 649.
+            ann = {}
+
+            # First collect annotations from bases in the MRO
+            for base in reversed(c.__mro__[:-1]):
+                ann.update(inspect.get_annotations(base, format=inspect.Format.VALUE) or {})
+
+            # For the class itself, use FORWARDREF format to keep "Self"/recursive types intact
+            ann.update(inspect.get_annotations(c, format=inspect.Format.FORWARDREF) or {})
+
+            if ann:
+                return ann
+            else:
+                return {f.name: f.type for f in fields(c)}
+
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -175,7 +213,7 @@ def _decode_dataclass(cls, kvs, infer_missing):
     kvs = _handle_undefined_parameters_safe(cls, kvs, usage="from")
 
     init_kwargs = {}
-    types = get_type_hints(cls)
+    types = _safe_get_type_hints(cls)
     for field in fields(cls):
         # The field should be skipped from being added
         # to init_kwargs as it's not intended as a constructor argument.

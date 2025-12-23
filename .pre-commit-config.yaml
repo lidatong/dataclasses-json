@@ -1,0 +1,54 @@
+default_language_version:
+  python: python3
+exclude: "^$"
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   # Ruff version.
+  #   rev: v0.12.9
+  #   hooks:
+  #     # Run the linter.
+  #     - id: ruff-check
+  #       types_or: [ python, pyi, jupyter ]
+  #       args: [ --fix ]
+  #     # Run the formatter.
+  #     - id: ruff-format
+  #       types_or: [ python, pyi, jupyter ]
+  - repo: local
+    hooks:
+      - entry: pyright
+        id: "pyright"
+        name: "pyright"
+        types_or: [python]
+        language: node
+        pass_filenames: true
+        additional_dependencies: ["pyright"]
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        require_serial: true
+        always_run: false
+        pass_filenames: true
+        args:
+          [
+            "-rn",
+            "-sn",
+          ]
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest -n 6
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: false
+        files: '.*\.(py|ipynb)$'

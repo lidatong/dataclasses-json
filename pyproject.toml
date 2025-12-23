@@ -3,7 +3,7 @@ name = "dataclasses-json"
 dynamic = ["version"]
 description = "Easily serialize dataclasses to and from JSON."
 authors = [{ name = "Charles Li", email = "charles.dt.li@gmail.com" }]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 readme = "README.md"
 license = "MIT"
 maintainers = [
@@ -17,7 +17,6 @@ dependencies = [
     "marshmallow>=3.18.0,<4.0.0",
 ]
 classifiers = [
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",

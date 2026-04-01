@@ -162,12 +162,14 @@ def _decode_dataclass(cls, kvs, infer_missing):
     decode_names = _decode_letter_case_overrides(field_names, overrides)
     kvs = {decode_names.get(k, k): v for k, v in kvs.items()}
     missing_fields = {field for field in fields(cls) if field.name not in kvs}
+    factory_populated_fields = set()
 
     for field in missing_fields:
         if field.default is not MISSING:
             kvs[field.name] = field.default
         elif field.default_factory is not MISSING:
             kvs[field.name] = field.default_factory()
+            factory_populated_fields.add(field.name)
         elif infer_missing:
             kvs[field.name] = None
 
@@ -230,9 +232,12 @@ def _decode_dataclass(cls, kvs, infer_missing):
                                           infer_missing)
             init_kwargs[field.name] = value
         elif _is_supported_generic(field_type) and field_type != str:
-            init_kwargs[field.name] = _decode_generic(field_type,
-                                                      field_value,
-                                                      infer_missing)
+            if field.name in factory_populated_fields:
+                init_kwargs[field.name] = field_value
+            else:
+                init_kwargs[field.name] = _decode_generic(field_type,
+                                                          field_value,
+                                                          infer_missing)
         else:
             init_kwargs[field.name] = _support_extended_types(field_type,
                                                               field_value)

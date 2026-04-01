@@ -264,3 +264,23 @@ class TestDecoder:
     )
     def test_abstract_collections(self, json_string, expected_instance):
         assert type(expected_instance).from_json(json_string) == expected_instance
+
+    def test_mutable_mapping_default_factory_from_empty_dict(self):
+        """Regression test for issue #505:
+        MutableMapping fields with default_factory should not raise TypeError
+        when deserializing from an input dict that omits the field."""
+        from collections.abc import MutableMapping
+        from dataclasses import dataclass, field
+        from dataclasses_json import DataClassJsonMixin
+
+        @dataclass
+        class MyClass(DataClassJsonMixin):
+            field1: MutableMapping[str, str] = field(default_factory=dict)
+
+        # Should not raise TypeError: MutableMapping() takes no arguments
+        result = MyClass.from_dict({})
+        assert result.field1 == {}
+
+        # Full round-trip should also work
+        obj = MyClass(field1={"key": "value"})
+        assert MyClass.from_dict(obj.to_dict()).field1 == {"key": "value"}

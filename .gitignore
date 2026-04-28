@@ -10,3 +10,4 @@ venv
 .mypy_cache
 .hypothesis
 pip-wheel-metadata
+.DS_Store

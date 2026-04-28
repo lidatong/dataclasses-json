@@ -2,19 +2,19 @@ name: test-and-release
 
 on:
   push:
-    branches: 
+    branches:
       - master
       - release/*  # this is a backup. prefer publishing using a tagged master.
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
   pull_request:
-    branches: 
+    branches:
       - master
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # instead of ubuntu-latest to support python3.7
     strategy:
       max-parallel: 5
       matrix:
@@ -41,7 +41,7 @@ jobs:
         else
           curl -sSL https://install.python-poetry.org | python3 -
         fi
-        
+
         poetry install --all-extras
     - name: Lint with flake8
       run: |
@@ -49,10 +49,10 @@ jobs:
         poetry run flake8 dataclasses_json --show-source --statistics --count
     - name: Test with pytest
       run: |
-        set -euxo pipefail    
-        
+        set -euxo pipefail
+
         poetry run pytest ./tests --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=term-missing:skip-covered | tee pytest-coverage.txt
-        
+
     - name: Publish Code Coverage
       uses: MishaKav/pytest-coverage-comment@main
       if: ${{ !github.event.pull_request.head.repo.fork }}
@@ -77,13 +77,13 @@ jobs:
       - name: Install Poetry and Prepare version
         run: |
           set -e
-          
+
           curl -sSL https://install.python-poetry.org | python3 -
           poetry self add "poetry-dynamic-versioning[plugin]"
       - name: Build package
         run: |
           set -e
-        
+
           poetry build
 
       - name: Publish distribution 📦 to Test PyPI

@@ -56,26 +56,26 @@ ConfiguredSimpleExample.from_json('{"intField": 1}')  # ConfiguredSimpleExample(
 ## Supported types
 
 It's recursive (see caveats below), so you can easily work with nested dataclasses.
-In addition to the supported types in the 
+In addition to the supported types in the
 [py to JSON table](https://docs.python.org/3/library/json.html#py-to-json-table), this library supports the following:
 
 - any arbitrary [Collection](https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection) type is supported.
-[Mapping](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) types are encoded as JSON objects and `str` types as JSON strings. 
+[Mapping](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) types are encoded as JSON objects and `str` types as JSON strings.
 Any other Collection types are encoded into JSON arrays, but decoded into the original collection types.
 
-- [datetime](https://docs.python.org/3/library/datetime.html#available-types) 
-objects. `datetime` objects are encoded to `float` (JSON number) using 
+- [datetime](https://docs.python.org/3/library/datetime.html#available-types)
+objects. `datetime` objects are encoded to `float` (JSON number) using
 [timestamp](https://docs.python.org/3/library/datetime.html#datetime.datetime.timestamp).
-As specified in the `datetime` docs, if your `datetime` object is naive, it will 
-assume your system local timezone when calling `.timestamp()`. JSON numbers 
-corresponding to a `datetime` field in your dataclass are decoded 
+As specified in the `datetime` docs, if your `datetime` object is naive, it will
+assume your system local timezone when calling `.timestamp()`. JSON numbers
+corresponding to a `datetime` field in your dataclass are decoded
 into a datetime-aware object, with `tzinfo` set to your system local timezone.
-Thus, if you encode a datetime-naive object, you will decode into a 
-datetime-aware object. This is important, because encoding and decoding won't 
+Thus, if you encode a datetime-naive object, you will decode into a
+datetime-aware object. This is important, because encoding and decoding won't
 strictly be inverses. See [this section](#Overriding) if you want to override this default
 behavior (for example, if you want to use ISO).
 
-- [UUID](https://docs.python.org/3/library/uuid.html#uuid.UUID) objects. They 
+- [UUID](https://docs.python.org/3/library/uuid.html#uuid.UUID) objects. They
 are encoded as `str` (JSON string).
 
 - [Decimal](https://docs.python.org/3/library/decimal.html) objects. They are
@@ -130,8 +130,6 @@ Pick whichever approach suits your taste. Note that there is better support for
 
 ## How do I...
 
-
-
 ### Use my dataclass with JSON arrays or objects?
 
 ```python
@@ -158,7 +156,7 @@ people_json = '[{"name": "lidatong"}]'
 Person.schema().loads(people_json, many=True)  # [Person(name='lidatong')]
 ```
 
-**Encode as part of a larger JSON object containing my Data Class (e.g. an HTTP 
+**Encode as part of a larger JSON object containing my Data Class (e.g. an HTTP
 request/response)**
 
 ```python
@@ -173,13 +171,13 @@ response_dict = {
 response_json = json.dumps(response_dict)
 ```
 
-In this case, we do two steps. First, we encode the dataclass into a 
-**python dictionary** rather than a JSON string, using `.to_dict`. 
+In this case, we do two steps. First, we encode the dataclass into a
+**python dictionary** rather than a JSON string, using `.to_dict`.
 
-Second, we leverage the built-in `json.dumps` to serialize our `dataclass` into 
+Second, we leverage the built-in `json.dumps` to serialize our `dataclass` into
 a JSON string.
 
-**Decode as part of a larger JSON object containing my Data Class (e.g. an HTTP 
+**Decode as part of a larger JSON object containing my Data Class (e.g. an HTTP
 response)**
 
 ```python
@@ -194,16 +192,15 @@ person = Person.from_dict(person_dict)
 
 In a similar vein to encoding above, we leverage the built-in `json` module.
 
-First, call `json.loads` to read the entire JSON object into a 
-dictionary. We then access the key of the value containing the encoded dict of 
+First, call `json.loads` to read the entire JSON object into a
+dictionary. We then access the key of the value containing the encoded dict of
 our `Person` that we want to decode (`response_dict['response']`).
 
 Second, we load in the dictionary using `Person.from_dict`.
 
-
 ### Encode or decode into Python lists/dictionaries rather than JSON?
 
-This can be by calling `.schema()` and then using the corresponding 
+This can be by calling `.schema()` and then using the corresponding
 encoder/decoder methods, ie. `.load(...)`/`.dump(...)`.
 
 **Encode into a single Python dictionary**
@@ -252,7 +249,7 @@ from dataclasses_json import LetterCase, config, dataclass_json
 class Person:
     given_name: str
     family_name: str
-    
+
 Person('Alice', 'Liddell').to_json()  # '{"givenName": "Alice"}'
 Person.from_json('{"givenName": "Alice", "familyName": "Liddell"}')  # Person('Alice', 'Liddell')
 
@@ -262,14 +259,14 @@ Person.from_json('{"givenName": "Alice", "familyName": "Liddell"}')  # Person('A
 class Person:
     given_name: str = field(metadata=config(letter_case=LetterCase.CAMEL))
     family_name: str
-    
+
 Person('Alice', 'Liddell').to_json()  # '{"givenName": "Alice"}'
 # notice how the `family_name` field is still snake_case, because it wasn't configured above
 Person.from_json('{"givenName": "Alice", "family_name": "Liddell"}')  # Person('Alice', 'Liddell')
 ```
 
 **This library assumes your field follows the Python convention of snake_case naming.**
-If your field is not `snake_case` to begin with and you attempt to parameterize `LetterCase`, 
+If your field is not `snake_case` to begin with and you attempt to parameterize `LetterCase`,
 the behavior of encoding/decoding is undefined (most likely it will result in subtle bugs).
 
 ### Encode or decode using a different name
@@ -291,7 +288,7 @@ Person('Alice').to_json()  # {"overriddenGivenName": "Alice"}
 
 ### Handle missing or optional field values when decoding?
 
-By default, any fields in your dataclass that use `default` or 
+By default, any fields in your dataclass that use `default` or
 `default_factory` will have the values filled with the provided default, if the
 corresponding field is missing from the JSON you're decoding.
 
@@ -310,8 +307,8 @@ Student.from_json('{"id": 1}')  # Student(id=1, name='student')
 Notice `from_json` filled the field `name` with the specified default 'student'
 when it was missing from the JSON.
 
-Sometimes you have fields that are typed as `Optional`, but you don't 
-necessarily want to assign a default. In that case, you can use the 
+Sometimes you have fields that are typed as `Optional`, but you don't
+necessarily want to assign a default. In that case, you can use the
 `infer_missing` kwarg to make `from_json` infer the missing field value as `None`.
 
 **Decode optional field without default**
@@ -326,10 +323,9 @@ class Tutor:
 Tutor.from_json('{"id": 1}')  # Tutor(id=1, student=None)
 ```
 
-Personally I recommend you leverage dataclass defaults rather than using 
-`infer_missing`, but if for some reason you need to decouple the behavior of 
+Personally I recommend you leverage dataclass defaults rather than using
+`infer_missing`, but if for some reason you need to decouple the behavior of
 JSON decoding from the field's default value, this will allow you to do so.
-
 
 ### Handle unknown / extraneous fields in JSON?
 
@@ -338,82 +334,92 @@ By default, it is up to the implementation what happens when a `json_dataclass` 
 There are three ways to customize this behavior.
 
 Assume you want to instantiate a dataclass with the following dictionary:
+
 ```python
 dump_dict = {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}, "undefined_field_name": [1, 2, 3]}
 ```
 
 1. You can enforce to always raise an error by setting the `undefined` keyword to `Undefined.RAISE`
- (`'RAISE'` as a case-insensitive string works as well). Of course it works normally if you don't pass any undefined parameters.
-    
-```python
-from dataclasses_json import Undefined
+   (`'RAISE'` as a case-insensitive string works as well).
+   Of course it works normally if you don't pass any undefined parameters.
 
-@dataclass_json(undefined=Undefined.RAISE)
-@dataclass()
-class ExactAPIDump:
-    endpoint: str
-    data: Dict[str, Any]
+   ```python
+   from dataclasses_json import Undefined
 
-dump = ExactAPIDump.from_dict(dump_dict)  # raises UndefinedParameterError
-```
+   @dataclass_json(undefined=Undefined.RAISE)
+   @dataclass()
+   class ExactAPIDump:
+       endpoint: str
+       data: Dict[str, Any]
 
-2. You can simply ignore any undefined parameters by setting the `undefined` keyword to `Undefined.EXCLUDE`
- (`'EXCLUDE'` as a case-insensitive string works as well). Note that you will not be able to retrieve them using `to_dict`:
-    
-```python
-from dataclasses_json import Undefined
+   dump = ExactAPIDump.from_dict(dump_dict)  # raises UndefinedParameterError
+   ```
 
-@dataclass_json(undefined=Undefined.EXCLUDE)
-@dataclass()
-class DontCareAPIDump:
-    endpoint: str
-    data: Dict[str, Any]
+1. You can simply ignore any undefined parameters by setting the `undefined` keyword to `Undefined.EXCLUDE`
+   (`'EXCLUDE'` as a case-insensitive string works as well).
+   Note that you will not be able to retrieve them using `to_dict`:
 
-dump = DontCareAPIDump.from_dict(dump_dict)  # DontCareAPIDump(endpoint='some_api_endpoint', data={'foo': 1, 'bar': '2'})
-dump.to_dict()  # {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}}
-```
+   ```python
+   from dataclasses_json import Undefined
 
-3. You can save them in a catch-all field and do whatever needs to be done later. Simply set the `undefined`
-keyword to `Undefined.INCLUDE` (`'INCLUDE'` as a case-insensitive string works as well) and define a field
+   @dataclass_json(undefined=Undefined.EXCLUDE)
+   @dataclass()
+   class DontCareAPIDump:
+       endpoint: str
+       data: Dict[str, Any]
+
+   dump = DontCareAPIDump.from_dict(dump_dict)  # DontCareAPIDump(endpoint='some_api_endpoint', data={'foo': 1, 'bar': '2'})
+   dump.to_dict()  # {"endpoint": "some_api_endpoint", "data": {"foo": 1, "bar": "2"}}
+   ```
+
+1. You can save them in a catch-all field and do whatever needs to be done later.
+   Simply set the `undefined` keyword to `Undefined.INCLUDE`
+   (`'INCLUDE'` as a case-insensitive string works as well) and define a field
 of type `CatchAll` where all unknown values will end up.
- This simply represents a dictionary that can hold anything. 
- If there are no undefined parameters, this will be an empty dictionary.
-    
-```python
-from dataclasses_json import Undefined, CatchAll
+   This simply represents a dictionary that can hold anything.
+   If there are no undefined parameters, this will be an empty dictionary.
 
-@dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass()
-class UnknownAPIDump:
-    endpoint: str
-    data: Dict[str, Any]
-    unknown_things: CatchAll
+   ```python
+   from dataclasses_json import Undefined, CatchAll
 
-dump = UnknownAPIDump.from_dict(dump_dict)  # UnknownAPIDump(endpoint='some_api_endpoint', data={'foo': 1, 'bar': '2'}, unknown_things={'undefined_field_name': [1, 2, 3]})
-dump.to_dict()  # {'endpoint': 'some_api_endpoint', 'data': {'foo': 1, 'bar': '2'}, 'undefined_field_name': [1, 2, 3]}
-```
+   @dataclass_json(undefined=Undefined.INCLUDE)
+   @dataclass()
+   class UnknownAPIDump:
+       endpoint: str
+       data: Dict[str, Any]
+       unknown_things: CatchAll
 
-Notes:
-- When using `Undefined.INCLUDE`, an `UndefinedParameterError` will be raised if you don't specify
-exactly one field of type `CatchAll`.
-- Note that `LetterCase` does not affect values written into the `CatchAll` field, they will be as they are given.
-- When specifying a default (or a default factory) for the the `CatchAll`-field, e.g. `unknown_things: CatchAll = None`, the default value will be used instead of an empty dict if there are no undefined parameters.
-- Calling __init__ with non-keyword arguments resolves the arguments to the defined fields and writes everything else into the catch-all field.
+   dump = UnknownAPIDump.from_dict(dump_dict)  # UnknownAPIDump(endpoint='some_api_endpoint', data={'foo': 1, 'bar': '2'}, unknown_things={'undefined_field_name': [1, 2, 3]})
+   dump.to_dict()  # {'endpoint': 'some_api_endpoint', 'data': {'foo': 1, 'bar': '2'}, 'undefined_field_name': [1, 2, 3]}
+   ```
 
-4. All 3 options work as well using `schema().loads` and `schema().dumps`, as long as you don't overwrite it by specifying `schema(unknown=<a marshmallow value>)`.
-marshmallow uses the same 3 keywords ['include', 'exclude', 'raise'](https://marshmallow.readthedocs.io/en/stable/quickstart.html#handling-unknown-fields).
+   Notes:
 
-5. All 3 operations work as well using `__init__`, e.g. `UnknownAPIDump(**dump_dict)` will **not** raise a `TypeError`, but write all unknown values to the field tagged as `CatchAll`.
-   Classes tagged with `EXCLUDE` will also simply ignore unknown parameters. Note that classes tagged as `RAISE` still raise a `TypeError`, and **not** a `UndefinedParameterError` if supplied with unknown keywords.
+   - When using `Undefined.INCLUDE`, an `UndefinedParameterError` will be raised if you don't specify
+   exactly one field of type `CatchAll`.
+   - Note that `LetterCase` does not affect values written into the `CatchAll` field, they will be as they are given.
+   - When specifying a default (or a default factory) for the the `CatchAll`-field, e.g. `unknown_things: CatchAll = None`,
+     the default value will be used instead of an empty dict if there are no undefined parameters.
+   - Calling `__init__()` with non-keyword arguments resolves the arguments to the defined fields and writes everything else into the catch-all field.
 
+1. All 3 options work as well using `schema().loads` and `schema().dumps`,
+   as long as you don't overwrite it by specifying `schema(unknown=<a marshmallow value>)`.
+   marshmallow uses the same 3 keywords ['include', 'exclude', 'raise'](https://marshmallow.readthedocs.io/en/stable/quickstart.html#handling-unknown-fields).
+
+1. All 3 operations work as well using `__init__`, e.g. `UnknownAPIDump(**dump_dict)` will **not** raise a `TypeError`,
+   but write all unknown values to the field tagged as `CatchAll`.
+   Classes tagged with `EXCLUDE` will also simply ignore unknown parameters.
+   Note that classes tagged as `RAISE` still raise a `TypeError`, and **not** a `UndefinedParameterError` if supplied with unknown keywords.
 
 ### Override the default encode / decode / marshmallow field of a specific field?
 
 See [Overriding](#Overriding)
 
 ### Handle recursive dataclasses?
+
 Object hierarchies where fields are of the type that they are declared within require a small
 type hinting trick to declare the forward reference.
+
 ```python
 from typing import Optional
 from dataclasses import dataclass
@@ -428,13 +434,18 @@ class Tree():
 ```
 
 Avoid using
+
 ```python
 from __future__ import annotations
 ```
+
 as it will cause problems with the way dataclasses_json accesses the type annotations.
 
 ### Use numpy or pandas types?
-Data types specific to libraries commonly used in data analysis and machine learning like [numpy](https://github.com/numpy/numpy) and [pandas](https://github.com/pandas-dev/pandas) are not supported by default, but you can easily enable them by using custom decoders and encoders. Below are two examples for `numpy` and `pandas` types.
+
+Data types specific to libraries commonly used in data analysis and machine learning like [numpy](https://github.com/numpy/numpy) and [pandas](https://github.com/pandas-dev/pandas) are not supported by default,
+but you can easily enable them by using custom decoders and encoders.
+Below are two examples for `numpy` and `pandas` types.
 
 ```python
 from dataclasses import field, dataclass
@@ -457,8 +468,8 @@ class DataWithPandas:
 data = DataWithPandas.from_dict({"my_df": [{"col1": 1, "col2": 2}, {"col1": 3, "col2": 4}]})
 # my_df results in:
 # col1  col2
-# 1    2    
-# 3    4
+# 1     2
+# 3     4
 data.to_dict()
 # {"my_df": [{"col1": 1, "col2": 2}, {"col1": 3, "col2": 4}]}
 ```
@@ -469,13 +480,13 @@ Using the `dataclass_json` decorator or mixing in `DataClassJsonMixin` will
 provide you with an additional method `.schema()`.
 
 `.schema()` generates a schema exactly equivalent to manually creating a
-marshmallow schema for your dataclass. You can reference the [marshmallow API docs](https://marshmallow.readthedocs.io/en/3.0/api_reference.html#schema)
+marshmallow schema for your dataclass.
+You can reference the [marshmallow API docs](https://marshmallow.readthedocs.io/en/3.0/api_reference.html#schema)
 to learn other ways you can use the schema returned by `.schema()`.
 
 You can pass in the exact same arguments to `.schema()` that you would when
 constructing a `PersonSchema` instance, e.g. `.schema(many=True)`, and they will
 get passed through to the marshmallow schema.
-
 
 ```python
 from dataclasses import dataclass
@@ -493,7 +504,7 @@ class PersonSchema(Schema):
     name = fields.Str()
 ```
 
-Briefly, on what's going on under the hood in the above examples: calling 
+Briefly, on what's going on under the hood in the above examples: calling
 `.schema()` will have this library generate a
 [marshmallow schema]('https://marshmallow.readthedocs.io/en/3.0/api_reference.html#schema)
 for you. It also fills in the corresponding object hook, so that marshmallow
@@ -504,7 +515,7 @@ by default in marshmallow.
 **Performance note**
 
 `.schema()` is not cached (it generates the schema on every call), so if you
-have a nested Data Class you may want to save the result to a variable to 
+have a nested Data Class you may want to save the result to a variable to
 avoid re-generation of the schema on every usage.
 
 ```python
@@ -562,23 +573,24 @@ class DataClassWithIsoDatetime:
     accessed_at: date
 ```
 
-As you can see, you can **override** or **extend** the default codecs by providing a "hook" via a 
+As you can see, you can **override** or **extend** the default codecs by providing a "hook" via a
 callable:
+
 - `encoder`: a callable, which will be invoked to convert the field value when encoding to JSON
 - `decoder`: a callable, which will be invoked to convert the JSON value when decoding from JSON
 - `mm_field`: a marshmallow field, which will affect the behavior of any operations involving `.schema()`
 
-Note that these hooks will be invoked regardless if you're using 
+Note that these hooks will be invoked regardless if you're using
 `.to_json`/`dump`/`dumps`
-and `.from_json`/`load`/`loads`. So apply overrides / extensions judiciously, making sure to 
+and `.from_json`/`load`/`loads`. So apply overrides / extensions judiciously, making sure to
 carefully consider whether the interaction of the encode/decode/mm_field is consistent with what you expect!
-
 
 #### What if I have other dataclass field extensions that rely on `metadata`
 
 All the `dataclasses_json.config` does is return a mapping, namespaced under the key `'dataclasses_json'`.
 
-Say there's another module, `other_dataclass_package` that uses metadata. Here's how you solve your problem:
+Say there's another module, `other_dataclass_package` that uses metadata.
+Here's how you solve your problem:
 
 ```python
 metadata = {'other_dataclass_package': 'some metadata...'}  # pre-existing metadata for another dataclass package
@@ -656,21 +668,20 @@ Take a look at [this issue](https://github.com/lidatong/dataclasses-json/issues/
 Note this library is still pre-1.0.0 (SEMVER).
 
 The current convention is:
+
 - **PATCH** version upgrades for bug fixes and minor feature additions.
 - **MINOR** version upgrades for big API features and breaking changes.
 
 Once this library is 1.0.0, it will follow standard SEMVER conventions.
 
-### Python compatibility 
+### Python compatibility
 
 Any version that is not listed in the table below we do not test against, though you might still be able to install the library. For future Python versions, please open an issue and/or a pull request, adding them to the CI suite.
-
 
 | Python version range | Compatible dataclasses-json version |
 |----------------------|:-----------------------------------:|
 | 3.7.x - 3.12.x       |            0.5.x - 0.6.x            |
 | >= 3.13.x            |         No official support (yet)   |
-
 
 ## Roadmap
 
@@ -680,23 +691,24 @@ on performance, and finishing [this issue](https://github.com/lidatong/dataclass
 That said, if you think there's a feature missing / something new needed in the
 library, please see the contributing section below.
 
-
 ## Contributing
 
 First of all, thank you for being interested in contributing to this library.
 I really appreciate you taking the time to work on this project.
 
-- If you're just interested in getting into the code, a good place to start are 
+- If you're just interested in getting into the code, a good place to start are
 issues tagged as bugs.
-- If introducing a new feature, especially one that modifies the public API, 
-consider submitting an issue for discussion before a PR. Please also take a look 
-at existing issues / PRs to see what you're proposing has  already been covered 
+- If introducing a new feature, especially one that modifies the public API,
+consider submitting an issue for discussion before a PR. Please also take a look
+at existing issues / PRs to see what you're proposing has  already been covered
 before / exists.
 - I like to follow the commit conventions documented [here](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
 ### Setting up your environment
 
-This project uses [Poetry](https://python-poetry.org/) for dependency and venv management. It is quite simple to get ready for your first commit:
+This project uses [Poetry](https://python-poetry.org/) for dependency and venv management.
+It is quite simple to get ready for your first commit:
+
 - [Install](https://python-poetry.org/docs/#installation) latest stable Poetry
 - Navigate to where you cloned `dataclasses-json`
 - Run `poetry install`

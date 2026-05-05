@@ -1,5 +1,7 @@
 from collections import Counter, deque
 
+import pytest
+
 from tests.entities import (DataClassIntImmutableDefault,
                             DataClassMutableDefaultDict,
                             DataClassMutableDefaultList, DataClassWithDeque,
@@ -20,7 +22,10 @@ from tests.entities import (DataClassIntImmutableDefault,
                             DataClassWithDequeCollections,
                             DataClassWithTuple, DataClassWithTupleUnbound,
                             DataClassWithUnionIntNone, MyCollection,
-                            DataClassWithCounter)
+                            DataClassWithCounter, DataClassWithCollection,
+                            DataClassWithMapping, DataClassWithMutableMapping,
+                            DataClassWithMutableSet, DataClassWithMutableSequence,
+                            DataClassWithSequence, DataClassWithAbstractSet)
 
 
 class TestEncoder:
@@ -244,3 +249,18 @@ class TestDecoder:
     def test_counter(self):
         assert DataClassWithCounter.from_json('{"c": {"f": 1, "o": 2}}') == \
                DataClassWithCounter(c=Counter('foo'))
+
+    @pytest.mark.parametrize(
+        "json_string, expected_instance",
+        [
+            pytest.param('{"c": [1, 2]}', DataClassWithCollection((1, 2)), id="collection"),
+            pytest.param('{"c": [1, 2]}', DataClassWithSequence((1, 2)), id="sequence"),
+            pytest.param('{"c": [1, 2]}', DataClassWithMutableSequence([1, 2]), id="mutable-sequence"),
+            pytest.param('{"c": [1, 2]}', DataClassWithAbstractSet({1, 2}), id="set"),
+            pytest.param('{"c": [1, 2]}', DataClassWithMutableSet({1, 2}), id="mutable-set"),
+            pytest.param('{"c": {"1": 1, "2": 2}}', DataClassWithMapping({"1": 1, "2": 2}), id="mapping"),
+            pytest.param('{"c": {"1": 1, "2": 2}}', DataClassWithMutableMapping({"1": 1, "2": 2}), id="mutable-mapping"),
+       ]
+    )
+    def test_abstract_collections(self, json_string, expected_instance):
+        assert type(expected_instance).from_json(json_string) == expected_instance

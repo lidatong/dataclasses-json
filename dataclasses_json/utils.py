@@ -2,6 +2,7 @@ import inspect
 import sys
 from datetime import datetime, timezone
 from collections import Counter
+from dataclasses import is_dataclass  # type: ignore
 from typing import (Collection, Mapping, Optional, TypeVar, Any, Type, Tuple,
                     Union, cast)
 
@@ -162,6 +163,10 @@ def _is_tuple(type_):
 def _is_nonstr_collection(type_):
     return (_issubclass_safe(_get_type_origin(type_), Collection)
             and not _issubclass_safe(type_, str))
+
+
+def _is_generic_dataclass(type_):
+    return is_dataclass(_get_type_origin(type_))
 
 
 def _timestamp_to_dt_aware(timestamp: float):

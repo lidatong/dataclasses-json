@@ -3,6 +3,8 @@ import json
 import sys
 import warnings
 from collections import defaultdict, namedtuple
+from collections.abc import (Collection as ABCCollection, Mapping as ABCMapping, MutableMapping, MutableSequence,
+                             MutableSet, Sequence, Set)
 from dataclasses import (MISSING,
                          fields,
                          is_dataclass  # type: ignore
@@ -10,6 +12,7 @@ from dataclasses import (MISSING,
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
+from types import MappingProxyType
 from typing import (Any, Collection, Mapping, Union, get_type_hints,
                     Tuple, TypeVar, Type)
 from uuid import UUID
@@ -24,12 +27,22 @@ from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _get_type_arg_param,
                                     _get_type_args, _is_counter,
                                     _NO_ARGS,
-                                    _issubclass_safe, _is_tuple)
+                                    _issubclass_safe, _is_tuple,
+                                    _is_generic_dataclass)
 
 Json = Union[dict, list, str, int, float, bool, None]
 
 confs = ['encoder', 'decoder', 'mm_field', 'letter_case', 'exclude']
 FieldOverride = namedtuple('FieldOverride', confs)  # type: ignore
+collections_abc_type_to_implementation_type = MappingProxyType({
+    ABCCollection: tuple,
+    ABCMapping: dict,
+    MutableMapping: dict,
+    MutableSequence: list,
+    MutableSet: set,
+    Sequence: tuple,
+    Set: frozenset,
+})
 
 
 class _ExtendedEncoder(json.JSONEncoder):
@@ -227,6 +240,16 @@ def _decode_dataclass(cls, kvs, infer_missing):
     return cls(**init_kwargs)
 
 
+def _decode_type(type_, value, infer_missing):
+    if _has_decoder_in_global_config(type_):
+        return _get_decoder_in_global_config(type_)(value)
+    if _is_supported_generic(type_):
+        return _decode_generic(type_, value, infer_missing)
+    if is_dataclass(type_) or is_dataclass(value):
+        return _decode_dataclass(type_, value, infer_missing)
+    return _support_extended_types(type_, value)
+
+
 def _support_extended_types(field_type, field_value):
     if _issubclass_safe(field_type, datetime):
         # FIXME this is a hack to deal with mm already decoding
@@ -259,8 +282,9 @@ def _is_supported_generic(type_):
         return False
     not_str = not _issubclass_safe(type_, str)
     is_enum = _issubclass_safe(type_, Enum)
+    is_generic_dataclass = _is_generic_dataclass(type_)
     return (not_str and _is_collection(type_)) or _is_optional(
-        type_) or is_union_type(type_) or is_enum
+        type_) or is_union_type(type_) or is_enum or is_generic_dataclass
 
 
 def _decode_generic(type_, value, infer_missing):
@@ -290,14 +314,11 @@ def _decode_generic(type_, value, infer_missing):
         else:
             xs = _decode_items(_get_type_arg_param(type_, 0), value, infer_missing)
 
-        # get the constructor if using corresponding generic type in `typing`
-        # otherwise fallback on constructing using type_ itself
-        materialize_type = type_
-        try:
-            materialize_type = _get_type_cons(type_)
-        except (TypeError, AttributeError):
-            pass
-        res = materialize_type(xs)
+        collection_type = _resolve_collection_type_to_decode_to(type_)
+        res = collection_type(xs)
+    elif _is_generic_dataclass(type_):
+        origin = _get_type_origin(type_)
+        res = _decode_dataclass(origin, value, infer_missing)
     else:  # Optional or Union
         _args = _get_type_args(type_)
         if _args is _NO_ARGS:
@@ -305,12 +326,7 @@ def _decode_generic(type_, value, infer_missing):
             res = value
         elif _is_optional(type_) and len(_args) == 2:  # Optional
             type_arg = _get_type_arg_param(type_, 0)
-            if is_dataclass(type_arg) or is_dataclass(value):
-                res = _decode_dataclass(type_arg, value, infer_missing)
-            elif _is_supported_generic(type_arg):
-                res = _decode_generic(type_arg, value, infer_missing)
-            else:
-                res = _support_extended_types(type_arg, value)
+            res = _decode_type(type_arg, value, infer_missing)
         else:  # Union (already decoded or try to decode a dataclass)
             type_options = _get_type_args(type_)
             res = value  # assume already decoded
@@ -320,7 +336,7 @@ def _decode_generic(type_, value, infer_missing):
                         try:
                             res = _decode_dataclass(type_option, value, infer_missing)
                             break
-                        except (KeyError, ValueError):
+                        except (KeyError, ValueError, AttributeError):
                             continue
                 if res == value:
                     warnings.warn(
@@ -367,17 +383,12 @@ def _decode_items(type_args, xs, infer_missing):
     type_arg is a typevar we need to extract the reified type information
     hence the check of `is_dataclass(vs)`
     """
-    def _decode_item(type_arg, x):
-        if is_dataclass(type_arg) or is_dataclass(xs):
-            return _decode_dataclass(type_arg, x, infer_missing)
-        if _is_supported_generic(type_arg):
-            return _decode_generic(type_arg, x, infer_missing)
-        return x
-
     def handle_pep0673(pre_0673_hint: str) -> Union[Type, str]:
-        for module in sys.modules:
-            maybe_resolved = getattr(sys.modules[module], type_args, None)
-            if maybe_resolved:
+        for module in sys.modules.values():
+            if hasattr(module, type_args):
+                maybe_resolved = getattr(module, type_args)
+                warnings.warn(f"Assuming hint {pre_0673_hint} resolves to {maybe_resolved} "
+                              "This is not necessarily the value that is in-scope.")
                 return maybe_resolved
 
         warnings.warn(f"Could not resolve self-reference for type {pre_0673_hint}, "
@@ -390,13 +401,25 @@ def _decode_items(type_args, xs, infer_missing):
 
     if _isinstance_safe(type_args, Collection) and not _issubclass_safe(type_args, Enum):
         if len(type_args) == len(xs):
-            return list(_decode_item(type_arg, x) for type_arg, x in zip(type_args, xs))
+            return list(_decode_type(type_arg, x, infer_missing) for type_arg, x in zip(type_args, xs))
         else:
             raise TypeError(f"Number of types specified in the collection type {str(type_args)} "
                             f"does not match number of elements in the collection. In case you are working with tuples"
                             f"take a look at this document "
                             f"docs.python.org/3/library/typing.html#annotating-tuples.")
-    return list(_decode_item(type_args, x) for x in xs)
+    return list(_decode_type(type_args, x, infer_missing) for x in xs)
+
+
+def _resolve_collection_type_to_decode_to(type_):
+    # get the constructor if using corresponding generic type in `typing`
+    # otherwise fallback on constructing using type_ itself
+    try:
+        collection_type = _get_type_cons(type_)
+    except (TypeError, AttributeError):
+        collection_type = type_
+
+    # map abstract collection to concrete implementation
+    return collections_abc_type_to_implementation_type.get(collection_type, collection_type)
 
 
 def _asdict(obj, encode_json=False):
@@ -428,5 +451,25 @@ def _asdict(obj, encode_json=False):
     # enum.IntFlag and enum.Flag are regarded as collections in Python 3.11, thus a check against Enum is needed
     elif isinstance(obj, Collection) and not isinstance(obj, (str, bytes, Enum)):
         return list(_asdict(v, encode_json=encode_json) for v in obj)
+    # encoding of generics primarily relies on concrete types while decoding relies on type annotations. This makes
+    # applying encoders/decoders from global configuration inconsistent.
+    elif _has_encoder_in_global_config(type(obj)):
+        return _get_encoder_in_global_config(type(obj))(obj)
     else:
         return copy.deepcopy(obj)
+
+
+def _has_decoder_in_global_config(type_):
+    return type_ in cfg.global_config.decoders
+
+
+def _get_decoder_in_global_config(type_):
+    return cfg.global_config.decoders[type_]
+
+
+def _has_encoder_in_global_config(type_):
+    return type_ in cfg.global_config.encoders
+
+
+def _get_encoder_in_global_config(type_):
+    return cfg.global_config.encoders[type_]

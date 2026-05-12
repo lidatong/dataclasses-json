@@ -37,6 +37,16 @@ class SnakeCasePerson:
 
 @dataclass_json
 @dataclass
+class SnakeCaseNumberedPerson:
+    cardsV2: str = field(
+        metadata={'dataclasses_json': {
+            'letter_case': LetterCase.SNAKE
+        }}
+    )
+
+
+@dataclass_json
+@dataclass
 class PascalCasePerson:
     given_name: str = field(
         metadata={'dataclasses_json': {
@@ -104,6 +114,9 @@ class TestLetterCase:
     def test_snake_decode(self):
         assert SnakeCasePerson.from_json(
             '{"given_name": "Alice"}') == SnakeCasePerson('Alice')
+
+    def test_snake_encode_keeps_digit_with_preceding_letter(self):
+        assert SnakeCaseNumberedPerson('card').to_json() == '{"cards_v2": "card"}'
 
     def test_pascal_encode(self):
         assert PascalCasePerson('Alice').to_json() == '{"GivenName": "Alice"}'

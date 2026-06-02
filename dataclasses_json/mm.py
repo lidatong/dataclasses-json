@@ -245,9 +245,11 @@ def build_type(type_, options, mixin, field, cls):
 
         if is_dataclass(type_):
             if _issubclass_safe(type_, mixin):
-                options['field_many'] = bool(
-                    _is_supported_generic(field.type) and _is_collection(
-                        field.type))
+                options['metadata'] = {
+                    "field_many": bool(
+                        _is_supported_generic(field.type) and _is_collection(
+                            field.type))
+                    }
                 return fields.Nested(type_.schema(), **options)
             else:
                 warnings.warn(f"Nested dataclass field {field.name} of type "
@@ -305,7 +307,7 @@ def schema(cls, mixin, infer_missing):
         else:
             type_ = field.type
             options: typing.Dict[str, typing.Any] = {}
-            missing_key = 'missing' if infer_missing else 'default'
+            missing_key = 'load_default' if infer_missing else 'dump_default'
             if field.default is not MISSING:
                 options[missing_key] = field.default
             elif field.default_factory is not MISSING:

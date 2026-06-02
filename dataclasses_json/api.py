@@ -95,7 +95,6 @@ class DataClassJsonMixin(abc.ABC):
         return Schema(only=only,
                       exclude=exclude,
                       many=many,
-                      context=context,
                       load_only=load_only,
                       dump_only=dump_only,
                       partial=partial,

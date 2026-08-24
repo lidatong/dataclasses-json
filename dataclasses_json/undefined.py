@@ -168,18 +168,26 @@ class _CatchAllUndefinedParameters(_UndefinedParameterAction):
         return known
 
     @staticmethod
-    def _get_default(catch_all_field: Field) -> Any:
+    def _is_missing(field_name):
         # access to the default factory currently causes
         # a false-positive mypy error (16. Dec 2019):
         # https://github.com/python/mypy/issues/6910
 
-        # noinspection PyProtectedMember
-        has_default = not isinstance(catch_all_field.default,
-                                     dataclasses._MISSING_TYPE)
-        # noinspection PyProtectedMember
-        has_default_factory = not isinstance(catch_all_field.default_factory,
-                                             # type: ignore
-                                             dataclasses._MISSING_TYPE)
+        # Python 3.14 and earlier
+        if hasattr(dataclasses, "_MISSING_TYPE"):
+            # noinspection PyProtectedMember
+            return not isinstance(field_name, dataclasses._MISSING_TYPE)
+        else:
+            return field_name is not dataclasses.MISSING
+
+    @staticmethod
+    def _get_default(catch_all_field: Field) -> Any:
+        has_default = _CatchAllUndefinedParameters._is_missing(
+            catch_all_field.default
+        )
+        has_default_factory = _CatchAllUndefinedParameters._is_missing(
+            catch_all_field.default_factory
+        )
         # TODO: black this for proper formatting
         default_value: Union[
             Type[_CatchAllUndefinedParameters._SentinelNoDefault], Any] = _CatchAllUndefinedParameters\

@@ -20,6 +20,7 @@ from uuid import UUID
 from typing_inspect import is_union_type  # type: ignore
 
 from dataclasses_json import cfg
+from dataclasses_json.undefined import UndefinedParameterError
 from dataclasses_json.utils import (_get_type_cons, _get_type_origin,
                                     _handle_undefined_parameters_safe,
                                     _is_collection, _is_mapping, _is_new_type,
@@ -316,7 +317,13 @@ def _decode_generic(type_, value, infer_missing):
 
         collection_type = _resolve_collection_type_to_decode_to(type_)
         res = collection_type(xs)
-    elif _is_generic_dataclass(type_):
+    else:
+        res = _decode_generic_dataclass_or_union(type_, value, infer_missing)
+    return res
+
+
+def _decode_generic_dataclass_or_union(type_, value, infer_missing):
+    if _is_generic_dataclass(type_):
         origin = _get_type_origin(type_)
         res = _decode_dataclass(origin, value, infer_missing)
     else:  # Optional or Union
@@ -331,19 +338,32 @@ def _decode_generic(type_, value, infer_missing):
             type_options = _get_type_args(type_)
             res = value  # assume already decoded
             if type(value) is dict and dict not in type_options:
-                for type_option in type_options:
-                    if is_dataclass(type_option):
-                        try:
-                            res = _decode_dataclass(type_option, value, infer_missing)
-                            break
-                        except (KeyError, ValueError, AttributeError):
-                            continue
+                res = _decode_union_dataclasses(type_options, value, infer_missing)
                 if res == value:
                     warnings.warn(
                         f"Failed to decode {value} Union dataclasses."
                         f"Expected Union to include a matching dataclass and it didn't."
                     )
     return res
+
+
+def _decode_union_dataclasses(type_options, value, infer_missing):
+    first_error: Union[UndefinedParameterError, None] = None
+    for type_option in type_options:
+        if not is_dataclass(type_option):
+            continue
+        try:
+            return _decode_dataclass(type_option, value, infer_missing)
+        except UndefinedParameterError as error:
+            if not error._is_unknown_field:
+                raise
+            if first_error is None:
+                first_error = error
+        except (KeyError, ValueError, AttributeError):
+            continue
+    if first_error is not None:
+        raise first_error
+    return value
 
 
 def _decode_dict_keys(key_type, xs, infer_missing):

@@ -69,8 +69,10 @@ class _RaiseUndefinedParameters(_UndefinedParameterAction):
             _UndefinedParameterAction._separate_defined_undefined_kvs(
                 cls=cls, kvs=kvs)
         if len(unknown) > 0:
-            raise UndefinedParameterError(
+            error = UndefinedParameterError(
                 f"Received undefined initialization arguments {unknown}")
+            error._is_unknown_field = True
+            raise error
         return known
 
 
@@ -277,4 +279,4 @@ class UndefinedParameterError(ValidationError):
     """
     Raised when something has gone wrong handling undefined parameters.
     """
-    pass
+    _is_unknown_field = False

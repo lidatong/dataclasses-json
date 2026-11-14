@@ -14,7 +14,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       max-parallel: 5
       matrix:
@@ -39,7 +39,7 @@ jobs:
         then
           curl -sSL https://install.python-poetry.org | python3 - --version 1.5.1
         else
-          curl -sSL https://install.python-poetry.org | python3 -
+          curl -sSL https://install.python-poetry.org | python3 - --version 1.8.5
         fi
         
         poetry install --all-extras

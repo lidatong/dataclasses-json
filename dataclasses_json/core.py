@@ -185,6 +185,10 @@ def _decode_dataclass(cls, kvs, infer_missing):
         field_value = kvs[field.name]
         field_type = types[field.name]
         if field_value is None:
+            decoder = overrides[field.name].decoder
+            if decoder is not None and field not in missing_fields:
+                init_kwargs[field.name] = decoder(field_value)
+                continue
             if not _is_optional(field_type):
                 warning = (
                     f"value of non-optional type {field.name} detected "

@@ -33,7 +33,7 @@ jobs:
         run: |
           set -e
           
-          curl -sSL https://install.python-poetry.org | python3 -
+          curl -sSL https://install.python-poetry.org | python3 - --version 1.8.5
           poetry install --all-extras
 
       - uses: reviewdog/action-setup@v1

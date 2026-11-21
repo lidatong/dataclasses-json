@@ -301,7 +301,10 @@ def schema(cls, mixin, infer_missing):
     for field in dc_fields(cls):
         metadata = overrides[field.name]
         if metadata.mm_field is not None:
-            schema[field.name] = metadata.mm_field
+            t = deepcopy(metadata.mm_field)
+            if t.data_key is None and metadata.letter_case is not None:
+                t.data_key = metadata.letter_case(field.name)
+            schema[field.name] = t
         else:
             type_ = field.type
             options: typing.Dict[str, typing.Any] = {}
